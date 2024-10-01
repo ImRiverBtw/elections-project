@@ -29,10 +29,10 @@ hic:
         - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $DEPLOY_HIC == "true"
           variables:
               HIC_ENVIRONMENT: "live"
-        - if: $CI_COMMIT_BRANCH == "dev" && $DEPLOY_HIC == "true"
+        - if: $CI_COMMIT_BRANCH == "main" && $DEPLOY_HIC == "true"
           variables:
-              HIC_ENVIRONMENT: "dev"
-        - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_COMMIT_BRANCH != "dev" && $DEPLOY_HIC == "true"
+              HIC_ENVIRONMENT: "main"
+        - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_COMMIT_BRANCH != "main" && $DEPLOY_HIC == "true"
           when: manual
           variables:
-              HIC_ENVIRONMENT: "dev"
+              HIC_ENVIRONMENT: "main"
