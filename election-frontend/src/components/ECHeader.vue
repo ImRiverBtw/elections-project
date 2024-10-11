@@ -14,15 +14,16 @@ function myFunction() {
 
   <div class="header-top">
     <div class="container">
-      <img alt="Vue logo" src="../assets/logo-ec-big.svg">
+      <img alt="Vue logo" src="../assets/img/logo-ec-big.svg">
+      <img class="imgright" alt="image right" src="../assets/img/right_header_image.svg">
     </div>
   </div>
 
   <div class="topnav" id="myTopnav">
     <div class="containernav">
       <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
-      <RouterLink to="/test">Test</RouterLink>
+      <RouterLink to="/electionresults">Verkiezingsuitslagen</RouterLink>
+      <RouterLink to="/test">Forum</RouterLink>
       <a href="javascript:void(0);" class="icon" @click="myFunction">
         <i class="fa fa-bars"></i>
       </a>
@@ -38,6 +39,16 @@ function myFunction() {
 .topnav {
   overflow: hidden;
   background-color: #004494;
+}
+
+.container{
+  display: flex;
+  justify-content: space-between;
+}
+.imgright{
+  height: 127px;
+  margin: -24px -16px;
+  height: 124px;
 }
 
 .topnav a {
