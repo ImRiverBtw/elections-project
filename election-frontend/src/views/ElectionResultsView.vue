@@ -32,6 +32,9 @@ export default {
 
 .content{
   max-width: 1100px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-right: 8px;
 }
 h3{
   padding-bottom: 18px;
