@@ -5,6 +5,7 @@
       <p>Partij</p>
       <p class="right">Totaal aantal Stemmen: {{ totalVoteCount }}</p>
     </div>
+
     <div class="sorting-selector">
       <label for="sort-selector">Sorteer op: </label>
       <select id="sort-selector" v-model="selectedSort">
@@ -25,7 +26,6 @@
         <td>{{ affiliation.votes }} stemmen <br> {{ getVotePercentage(affiliation) }}%</td>
       </tr>
       </tbody>
-
     </table>
   </div>
 </template>
@@ -120,13 +120,15 @@ export default {
         default:
           return affiliationsCopy
       }
-    },
-
+    }
   }
 }
 </script>
 
 <style scoped>
+h2{
+  margin-bottom: 18px;
+}
 .content {
   box-sizing: border-box;
   max-width: 1100px;
@@ -135,21 +137,10 @@ export default {
   border-radius: 8px;
   padding: 8px;
 }
-h2{
-  margin-bottom: 18px;
-}
 .sorting-selector{
   text-align: right;
   margin: 8px;
 }
-
-table {
-  box-sizing: border-box;
-  width: 100%;
-  border-collapse: collapse;
-
-}
-
 .header {
   background-color: #B9C5E9;
   border-radius: 8px;
@@ -161,21 +152,20 @@ table {
   margin-bottom: 4px;
 }
 
+table {
+  box-sizing: border-box;
+  width: 100%;
+  border-collapse: collapse;
+}
 tbody tr {
   border-top: 1px solid gray;
 }
-
 th {
   text-align: left;
   padding: 18px;
 }
-
 td {
   text-align: right;
   padding: 18px;
-}
-
-.right {
-  text-align: right;
 }
 </style>
