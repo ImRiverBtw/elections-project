@@ -44,11 +44,15 @@ function myFunction() {
 .container{
   display: flex;
   justify-content: space-between;
+  position: relative;
 }
 .imgright{
   height: 127px;
-  margin: -24px -16px;
-  height: 124px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: -1;
+
 }
 
 .topnav a {
