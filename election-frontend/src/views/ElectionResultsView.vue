@@ -28,6 +28,7 @@ export default {
 .electionresults-container{
   display: flex;
   flex-direction: row;
+  margin-top: 18px;
 }
 
 .content{
