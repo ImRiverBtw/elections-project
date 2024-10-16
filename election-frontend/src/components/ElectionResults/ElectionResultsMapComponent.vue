@@ -15,6 +15,7 @@ export default {
   data() {
     return {
       map: null, // Voeg een map eigenschap toe aan de data
+      hoveredLayerId: null // Houdt de ID van de laag die wordt gehovert
     };
   },
   mounted() {
@@ -33,30 +34,47 @@ export default {
         type: 'geojson',
         data: {
           type: 'FeatureCollection',
-          features: []
+          features: [] // Zorg ervoor dat je hier data toevoegt
         }
       });
 
-      // Voeg een lege laag toe die we later zullen updaten
+      // Voeg de laag toe voor gemeenten
       this.map.addLayer({
-        'id': 'townships-layer',
+        'id': 'townships',
         'type': 'fill',
         'source': 'townships',
         'layout': {},
         'paint': {
-          'fill-color': '#088', // Initieel statische kleur
-          'fill-opacity': 0.5   // Initieel doorzichtigheid
+          'fill-color': 'hsla(0, 0%, 0%, 0.1)', // Standaard kleur voor alle gemeenten
+          'fill-opacity': 0.5   // Standaard doorzichtigheid
         }
       });
 
-      // Voorbeeldmethode om de stijl van de laag aan te passen
-      this.updateLayerStyle('#FF5733'); // Voorbeeld: oranje kleur
+      // Zodra de kaart geladen is, pas specifieke gemeente kleuren aan
+      this.updateMunicipalityColors();
     });
   },
   methods: {
-    // Methode om de stijl van de laag dynamisch aan te passen
-    updateLayerStyle(color) {
-      this.map.setPaintProperty('townships', 'fill-color', color);
+    updateMunicipalityColors() {
+      // Stel de kleur per gemeente in, gebruikmakend van de 'setPaintProperty' methode
+      this.map.setPaintProperty('townships', 'fill-color', [
+        'case',
+        ['==', ['get', 'name'], 'Amsterdam'], '#FF0000', // Rode kleur voor Amsterdam
+        ['==', ['get', 'name'], 'Rotterdam'], '#00FF00', // Groene kleur voor Rotterdam
+        'hsla(0, 0%, 0%, 0.1)' // Default kleur voor andere gemeenten
+      ]);
+    },
+    getMunicipalityData(event) {
+      const features = this.map.queryRenderedFeatures(event.point, {
+        layers: ['townships']
+      });
+
+      if (features.length > 0) {
+        const municipality = features[0].properties.name; // Controleer of 'name' de juiste eigenschap is
+        console.log('Gemeente naam:', municipality);
+      } else {
+        console.log('Geen gemeente gevonden op deze locatie');
+      }
     }
   }
 }
@@ -65,6 +83,6 @@ export default {
 <style scoped>
 .map-container {
   height: 500px;
-  width: 200%;
+  width: 100%;
 }
 </style>
