@@ -20,12 +20,18 @@ export default {
   },
   mounted() {
     mapboxgl.accessToken = 'pk.eyJ1IjoiZGR3MjIxMiIsImEiOiJjbTI0amc4bnEwZjQ1MmtzNmNreWhoaTV3In0.fWrzBJ3_mczo0s4NzjvHxA';
+    //De ruimte die de kaart kan bewegen
+    const bounds = [
+      [3.1, 50.5],  // Southwest coordinates (iets zuidelijker en westelijker)
+      [7.5, 53.7]   // Northeast coordinates (iets noordelijker en oostelijker)
+    ];
 
     this.map = new mapboxgl.Map({
       container: this.$refs.mapContainer,
       style: 'mapbox://styles/ddw2212/cm24jsqe100dy01r21eum3t5c',
       center: [5.2, 52.2],
-      zoom: 6
+      zoom: 6,
+      maxBounds: bounds
     });
 
     this.map.on('load', () => {
@@ -38,6 +44,10 @@ export default {
         }
       });
 
+      this.map.on('click', 'townships', (e) =>{
+        this.getMunicipalityData(e);
+      })
+
       // Voeg de laag toe voor gemeenten
       this.map.addLayer({
         'id': 'townships',
@@ -46,7 +56,6 @@ export default {
         'layout': {},
         'paint': {
           'fill-color': 'hsla(0, 0%, 0%, 0.1)', // Standaard kleur voor alle gemeenten
-          'fill-opacity': 0.5   // Standaard doorzichtigheid
         }
       });
 
@@ -59,8 +68,8 @@ export default {
       // Stel de kleur per gemeente in, gebruikmakend van de 'setPaintProperty' methode
       this.map.setPaintProperty('townships', 'fill-color', [
         'case',
-        ['==', ['get', 'name'], 'Amsterdam'], '#FF0000', // Rode kleur voor Amsterdam
-        ['==', ['get', 'name'], 'Rotterdam'], '#00FF00', // Groene kleur voor Rotterdam
+        ['==', ['get', 'name'], 'Amsterdam'], 'hsla(0, 100%, 50%, 0.7)', // Rode kleur voor Amsterdam
+        ['==', ['get', 'name'], 'Rotterdam'], 'hsla(115, 100%, 50%, 0.7)', // Groene kleur voor Rotterdam
         'hsla(0, 0%, 0%, 0.1)' // Default kleur voor andere gemeenten
       ]);
     },
