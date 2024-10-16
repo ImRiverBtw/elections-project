@@ -16,7 +16,7 @@
               <li><a href="/totaaltabel">Totaaltabel</a></li>
               <li><a href="/zetelsverdeling">Zetelsverdeling</a></li>
               <li><a href="/meerderheidszoeker">Meerderheidszoeker</a></li>
-              <li><a href="/minderheidszoeker">Minderheidszoeker</a></li>
+              <li><a href="municipalityfinder">Zoek Je Gemeente</a></li>
             </ul>
             <a href="/forum">Forum</a>
           </div>
