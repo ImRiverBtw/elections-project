@@ -48,31 +48,13 @@ export default {
         this.getMunicipalityData(e);
       })
 
-      // Voeg de laag toe voor gemeenten
-      this.map.addLayer({
-        'id': 'townships',
-        'type': 'fill',
-        'source': 'townships',
-        'layout': {},
-        'paint': {
-          'fill-color': 'hsla(0, 0%, 0%, 0.1)', // Standaard kleur voor alle gemeenten
-        }
-      });
-
       // Zodra de kaart geladen is, pas specifieke gemeente kleuren aan
       this.updateMunicipalityColors();
+
+      this.getAllMunicipalityNames();
     });
   },
   methods: {
-    updateMunicipalityColors() {
-      // Stel de kleur per gemeente in, gebruikmakend van de 'setPaintProperty' methode
-      this.map.setPaintProperty('townships', 'fill-color', [
-        'case',
-        ['==', ['get', 'name'], 'Amsterdam'], 'hsla(0, 100%, 50%, 0.7)', // Rode kleur voor Amsterdam
-        ['==', ['get', 'name'], 'Rotterdam'], 'hsla(115, 100%, 50%, 0.7)', // Groene kleur voor Rotterdam
-        'hsla(0, 0%, 0%, 0.1)' // Default kleur voor andere gemeenten
-      ]);
-    },
     getMunicipalityData(event) {
       const features = this.map.queryRenderedFeatures(event.point, {
         layers: ['townships']
@@ -84,7 +66,33 @@ export default {
       } else {
         console.log('Geen gemeente gevonden op deze locatie');
       }
-    }
+    },
+
+    getAllMunicipalityNames() {
+      const features = this.map.queryRenderedFeatures({ layers: ['townships'] }); // Specificeer de laag
+
+      if (features.length > 0) {
+        // Filter de namen die je zoekt, bijvoorbeeld "Texel"
+        const municipalityNames = features.map(feature => feature.properties.name);
+
+        // Zoek naar een specifieke naam, bijvoorbeeld "Texel"
+        //const specificMunicipality = municipalityNames.find(name => name === 'Texel');
+
+        // Als je alle namen wilt loggen
+        console.log('Alle gemeenten:', municipalityNames);
+      } else {
+        console.log('Geen gemeenten gevonden.');
+      }
+    },
+    updateMunicipalityColors() {
+      // Stel de kleur per gemeente in, gebruikmakend van de 'setPaintProperty' methode
+      this.map.setPaintProperty('townships', 'fill-color', [
+        'case',
+        ['==', ['get', 'name'], 'Amsterdam'], 'hsla(0, 100%, 50%, 0.7)', // Rode kleur voor Amsterdam
+        ['==', ['get', 'name'], 'Rotterdam'], 'hsla(115, 100%, 50%, 0.7)', // Groene kleur voor Rotterdam
+        'hsla(0, 0%, 0%, 0.1)' // Default kleur voor andere gemeenten
+      ]);
+    },
   }
 }
 </script>
