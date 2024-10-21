@@ -1,10 +1,6 @@
 <!--
 Todo:
       1: Visuele grafiek maken
-      2: Resetbutton bug fixen - FIXED
-      3: responsive maken voor telefoon - FIXED
-
-
 -->
 
 <template>
