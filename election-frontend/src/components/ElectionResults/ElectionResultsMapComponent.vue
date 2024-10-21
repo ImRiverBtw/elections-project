@@ -2,117 +2,102 @@
   <div>
     <h2>Uitslagenkaart</h2>
     <div class="content">
-      <div ref="mapContainer" class="map-container"></div>
+      <div id="map"></div>
     </div>
   </div>
 </template>
 
 <script>
-import mapboxgl from 'mapbox-gl';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 export default {
-  name: "ElectionResultsMap",
   data() {
     return {
-      map: null, // Voeg een map eigenschap toe aan de data
-      hoveredLayerId: null // Houdt de ID van de laag die wordt gehovert
+      geojson: null  // Declareer geojson in de data() functie
     };
   },
   mounted() {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZGR3MjIxMiIsImEiOiJjbTI0amc4bnEwZjQ1MmtzNmNreWhoaTV3In0.fWrzBJ3_mczo0s4NzjvHxA';
-    //De ruimte die de kaart kan bewegen
-    const bounds = [
-      [3.1, 50.5],  // Southwest coordinates (iets zuidelijker en westelijker)
-      [7.5, 53.7]   // Northeast coordinates (iets noordelijker en oostelijker)
-    ];
+    // Maak de Leaflet kaart aan, gecentreerd op Nederland
+    let map = L.map('map').setView([52.3676, 4.9041], 7); // Coördinaten van Nederland
 
-    this.map = new mapboxgl.Map({
-      container: this.$refs.mapContainer,
-      style: 'mapbox://styles/ddw2212/cm24jsqe100dy01r21eum3t5c',
-      center: [5.2, 52.2],
-      zoom: 6,
-      maxBounds: bounds
-    });
+    // Voeg OpenStreetMap tegels toe
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-    this.map.on('load', () => {
-      // Voeg een bron (source) toe voor de gemeenten (townships)
-      this.map.addSource('townships', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [] // Zorg ervoor dat je hier data toevoegt
-        }
-      });
-
-      this.map.on('click', 'townships', (e) =>{
-        this.getMunicipalityData(e);
-      })
-
-      this.getAllMunicipalityNames();
-    });
-  },
-  methods: {
-    getMunicipalityData(event) {
-      const features = this.map.queryRenderedFeatures(event.point, {
-        layers: ['townships']
-      });
-
-      if (features.length > 0) {
-        const municipality = features[0].properties.name; // Controleer of 'name' de juiste eigenschap is
-        console.log('Gemeente naam:', municipality);
-      } else {
-        console.log('Geen gemeente gevonden op deze locatie');
-      }
-    },
-
-    getAllMunicipalityNames() {
-      const features = this.map.queryRenderedFeatures({ layers: ['townships'] }); // Specificeer de laag
-
-      if (features.length > 0) {
-        // Filter de namen die je zoekt, bijvoorbeeld "Texel"
-        const municipalityNames = features.map(feature => feature.properties.name);
-
-        // Zoek naar een specifieke naam, bijvoorbeeld "Texel"
-        //const specificMunicipality = municipalityNames.find(name => name === 'Texel');
-
-        // Als je alle namen wilt loggen
-        this.updateMunicipalityColors(municipalityNames);
-      } else {
-        console.log('Geen gemeenten gevonden.');
-      }
-    },
-    updateMunicipalityColors(municipalityNames) {
-      console.log('Alle gemeenten:', municipalityNames);
-
-      // Bouw de conditionele array
-      const colorCases = ['case'];
-
-      // Voeg kleuren toe voor gemeenten met een 'a' in de naam
-      municipalityNames.forEach((name) => {
-        // Controleer of de gemeente naam een 'a' bevat
-        if (name.toLowerCase().includes('a')) {
-          colorCases.push(['==', ['get', 'name'], name]); // Voeg de gemeente naam toe
-          colorCases.push('hsla(115, 100%, 50%, 0.7)'); // Groene kleur voor gemeenten met 'a'
-        } else if (name.toLowerCase().includes('r')){
-          colorCases.push(['==', ['get', 'name'], name]); // Voeg de gemeente naam toe
-          colorCases.push('hsla(0, 100%, 50%, 0.7)');
-        }
-      });
-
-      // Voeg de default kleur toe voor andere gemeenten
-      colorCases.push('hsla(0, 0%, 50%, 0.7)'); // Default kleur voor andere gemeenten
-
-      // Stel de kleuren in met de gehele case
-      this.map.setPaintProperty('townships', 'fill-color', colorCases);
+    // Functie om de kleur te bepalen op basis van de winnende partij
+    function getColor(party) {
+      return party === 'Partij A' ? '#FF0000' :  // Rood voor Partij A
+          party === 'Partij B' ? '#0000FF' :  // Blauw voor Partij B
+              party === 'Partij C' ? '#00FF00' :  // Groen voor Partij C
+                  '#CCCCCC';  // Grijs als default
     }
 
+    // Stijl voor elke gemeente
+    function style(feature) {
+      // Dummy logic voor winnende partij (je kunt hier je eigen data inbrengen)
+      const randomParties = ['Partij A', 'Partij B', 'Partij C'];
+      const winningParty = randomParties[Math.floor(Math.random() * randomParties.length)];
+      feature.properties.winning_party = winningParty;  // Voeg de partij toe aan de feature
+
+      return {
+        fillColor: getColor(winningParty),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+      };
+    }
+
+    // Interactie: mouseover en mouseout effecten
+    const highlightFeature = (e) => {
+      var layer = e.target;
+
+      layer.setStyle({
+        weight: 5,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.9
+      });
+
+      if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+      }
+    };
+
+    const resetHighlight = (e) => {
+      this.geojson.resetStyle(e.target);  // Gebruik this.geojson voor toegang
+    };
+
+    // Functie die een popup toont wanneer er over een gemeente wordt gehoverd
+    const onEachFeature = (feature, layer) => {
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight
+      });
+      layer.bindPopup('<strong>' + feature.properties.name + '</strong><br>Winnende partij: ' + feature.properties.winning_party);
+    };
+
+    // Laad de GeoJSON data extern in
+    fetch('https://www.webuildinternet.com/articles/2015-07-19-geojson-data-of-the-netherlands/townships.geojson')
+        .then(response => response.json())
+        .then(data => {
+          // Voeg de GeoJSON data toe aan de kaart en sla het op in this.geojson
+          this.geojson = L.geoJson(data, {
+            style: style,
+            onEachFeature: onEachFeature
+          }).addTo(map);
+        })
+        .catch(error => console.error('Error fetching GeoJSON data:', error));
   }
-}
+};
 </script>
 
 <style scoped>
-.map-container {
-  height: 500px;
+#map {
+  height: 600px;
   width: 100%;
 }
 </style>
