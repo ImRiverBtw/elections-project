@@ -24,6 +24,7 @@ function myFunction() {
       <RouterLink to="/">Home</RouterLink>
       <RouterLink to="/electionresults">Verkiezingsuitslagen</RouterLink>
       <RouterLink to="/test">Forum</RouterLink>
+      <RouterLink to="/parsetest">Parse Test</RouterLink>
       <a href="javascript:void(0);" class="icon" @click="myFunction">
         <i class="fa fa-bars"></i>
       </a>
