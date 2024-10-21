@@ -18,8 +18,18 @@ export default {
     };
   },
   mounted() {
+    // Definieer de grenzen (bounding box) voor Nederland
+    let bounds = [[50.5, 3.2], [53.7, 7.2]];
+
     // Maak de Leaflet kaart aan, gecentreerd op Nederland
-    let map = L.map('map').setView([52.3676, 4.9041], 7); // Coördinaten van Nederland
+    let map = L.map('map', {
+      center: [52.1, 5.3],  // Center on the Netherlands
+      zoom: 7,              // Default zoom level
+      minZoom: 7            // Restrict zoom in to 2 levels above the default
+    });
+
+    // Stel de zichtbare grenzen in op Nederland
+    map.setMaxBounds(bounds);
 
     // Voeg OpenStreetMap tegels toe
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -36,7 +46,6 @@ export default {
 
     // Stijl voor elke gemeente
     function style(feature) {
-      // Dummy logic voor winnende partij (je kunt hier je eigen data inbrengen)
       const randomParties = ['Partij A', 'Partij B', 'Partij C'];
       const winningParty = randomParties[Math.floor(Math.random() * randomParties.length)];
       feature.properties.winning_party = winningParty;  // Voeg de partij toe aan de feature
@@ -51,7 +60,6 @@ export default {
       };
     }
 
-    // Interactie: mouseover en mouseout effecten
     const highlightFeature = (e) => {
       var layer = e.target;
 
@@ -68,23 +76,20 @@ export default {
     };
 
     const resetHighlight = (e) => {
-      this.geojson.resetStyle(e.target);  // Gebruik this.geojson voor toegang
+      this.geojson.resetStyle(e.target);
     };
 
-    // Functie die een popup toont wanneer er over een gemeente wordt gehoverd
     const onEachFeature = (feature, layer) => {
       layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight
       });
-      layer.bindPopup('<strong>' + feature.properties.name + '</strong><br>Winnende partij: ' + feature.properties.winning_party);
+      layer.bindPopup('<strong>' + feature.properties.name + '</strong><br>grootste partij: ' + feature.properties.winning_party);
     };
 
-    // Laad de GeoJSON data extern in
     fetch('https://www.webuildinternet.com/articles/2015-07-19-geojson-data-of-the-netherlands/townships.geojson')
         .then(response => response.json())
         .then(data => {
-          // Voeg de GeoJSON data toe aan de kaart en sla het op in this.geojson
           this.geojson = L.geoJson(data, {
             style: style,
             onEachFeature: onEachFeature
@@ -92,7 +97,7 @@ export default {
         })
         .catch(error => console.error('Error fetching GeoJSON data:', error));
   }
-};
+}
 </script>
 
 <style scoped>
