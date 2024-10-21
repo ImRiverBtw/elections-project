@@ -50,3 +50,4 @@ Thumbs.db
 
 # Election xml files
 /election-backend/src/main/resources/election-results/constituency/*.xml
+/election-backend/src/main/resources/election-results/municipality/*.xml
