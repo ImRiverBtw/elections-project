@@ -1,8 +1,8 @@
 <!--
 Todo:
       1: Visuele grafiek maken
-      2: Resetbutton bug fixen
-      3: responsive maken voor telefoon
+      2: Resetbutton bug fixen - FIXED
+      3: responsive maken voor telefoon - FIXED
 
 
 -->
@@ -22,7 +22,7 @@ Todo:
 
     <div class="graphWrapper">
 
-      <p> Grafiek placeholder</p>
+      <p class="graph"> Grafiek placeholder</p>
       <h2 id="seatsCounter"> ({{ this.totalAccumulatedSeats }} Zetels)</h2>
 
     </div>
@@ -34,6 +34,8 @@ Todo:
         <div class="activatedPartiesWrapper">
 <!--          makes a "tag" for every party in activatedParties array -->
           <p class="activatedParty" v-for="party in selectedParties" :key="party.id"> {{ party.name }} </p>
+
+<!--          <p class="activatedParty" v-for="party in parties.filter(p => p.selected)" :key="party.id"> {{ party.name }} </p>-->
         </div>
 
     </div>
@@ -154,14 +156,17 @@ export default {
 
     handleResetButtonClick() {
 
+      console.log("test")
+
       this.selectedParties = [];
       this.totalAccumulatedSeats = 0;
 
-      // moet een bug fixen waarbij het niet de kleur van de tag veranderd //
-      for (let i = 0; i < this.parties; i++) {
+      console.log("beforeloop");
 
+      for (let i = 0; i < this.parties.length; i++) {
+
+        console.log("loop")
         this.parties[i].selected = false;
-        console.log(this.parties[i].selected + "test");
 
       }
 
@@ -233,6 +238,7 @@ export default {
   //border: 1px solid red;
   margin-top: 11px;
   margin-bottom: 11px;
+
 }
 .activatedPartiesWrapper {
   display: inline-block;
