@@ -1,6 +1,7 @@
 <template>
+  <h1>Verkiezingsuitslagen 2023</h1>
   <h2>Totaaltabel</h2>
-  <div class="content">
+  <div class="total-table">
     <div class=" header">
       <p>Partij</p>
       <p class="right">Totaal aantal Stemmen: {{ totalVoteCount }}</p>
@@ -129,27 +130,26 @@ export default {
 h2{
   margin-bottom: 18px;
 }
-.content {
-  box-sizing: border-box;
-  max-width: 1100px;
-  width: 100%;
-  border: 1px solid gray;
-  border-radius: 8px;
-  padding: 8px;
-}
+
 .sorting-selector{
   text-align: right;
   margin: 8px;
 }
 .header {
   background-color: #B9C5E9;
-  border-radius: 8px;
   padding: 18px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   font-weight: bold;
   margin-bottom: 4px;
+  border-radius: 2px;
+}
+.total-table{
+  filter: drop-shadow(0 0 0.15rem lightgrey);
+  background-color: white;
+  border-radius: 2px;
+
 }
 
 table {
