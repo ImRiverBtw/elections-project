@@ -48,9 +48,6 @@ export default {
         this.getMunicipalityData(e);
       })
 
-      // Zodra de kaart geladen is, pas specifieke gemeente kleuren aan
-      this.updateMunicipalityColors();
-
       this.getAllMunicipalityNames();
     });
   },
@@ -79,20 +76,36 @@ export default {
         //const specificMunicipality = municipalityNames.find(name => name === 'Texel');
 
         // Als je alle namen wilt loggen
-        console.log('Alle gemeenten:', municipalityNames);
+        this.updateMunicipalityColors(municipalityNames);
       } else {
         console.log('Geen gemeenten gevonden.');
       }
     },
-    updateMunicipalityColors() {
-      // Stel de kleur per gemeente in, gebruikmakend van de 'setPaintProperty' methode
-      this.map.setPaintProperty('townships', 'fill-color', [
-        'case',
-        ['==', ['get', 'name'], 'Amsterdam'], 'hsla(0, 100%, 50%, 0.7)', // Rode kleur voor Amsterdam
-        ['==', ['get', 'name'], 'Rotterdam'], 'hsla(115, 100%, 50%, 0.7)', // Groene kleur voor Rotterdam
-        'hsla(0, 0%, 0%, 0.1)' // Default kleur voor andere gemeenten
-      ]);
-    },
+    updateMunicipalityColors(municipalityNames) {
+      console.log('Alle gemeenten:', municipalityNames);
+
+      // Bouw de conditionele array
+      const colorCases = ['case'];
+
+      // Voeg kleuren toe voor gemeenten met een 'a' in de naam
+      municipalityNames.forEach((name) => {
+        // Controleer of de gemeente naam een 'a' bevat
+        if (name.toLowerCase().includes('a')) {
+          colorCases.push(['==', ['get', 'name'], name]); // Voeg de gemeente naam toe
+          colorCases.push('hsla(115, 100%, 50%, 0.7)'); // Groene kleur voor gemeenten met 'a'
+        } else if (name.toLowerCase().includes('r')){
+          colorCases.push(['==', ['get', 'name'], name]); // Voeg de gemeente naam toe
+          colorCases.push('hsla(0, 100%, 50%, 0.7)');
+        }
+      });
+
+      // Voeg de default kleur toe voor andere gemeenten
+      colorCases.push('hsla(0, 0%, 50%, 0.7)'); // Default kleur voor andere gemeenten
+
+      // Stel de kleuren in met de gehele case
+      this.map.setPaintProperty('townships', 'fill-color', colorCases);
+    }
+
   }
 }
 </script>
