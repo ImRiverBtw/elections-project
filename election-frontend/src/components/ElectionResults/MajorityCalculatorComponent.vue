@@ -23,6 +23,8 @@ Todo:
     <div class="graphWrapper">
 
       <p class="graph"> Grafiek placeholder</p>
+<!--      <SeatsGraphComponent :data="chartData" :max="150" :size="400"> </SeatsGraphComponent>-->
+
       <h2 id="seatsCounter"> ({{ this.totalAccumulatedSeats }} Zetels)</h2>
 
     </div>
@@ -52,7 +54,7 @@ Todo:
 <!--        makes a party tag for every party in the parties array and binds click method to it when it is clicked -->
         <PartyTag class="partyTag"
                   v-for="party in parties"
-                  @click="handlePartyTagClick(party)"
+                  @click="handlePartyTagClick(party); addSegment()"
                   :class="{active: party.selected}"
         > <p class="partyName"> {{ party.name }} </p>
         </PartyTag>
@@ -68,10 +70,11 @@ Todo:
 
 <script >
 import PartyTag from "@/components/PartyTag.vue";
+import SeatsGraphComponent from "@/components/SeatsGraphComponent.vue";
 
 export default {
   name: "MajorityCalulator",
-  components: {PartyTag},
+  components: {PartyTag, SeatsGraphComponent},
 
   data() {
 
@@ -87,22 +90,23 @@ export default {
 
       parties: [
 
-        { id: "1", name: "PVV", seatAmount: 37, selected: false, color: "" },
-        { id: "2", name: "GL/PVDA", seatAmount: 25, selected: false, color: "" },
-        { id: "3", name: "VVD", seatAmount: 24, selected: false, color: "" },
-        { id: "4", name: "NSC", seatAmount: 20, selected: false, color: "" },
-        { id: "5", name: "D66", seatAmount: 9, selected: false, color: "" },
-        { id: "6", name: "BBB", seatAmount: 7, selected: false, color: "" },
-        { id: "7", name: "CDA", seatAmount: 5, selected: false, color: "" },
-        { id: "8", name: "SP", seatAmount: 5, selected: false, color: "" },
-        { id: "9", name: "DENK", seatAmount: 3, selected: false, color: "" },
-        { id: "10", name: "PVDD", seatAmount: 3, selected: false, color: "" },
-        { id: "11", name: "FVD", seatAmount: 3, selected: false, color: "" },
-        { id: "12", name: "SGP", seatAmount: 3, selected: false, color: "" },
-        { id: "13", name: "CU", seatAmount: 3, selected: false, color: "" },
-        { id: "14", name: "VOLT", seatAmount: 2, selected: false, color: "" },
-        { id: "15", name: "JA21", seatAmount: 1, selected: false, color: "" },
-      ]
+        {id: "1", name: "PVV", seatAmount: 37, selected: false, color: ""},
+        {id: "2", name: "GL/PVDA", seatAmount: 25, selected: false, color: ""},
+        {id: "3", name: "VVD", seatAmount: 24, selected: false, color: ""},
+        {id: "4", name: "NSC", seatAmount: 20, selected: false, color: ""},
+        {id: "5", name: "D66", seatAmount: 9, selected: false, color: ""},
+        {id: "6", name: "BBB", seatAmount: 7, selected: false, color: ""},
+        {id: "7", name: "CDA", seatAmount: 5, selected: false, color: ""},
+        {id: "8", name: "SP", seatAmount: 5, selected: false, color: ""},
+        {id: "9", name: "DENK", seatAmount: 3, selected: false, color: ""},
+        {id: "10", name: "PVDD", seatAmount: 3, selected: false, color: ""},
+        {id: "11", name: "FVD", seatAmount: 3, selected: false, color: ""},
+        {id: "12", name: "SGP", seatAmount: 3, selected: false, color: ""},
+        {id: "13", name: "CU", seatAmount: 3, selected: false, color: ""},
+        {id: "14", name: "VOLT", seatAmount: 2, selected: false, color: ""},
+        {id: "15", name: "JA21", seatAmount: 1, selected: false, color: ""},
+      ],
+      chartData: [],
     }
   },
 
@@ -167,19 +171,22 @@ export default {
 
         console.log("loop")
         this.parties[i].selected = false;
-
       }
+    },
+    addSegment() {
+      // Add a new segment dynamically
+      this.chartData.push({
+        value: 20,
+        color: '#FFA726',
+      });
 
-    }
-
-  },
-
-  watch: {
     },
 
-  computed: {
-  },
+    watch: {},
 
+    computed: {},
+
+  }
 }
 
 </script>
