@@ -23,7 +23,7 @@
           v-for="affiliation in sortedAffiliations"
           :key="affiliation.shortName"
       >
-        <th>{{ affiliation.longName }}</th>
+        <th>{{ affiliation.name }}</th>
         <td>{{ affiliation.votes }} stemmen <br> {{ getVotePercentage(affiliation) }}%</td>
       </tr>
       </tbody>
@@ -37,41 +37,7 @@ import {Affiliation} from "@/models/affiliation.js";
 export default {
   name: "TotalTable",
   created() {
-    //Possibly Provide/Inject from ElectionResults
-    const affiliationList = [
-      "NSC",
-      "PVV",
-      "GLPVDA",
-      "BBB",
-      "BVN",
-      "DENK",
-      "NLPLAN",
-      "SvN",
-      "Lef",
-      "PvdS",
-      "PPvB",
-      "PDG",
-      "LP",
-      "Splinter",
-      "Bij1",
-      "50Plus",
-      "Volt",
-      "CU",
-      "PvD",
-      "Ja21",
-      "FvD",
-      "SP",
-      "CDA",
-      "VVD",
-      "D66"
-    ]
-    //fill affiliations array with data from Affiliation model
-    for (let i = 0; i < affiliationList.length; i++) {
-      let currentAffiliation = Affiliation.createParty(affiliationList[i])
-      this.affiliations.push(currentAffiliation)
-      //keep track of the total number of votes
-      this.totalVoteCount += currentAffiliation.votes
-    }
+    this.fetchAffiliations();
   },
   data() {
     return {
@@ -81,6 +47,39 @@ export default {
     }
   },
   methods: {
+    async fetchAffiliations() {
+      try {
+        const response = await fetch('http://localhost:8080/electionresult/affiliation');
+        if (!response.ok) {
+          throw new Error(response.status);
+        }
+        const affiliations = await response.json();
+        console.log(affiliations)
+        this.affiliations = affiliations.map(aff => ({ ...aff, votes: 0 }));
+
+        // Now fetch the vote counts for each affiliation
+        await this.fetchVoteCount()
+      } catch (error) {
+        console.error('Error fetching afiliations: ', error)
+      }
+    },
+    async fetchVoteCount() {
+      try {
+        const promises = this.affiliations.map(async (affiliation) => {
+          const response = await fetch(`http://localhost:8080/electionresult/affiliation/${affiliation.id}/votes`);
+          if (!response.ok) {
+            throw new Error(response.status);
+          }
+          const votes = await response.json();
+          console.log(votes)
+          affiliation.votes = votes;
+        })
+        await Promise.all(promises);
+        this.totalVoteCount = this.affiliations.reduce((total, affiliation) => total + affiliation.votes, 0);
+      } catch (error) {
+        console.error('Error fetching votes: ', error)
+      }
+    },
     getVotePercentage(affiliation) {
       if (this.totalVoteCount === 0) {
         return 0;
@@ -88,9 +87,9 @@ export default {
       return ((affiliation.votes / this.totalVoteCount) * 100).toFixed(2);
     },
     compareAlphabetical(a, b) {
-      if (a.longName < b.longName)
+      if (a.name < b.name)
         return -1;
-      if (a.longName > b.longName)
+      if (a.name > b.name)
         return 1;
       return 0;
     },
@@ -127,14 +126,15 @@ export default {
 </script>
 
 <style scoped>
-h2{
+h2 {
   margin-bottom: 18px;
 }
 
-.sorting-selector{
+.sorting-selector {
   text-align: right;
   margin: 8px;
 }
+
 .header {
   background-color: #B9C5E9;
   padding: 18px;
@@ -145,7 +145,8 @@ h2{
   margin-bottom: 4px;
   border-radius: 2px;
 }
-.total-table{
+
+.total-table {
   filter: drop-shadow(0 0 0.15rem lightgrey);
   background-color: white;
   border-radius: 2px;
@@ -157,13 +158,16 @@ table {
   width: 100%;
   border-collapse: collapse;
 }
+
 tbody tr {
   border-top: 1px solid gray;
 }
+
 th {
   text-align: left;
   padding: 18px;
 }
+
 td {
   text-align: right;
   padding: 18px;
