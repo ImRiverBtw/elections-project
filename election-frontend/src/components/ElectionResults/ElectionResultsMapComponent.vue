@@ -379,7 +379,6 @@ export default {
       "Zwolle"
     ];
 
-    // Verdeel willekeurige partijen over gemeenten
     gemeenten.forEach(gemeente => {
       this.gemeentenVotesMap[gemeente] = this.shuffleArray([...partijen])[0];
     });
@@ -390,16 +389,15 @@ export default {
     }))
 
     const fuseOptions = {
-      keys: ['name'], //zoek op gemeentennaam
+      keys: ['name'],
       threshold: 0.4 //percentatie hoe erg de namen op elkaar mogelijk lijken.
     };
     this.fuse = new Fuse(normalizedGemeenten, fuseOptions);
   },
   mounted() {
-    // Definieer de grenzen (bounding box) voor Nederland
+    // boundary van de kaart
     let bounds = [[50.5, 3.2], [53.7, 7.2]];
 
-    // Maak de Leaflet kaart aan, gecentreerd op Nederland
     let map = L.map('map', {
       center: [52.1, 5.3],  // Centraal op Nederland
       zoom: 7,              // Standaard zoomniveau
@@ -425,22 +423,30 @@ export default {
                               '#CCCCCC';  // Grijs als default
     }
 
-    // Stijl voor elke gemeente op basis van de winnende partij
+    let directMatch = [];
+    let noMatch = [];
+    let fuzzyMatch = [];
+
     const style = (feature) => {
-      const gemeenteNaam = this.normalize(feature.properties.name);
-      let winningParty = this.gemeentenVotesMap[feature.properties.name];
+      let gemeenteNaam = feature.properties.name;
+
+      let normalizedGemeenteNaam = this.normalize(gemeenteNaam)
+      let winningParty = this.gemeentenVotesMap[gemeenteNaam] || this.gemeentenVotesMap[normalizedGemeenteNaam];
+
+      if (this.gemeentenVotesMap[gemeenteNaam]) {
+        directMatch.push(gemeenteNaam);
+      }
 
       if (!winningParty && !this.gekozenGemeentens.has(gemeenteNaam)) {
         const fuzzyResult = this.fuse.search(this.normalize(gemeenteNaam));
-        console.log(`Zoeken naar: ${gemeenteNaam}, Fuse zoekresultaat:`, fuzzyResult);
 
         if (fuzzyResult.length > 0) {
           const bestMatch = fuzzyResult[0].item.original;
-          console.log(`Fuzzy match voor ${gemeenteNaam}: ${bestMatch}`)
+          fuzzyMatch.push(gemeenteNaam + " & " + bestMatch);
 
           winningParty = this.gemeentenVotesMap[bestMatch];
         } else {
-          console.log(`geen match gevonden voor: ${gemeenteNaam}`)
+          noMatch.push(gemeenteNaam);
         }
       }
 
@@ -451,7 +457,7 @@ export default {
       feature.properties.winning_party = winningParty || 'Onbekend';
 
       return {
-        fillColor: getColor(feature.properties.winning_party),
+        fillColor: getColor(winningParty),
         weight: 2,
         opacity: 1,
         color: 'white',
@@ -459,6 +465,10 @@ export default {
         fillOpacity: 0.7
       };
     };
+
+    console.log("direct match ", directMatch);
+    console.log("no match ", noMatch);
+    console.log("fuzzy match", fuzzyMatch);
 
     const highlightFeature = (e) => {
       let layer = e.target;
@@ -507,8 +517,9 @@ export default {
     },
     normalize(name) {
       const normalized = name.toLowerCase().replace(/[^a-z0-9]/g, '')
-      console.log(`Aanpassing naam: ${name} -> ${normalized}`);
-      return normalized;
+      if (normalized) {
+        return normalized;
+      }
     }
   }
 };
