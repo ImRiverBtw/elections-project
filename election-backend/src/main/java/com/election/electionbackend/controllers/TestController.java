@@ -1,4 +1,4 @@
-package com.election.electionbackend;
+package com.election.electionbackend.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

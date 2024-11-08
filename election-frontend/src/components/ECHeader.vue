@@ -22,7 +22,7 @@ function myFunction() {
   <div class="topnav" id="myTopnav">
     <div class="containernav">
       <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/electionresults">Verkiezingsuitslagen</RouterLink>
+      <RouterLink to="/electionresults/resultsmap">Verkiezingsuitslagen</RouterLink>
       <RouterLink to="/test">Forum</RouterLink>
       <RouterLink to="/parsetest">Parse Test</RouterLink>
       <a href="javascript:void(0);" class="icon" @click="myFunction">
