@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -95,23 +96,31 @@ class ElectionResultController {
         return affiliationRepo.findById(affiliation_id);
     }
 
+    @GetMapping("/electionresults/affiliation/{affiliation_id}/seats")
+    public int getTotalSeatsForAffiliation(@PathVariable Long affiliation_id) {
+        return affiliationRepo.getSeatCount(affiliation_id);
+    }
+
+
+
     @GetMapping("/electionresult/affiliation/{affiliation_id}/votes")
     public int getTotalVotesForAffiliation(@PathVariable Long affiliation_id) {
-        Affiliation affiliation = affiliationRepo.findById(affiliation_id);
-        List<Candidate> candidates = affiliation.getCandidates();
-        List<PollingStation> pollingStations = pollingStationRepo.findAll();
-
-        int votes = 0;
-        for (Candidate candidate : candidates) {
-            for (PollingStation pollingStation : pollingStations) {
-                PollingStationCandidateId id = new PollingStationCandidateId(pollingStation.getId(), candidate.getId());
-                PollingStationCandidate pollingStationCandidate = pollingStationCandidateRepo.findById(id);
-                if (pollingStationCandidate != null) {
-                    votes += pollingStationCandidate.getVotes();
-                }
-            }
-        }
-        return votes;
+//        Affiliation affiliation = affiliationRepo.findById(affiliation_id);
+//        List<Candidate> candidates = affiliation.getCandidates();
+//        List<PollingStation> pollingStations = pollingStationRepo.findAll();
+//
+//        int votes = 0;
+//        for (Candidate candidate : candidates) {
+//            for (PollingStation pollingStation : pollingStations) {
+//                PollingStationCandidateId id = new PollingStationCandidateId(pollingStation.getId(), candidate.getId());
+//                PollingStationCandidate pollingStationCandidate = pollingStationCandidateRepo.findById(id);
+//                if (pollingStationCandidate != null) {
+//                    votes += pollingStationCandidate.getVotes();
+//                }
+//            }
+//        }
+//        return votes;
+        return affiliationRepo.getVoteCount(affiliation_id);
     }
 
     @GetMapping("/electionresult/affiliation/{affiliation_id}/{candidate_id}")
