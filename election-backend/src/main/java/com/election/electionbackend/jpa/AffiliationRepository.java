@@ -4,8 +4,10 @@ import com.election.electionbackend.entity.Affiliation;
 import com.election.electionbackend.entity.Candidate;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,6 +17,9 @@ import java.util.List;
 public class AffiliationRepository{
     @PersistenceContext
     private EntityManager em;
+
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public Affiliation findById(Long id) {
         return em.find(Affiliation.class, id);
@@ -36,6 +41,23 @@ public class AffiliationRepository{
             em.merge(affiliation);
         }
         return affiliation;
+    }
+
+    public int getVoteCount(Long affiliationId){
+        Affiliation affiliation = findById(affiliationId);
+        TypedQuery<Long> query = em.createQuery( "Select sum(psc.votes) From PollingStationCandidate psc JOIN psc.candidate c WHERE  c.affiliation = :affiliation", Long.class );
+       query.setParameter("affiliation", affiliation);
+        logger.info(String.valueOf(query.getSingleResult()));
+        return query.getSingleResult().intValue();
+
+    }
+
+    public int getSeatCount(Long affiliationId){
+        TypedQuery<Long> query = em.createQuery( "Select sum(psc.votes) From PollingStationCandidate psc", Long.class );
+        int totalVotes = query.getSingleResult().intValue();
+        int votesPerSeat = (int) Math.ceil((double) totalVotes / 150);
+        return getVoteCount(affiliationId) / votesPerSeat;
+        //TODO: rekening houden met restzetels
     }
 
     public void insertDummyData(){

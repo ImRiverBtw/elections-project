@@ -1,5 +1,4 @@
 <template>
-  <h1>Verkiezingsuitslagen 2023</h1>
   <h2>Totaaltabel</h2>
   <div class="total-table">
     <div class=" header">
@@ -32,7 +31,6 @@
 </template>
 
 <script>
-import {Affiliation} from "@/models/affiliation.js";
 
 export default {
   name: "TotalTable",
@@ -57,7 +55,6 @@ export default {
         console.log(affiliations)
         this.affiliations = affiliations.map(aff => ({ ...aff, votes: 0 }));
 
-        // Now fetch the vote counts for each affiliation
         await this.fetchVoteCount()
       } catch (error) {
         console.error('Error fetching afiliations: ', error)
