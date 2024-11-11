@@ -28,18 +28,22 @@ export default {
 .electionresults-container{
   display: flex;
   flex-direction: row;
-  margin-top: 18px;
+  max-width: 1100px;
+  width: 100%;
 }
-
 .content{
   max-width: 1100px;
   width: 100%;
   box-sizing: border-box;
   margin-right: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
 }
 h3{
   padding-bottom: 18px;
 }
+
 .election-results-nav{
   display: flex;
   flex-direction: column;
