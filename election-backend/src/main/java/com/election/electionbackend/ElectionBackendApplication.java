@@ -64,17 +64,19 @@ class ElectionResultController {
     @Autowired
     private AffiliationRepository affiliationRepo;
 
-//    @Autowired
-//    private PollingStationRepository pollingStationRepo;
-//
-//    @Autowired
-//    private PollingStationCandidateRepository pollingStationCandidateRepo;
+    @Autowired
+    private PollingStationRepository pollingStationRepo;
+
+    @Autowired
+    private PollingStationCandidateRepository pollingStationCandidateRepo;
 //
 //    @Autowired
 //    private ConstituencyRepository constituencyRepo;
 
     @Autowired
     private CandidateRepository candidateRepo;
+    @Autowired
+    private PollingStationRepository pollingStationRepository;
 
 
     @GetMapping("/electionresult/constituency/{constituency_id}")
@@ -124,5 +126,10 @@ class ElectionResultController {
     @GetMapping("/electionresult/affiliation/{affiliation_id}/{candidate_id}")
     public Candidate getCandidate(@PathVariable Long affiliation_id, @PathVariable Long candidate_id) {
         return candidateRepo.findById(new CandidateId(affiliation_id, candidate_id));
+    }
+
+    @GetMapping("electionresult/pollingstation/{pollingstation_id}/largest_affiliation")
+    public Object[] getLargestAffiliation(@PathVariable Long pollingstation_id) {
+        return pollingStationRepo.getBiggestAffiliation(pollingstation_id);
     }
 }
