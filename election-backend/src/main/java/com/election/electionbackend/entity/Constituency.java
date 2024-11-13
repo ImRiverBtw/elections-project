@@ -14,7 +14,7 @@ public class Constituency {
     private String name;
 
     @OneToMany(mappedBy = "constituency")
-    private List<PollingStation> pollingStations = new ArrayList<>();
+    private List<Township> townships = new ArrayList<>();
 
     public Constituency() {
     }
@@ -35,15 +35,15 @@ public class Constituency {
         this.name = name;
     }
 
-    public List<PollingStation> getPollingStations() {
-        return pollingStations;
+    public List<Township> getTownships() {
+        return townships;
     }
 
-    public void addPollingStation(PollingStation pollingStation) {
-        pollingStations.add(pollingStation);
+    public void addTownship(Township township) {
+        townships.add(township);
     }
 
-    public void removePollingStation(PollingStation pollingStation) {
-        pollingStations.remove(pollingStation);
+    public void removeTownship(Township township) {
+        townships.remove(township);
     }
 }

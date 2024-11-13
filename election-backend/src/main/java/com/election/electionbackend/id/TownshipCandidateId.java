@@ -6,24 +6,24 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class PollingStationCandidateId implements Serializable {
-    private Long pollingStationId;
+public class TownshipCandidateId implements Serializable {
+    private Long townshipId;
     private CandidateId candidateId;
 
-    public PollingStationCandidateId() {
+    public TownshipCandidateId() {
     }
 
-    public PollingStationCandidateId(Long pollingStationId, CandidateId candidateId) {
-        this.pollingStationId = pollingStationId;
+    public TownshipCandidateId(Long townshipId, CandidateId candidateId) {
+        this.townshipId = townshipId;
         this.candidateId = candidateId;
     }
 
-    public Long getPollingStationId() {
-        return pollingStationId;
+    public Long getTownshipId() {
+        return townshipId;
     }
 
-    public void setPollingStationId(Long pollingStationId) {
-        this.pollingStationId = pollingStationId;
+    public void setTownshipId(Long townshipId) {
+        this.townshipId = townshipId;
     }
 
     public CandidateId getCandidateId() {
@@ -39,13 +39,13 @@ public class PollingStationCandidateId implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PollingStationCandidateId that = (PollingStationCandidateId) o;
-        return Objects.equals(pollingStationId, that.pollingStationId) &&
+        TownshipCandidateId that = (TownshipCandidateId) o;
+        return Objects.equals(townshipId, that.townshipId) &&
                 Objects.equals(candidateId, that.candidateId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pollingStationId, candidateId);
+        return Objects.hash(townshipId, candidateId);
     }
 }

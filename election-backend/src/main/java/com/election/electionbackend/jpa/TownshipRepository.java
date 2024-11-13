@@ -1,7 +1,7 @@
 package com.election.electionbackend.jpa;
 
 import com.election.electionbackend.entity.Constituency;
-import com.election.electionbackend.entity.PollingStation;
+import com.election.electionbackend.entity.Township;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -12,23 +12,23 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class PollingStationRepository {
+public class TownshipRepository {
     @PersistenceContext
     private EntityManager em;
 
     @Autowired
     ConstituencyRepository constituencyRepository;
 
-    public PollingStation findById(Long id) {
-        return em.find(PollingStation.class, id);
+    public Township findById(Long id) {
+        return em.find(Township.class, id);
     }
 
-    public List<PollingStation> findAll() {
-        return em.createQuery("from PollingStation", PollingStation.class).getResultList();
+    public List<Township> findAll() {
+        return em.createQuery("from Township", Township.class).getResultList();
     }
 
     public void insertDummyData() {
-        String[] pollingStationNames = new String[]{
+        String[] townshipNames = new String[]{
                 "Groningen1", "Groningen2",
                 "Leeuwarden1", "Leeuwarden2",
                 "Assen1", "Assen2",
@@ -42,12 +42,12 @@ public class PollingStationRepository {
         List<Constituency> constituencies = constituencyRepository.findAll();
         int index = 0;
         for (Constituency constituency : constituencies) {
-            PollingStation pollingStation1 = new PollingStation(constituency, pollingStationNames[index++]);
-            PollingStation pollingStation2 = new PollingStation(constituency, pollingStationNames[index++]);
-            constituency.addPollingStation(pollingStation1);
-            constituency.addPollingStation(pollingStation2);
-            em.persist(pollingStation1);
-            em.persist(pollingStation2);
+            Township township1 = new Township(constituency, townshipNames[index++]);
+            Township township2 = new Township(constituency, townshipNames[index++]);
+            constituency.addTownship(township1);
+            constituency.addTownship(township2);
+            em.persist(township1);
+            em.persist(township2);
         }
     }
 }

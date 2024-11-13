@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class PollingStation {
+public class Township {
     @Id
     @GeneratedValue
     private Long id;
@@ -16,13 +16,13 @@ public class PollingStation {
     @JoinColumn(name = "constituency_id")
     private Constituency constituency;
 
-    @OneToMany(mappedBy = "pollingStation")
-    private Set<PollingStationCandidate> pollingStationCandidates = new HashSet<>();
+    @OneToMany(mappedBy = "township")
+    private Set<TownshipCandidate> townshipCandidates = new HashSet<>();
 
-    public PollingStation() {
+    public Township() {
     }
 
-    public PollingStation(Constituency constituency, String name) {
+    public Township(Constituency constituency, String name) {
         this.constituency = constituency;
         this.name = name;
     }
@@ -47,15 +47,15 @@ public class PollingStation {
         this.constituency = constituency;
     }
 
-    public Set<PollingStationCandidate> getPollingStationCandidates() {
-        return pollingStationCandidates;
+    public Set<TownshipCandidate> getTownshipCandidates() {
+        return townshipCandidates;
     }
 
-    public void addPollingStation_Candidate(PollingStationCandidate pollingStationCandidate) {
-        pollingStationCandidates.add(pollingStationCandidate);
+    public void addTownship_Candidate(TownshipCandidate townshipCandidate) {
+        townshipCandidates.add(townshipCandidate);
     }
 
-    public void removePollingStation_Candidate(PollingStationCandidate pollingStationCandidate) {
-        pollingStationCandidates.remove(pollingStationCandidate);
+    public void removeTownship_Candidate(TownshipCandidate townshipCandidate) {
+        townshipCandidates.remove(townshipCandidate);
     }
 }

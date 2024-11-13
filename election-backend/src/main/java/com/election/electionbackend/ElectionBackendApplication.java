@@ -25,10 +25,10 @@ public class ElectionBackendApplication implements CommandLineRunner {
     private AffiliationRepository affiliationRepo;
 
     @Autowired
-    private PollingStationRepository pollingStationRepo;
+    private TownshipRepository townshipRepo;
 
     @Autowired
-    private PollingStationCandidateRepository pollingStationCandidateRepo;
+    private TownshipCandidateRepository townshipCandidateRepo;
 
     @Autowired
     private ConstituencyRepository constituencyRepo;
@@ -49,8 +49,8 @@ public class ElectionBackendApplication implements CommandLineRunner {
         affiliationRepo.insertDummyData();
         constituencyRepo.insertDummyData();
         candidateRepo.insertDummyData();
-        pollingStationRepo.insertDummyData();
-        pollingStationCandidateRepo.insertDummyData();
+        townshipRepo.insertDummyData();
+        townshipCandidateRepo.insertDummyData();
     }
 
     public static void main(String[] args) {
@@ -65,10 +65,10 @@ class ElectionResultController {
     private AffiliationRepository affiliationRepo;
 
 //    @Autowired
-//    private PollingStationRepository pollingStationRepo;
+//    private TownshipRepository townshipRepo;
 //
 //    @Autowired
-//    private PollingStationCandidateRepository pollingStationCandidateRepo;
+//    private TownshipCandidateRepository townshipCandidateRepo;
 //
 //    @Autowired
 //    private ConstituencyRepository constituencyRepo;
@@ -105,15 +105,15 @@ class ElectionResultController {
     public int getTotalVotesForAffiliation(@PathVariable Long affiliation_id) {
 //        Affiliation affiliation = affiliationRepo.findById(affiliation_id);
 //        List<Candidate> candidates = affiliation.getCandidates();
-//        List<PollingStation> pollingStations = pollingStationRepo.findAll();
+//        List<Township> townships = townshipRepo.findAll();
 //
 //        int votes = 0;
 //        for (Candidate candidate : candidates) {
-//            for (PollingStation pollingStation : pollingStations) {
-//                PollingStationCandidateId id = new PollingStationCandidateId(pollingStation.getId(), candidate.getId());
-//                PollingStationCandidate pollingStationCandidate = pollingStationCandidateRepo.findById(id);
-//                if (pollingStationCandidate != null) {
-//                    votes += pollingStationCandidate.getVotes();
+//            for (Township township : townships) {
+//                TownshipCandidateId id = new TownshipCandidateId(township.getId(), candidate.getId());
+//                TownshipCandidate townshipCandidate = townshipCandidateRepo.findById(id);
+//                if (townshipCandidate != null) {
+//                    votes += townshipCandidate.getVotes();
 //                }
 //            }
 //        }

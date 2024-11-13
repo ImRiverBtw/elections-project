@@ -45,7 +45,7 @@ public class AffiliationRepository{
 
     public int getVoteCount(Long affiliationId){
         Affiliation affiliation = findById(affiliationId);
-        TypedQuery<Long> query = em.createQuery( "Select sum(psc.votes) From PollingStationCandidate psc JOIN psc.candidate c WHERE  c.affiliation = :affiliation", Long.class );
+        TypedQuery<Long> query = em.createQuery( "Select sum(psc.votes) From TownshipCandidate psc JOIN psc.candidate c WHERE  c.affiliation = :affiliation", Long.class );
        query.setParameter("affiliation", affiliation);
         logger.info(String.valueOf(query.getSingleResult()));
         return query.getSingleResult().intValue();
@@ -53,7 +53,7 @@ public class AffiliationRepository{
     }
 
     public int getSeatCount(Long affiliationId){
-        TypedQuery<Long> query = em.createQuery( "Select sum(psc.votes) From PollingStationCandidate psc", Long.class );
+        TypedQuery<Long> query = em.createQuery( "Select sum(psc.votes) From TownshipCandidate psc", Long.class );
         int totalVotes = query.getSingleResult().intValue();
         int votesPerSeat = (int) Math.ceil((double) totalVotes / 150);
         return getVoteCount(affiliationId) / votesPerSeat;

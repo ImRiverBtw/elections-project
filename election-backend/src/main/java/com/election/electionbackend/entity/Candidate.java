@@ -1,7 +1,6 @@
 package com.election.electionbackend.entity;
 
 import com.election.electionbackend.id.CandidateId;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -25,7 +24,7 @@ public class Candidate {
 
     @OneToMany(mappedBy = "candidate")
     @JsonIgnore
-    private Set<PollingStationCandidate> pollingStationCandidates = new HashSet<>();
+    private Set<TownshipCandidate> townshipCandidates = new HashSet<>();
 
     public Candidate() {
     }
@@ -57,16 +56,16 @@ public class Candidate {
         this.affiliation = affiliation;
     }
 
-    public Set<PollingStationCandidate> getPollingStationCandidates() {
-        return pollingStationCandidates;
+    public Set<TownshipCandidate> getTownshipCandidates() {
+        return townshipCandidates;
     }
 
-    public void addPollingStation_Candidate(PollingStationCandidate pollingStationCandidate) {
-        pollingStationCandidates.add(pollingStationCandidate);
+    public void addTownship_Candidate(TownshipCandidate townshipCandidate) {
+        townshipCandidates.add(townshipCandidate);
     }
 
-    public void removePollingStation_Candidate(PollingStationCandidate pollingStationCandidate) {
-        pollingStationCandidates.remove(pollingStationCandidate);
+    public void removeTownship_Candidate(TownshipCandidate townshipCandidate) {
+        townshipCandidates.remove(townshipCandidate);
     }
 
 }
