@@ -19,7 +19,7 @@ import java.util.Map;
 @SpringBootApplication
 public class ElectionBackendApplication implements CommandLineRunner {
 
-    private Logger logger = LoggerFactory.getLogger(ElectionBackendApplication.class);
+    private final Logger logger = LoggerFactory.getLogger(ElectionBackendApplication.class);
 
     @Autowired
     private AffiliationRepository affiliationRepo;

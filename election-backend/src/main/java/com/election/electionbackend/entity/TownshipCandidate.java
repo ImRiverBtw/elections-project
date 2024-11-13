@@ -10,7 +10,7 @@ public class TownshipCandidate {
 
     @ManyToOne
     @MapsId("townshipId")
-    @JoinColumn(name = "polling_station_id", referencedColumnName = "id")
+    @JoinColumn(name = "township_id", referencedColumnName = "id")
     private Township township;
 
     @ManyToOne
