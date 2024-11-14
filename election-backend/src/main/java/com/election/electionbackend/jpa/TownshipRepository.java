@@ -384,18 +384,31 @@ public class TownshipRepository {
                 "Zwijndrecht",
                 "Zwolle"
         };
-        List<Constituency> constituencies = constituencyRepository.findAll();
-        int constituencyIndex = 0;
+        int pollingIndex  = 0;
 
         for (String townshipName : townshipsName) {
-            Constituency constituency = constituencies.get(constituencyIndex);
-
-            constituencyIndex = (constituencyIndex + 1) % constituencies.size();
+            Constituency constituency = new Constituency(townshipName);
+            em.persist(constituency);
 
             Township township = new Township(constituency, null, townshipName);
-
             constituency.addTownship(township);
             em.persist(township);
+
+            if (pollingIndex < pollingStationNames.length && shouldHavePollingStation(townshipName)) {
+                township.setPollingStation(pollingStationNames[pollingIndex]);
+                pollingIndex++;
+
+                if (pollingIndex < pollingStationNames.length) {
+                    Township secondPollingStation = new Township(constituency, pollingStationNames[pollingIndex], townshipName);
+                    pollingIndex++;
+
+                    constituency.addTownship(secondPollingStation);
+                    em.persist(secondPollingStation);
+                }
+            }
         }
+    }
+    private boolean shouldHavePollingStation(String townshipName) {
+        return townshipName.startsWith("A") || townshipName.endsWith("1");
     }
 }
