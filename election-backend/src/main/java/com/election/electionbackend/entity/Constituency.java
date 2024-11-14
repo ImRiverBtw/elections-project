@@ -39,6 +39,10 @@ public class Constituency {
         return townships;
     }
 
+    public void addPollingStation(Township pollingStation) {
+        townships.add(pollingStation);
+    }
+
     public void addTownship(Township township) {
         townships.add(township);
     }

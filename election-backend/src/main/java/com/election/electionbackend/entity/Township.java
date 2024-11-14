@@ -10,7 +10,8 @@ public class Township {
     @Id
     @GeneratedValue
     private Long id;
-    private String name;
+    private String PollingStation;
+    private String location;
 
     @ManyToOne
     @JoinColumn(name = "constituency_id")
@@ -22,21 +23,30 @@ public class Township {
     public Township() {
     }
 
-    public Township(Constituency constituency, String name) {
+    public Township(Constituency constituency, String name, String townshipNames) {
         this.constituency = constituency;
-        this.name = name;
+        this.PollingStation = name;
+        this.location = townshipNames;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getPollingStation() {
+        return PollingStation;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPollingStation(String PollingStation) {
+        this.PollingStation = PollingStation;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public Constituency getConstituency() {
