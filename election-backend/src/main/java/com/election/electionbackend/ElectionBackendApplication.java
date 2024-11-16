@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +37,9 @@ public class ElectionBackendApplication implements CommandLineRunner {
     @Autowired
     private CandidateRepository candidateRepo;
 
+    public static void main(String[] args) {
+        SpringApplication.run(ElectionBackendApplication.class, args);
+    }
 
     @Override
     public void run(String... args) throws Exception {
@@ -43,18 +47,12 @@ public class ElectionBackendApplication implements CommandLineRunner {
         insertDummyData();
     }
 
-
-
     public void insertDummyData() {
         affiliationRepo.insertDummyData();
         constituencyRepo.insertDummyData();
         candidateRepo.insertDummyData();
         townshipRepo.insertDummyData();
         townshipCandidateRepo.insertDummyData();
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(ElectionBackendApplication.class, args);
     }
 }
 
@@ -66,22 +64,31 @@ class ElectionResultController {
 
 //    @Autowired
 //    private TownshipRepository townshipRepo;
-//
+
 //    @Autowired
 //    private TownshipCandidateRepository townshipCandidateRepo;
-//
+
 //    @Autowired
 //    private ConstituencyRepository constituencyRepo;
+
+    @Autowired
+    private ElectionService electionService;
 
     @Autowired
     private CandidateRepository candidateRepo;
 
 
     @GetMapping("/electionresult/constituency/{constituency_id}")
-    public Map<String, Integer> getElectionResults(@PathVariable String constituency_id) {
-        ElectionResultParser parser = new ElectionResultParser();
-        String filePath = "election-backend/src/main/resources/election-results/constituency/Telling_TK2023_kieskring_" + constituency_id + ".eml.xml";
-        return parser.parseElectionResults(filePath);
+    public ResponseEntity<Map<String, Integer>> getElectionResults(@PathVariable String constituency_id) {
+        try {
+            Map<String, Integer> results = electionService.getElectionResults(constituency_id);
+            if (results.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(results);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();  // Internal Server Error
+        }
     }
 
     @GetMapping("/electionresult/affiliation")
@@ -90,16 +97,21 @@ class ElectionResultController {
     }
 
     @GetMapping("/electionresult/affiliation/{affiliation_id}")
-    public Affiliation getAffiliation(@PathVariable Long affiliation_id) {
-        return affiliationRepo.findById(affiliation_id);
+    public ResponseEntity<Affiliation> getAffiliation(@PathVariable Long affiliation_id) {
+        return affiliationRepo.findById(affiliation_id)
+                .map(affiliation -> ResponseEntity.ok(affiliation)) // Explicitly pass the body
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/electionresults/affiliation/{affiliation_id}/seats")
+    @GetMapping("/electionresult/affiliation/{affiliation_id}/seats")
     public int getTotalSeatsForAffiliation(@PathVariable Long affiliation_id) {
         return affiliationRepo.getSeatCount(affiliation_id);
     }
 
-
+    @GetMapping("/electionresult/affiliation/{affiliation_id}/{candidate_id}")
+    public Candidate getCandidate(@PathVariable Long affiliation_id, @PathVariable Long candidate_id) {
+        return candidateRepo.findById(new CandidateId(affiliation_id, candidate_id)).orElse(null);
+    }
 
     @GetMapping("/electionresult/affiliation/{affiliation_id}/votes")
     public int getTotalVotesForAffiliation(@PathVariable Long affiliation_id) {
@@ -119,10 +131,5 @@ class ElectionResultController {
 //        }
 //        return votes;
         return affiliationRepo.getVoteCount(affiliation_id);
-    }
-
-    @GetMapping("/electionresult/affiliation/{affiliation_id}/{candidate_id}")
-    public Candidate getCandidate(@PathVariable Long affiliation_id, @PathVariable Long candidate_id) {
-        return candidateRepo.findById(new CandidateId(affiliation_id, candidate_id));
     }
 }

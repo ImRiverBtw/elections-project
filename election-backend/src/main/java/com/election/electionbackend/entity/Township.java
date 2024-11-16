@@ -29,7 +29,6 @@ public class Township {
     public Township(Constituency constituency, String location) {
         this.constituency = constituency;
         this.location = location;
-        this.townshipCandidates = new HashSet<>();
     }
 
     public Long getId() {

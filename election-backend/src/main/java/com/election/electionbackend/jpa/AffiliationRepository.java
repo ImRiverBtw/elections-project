@@ -10,7 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional
@@ -18,18 +20,19 @@ public class AffiliationRepository{
     @PersistenceContext
     private EntityManager em;
 
-
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public Affiliation findById(Long id) {
-        return em.find(Affiliation.class, id);
+    public Optional<Affiliation> findById(Long id) {
+        return Optional.ofNullable(em.find(Affiliation.class, id));
     }
+
     public List<Affiliation> findAll() {
-        return em.createQuery("from Affiliation").getResultList();
+        return em.createQuery("from Affiliation", Affiliation.class).getResultList();
     }
+
     public List<Candidate> getCandidates(Long affiliationId) {
-        Affiliation affiliation = findById(affiliationId);
-        return affiliation.getCandidates();
+        Optional<Affiliation> affiliationOpt = findById(affiliationId);
+        return affiliationOpt.map(Affiliation::getCandidates).orElse(Collections.emptyList());
     }
 
     public Affiliation save(Affiliation affiliation) {
@@ -43,13 +46,14 @@ public class AffiliationRepository{
         return affiliation;
     }
 
-    public int getVoteCount(Long affiliationId){
-        Affiliation affiliation = findById(affiliationId);
-        TypedQuery<Long> query = em.createQuery( "Select sum(psc.votes) From TownshipCandidate psc JOIN psc.candidate c WHERE  c.affiliation = :affiliation", Long.class );
-       query.setParameter("affiliation", affiliation);
-        logger.info(String.valueOf(query.getSingleResult()));
+    public int getVoteCount(Long affiliationId) {
+        Optional<Affiliation> affiliation = findById(affiliationId);
+        TypedQuery<Long> query = em.createQuery(
+                "SELECT SUM(psc.votes) FROM TownshipCandidate psc JOIN psc.candidate c WHERE c.affiliation = :affiliation",
+                Long.class
+        );
+        query.setParameter("affiliation", affiliation);
         return query.getSingleResult().intValue();
-
     }
 
     public int getSeatCount(Long affiliationId){
@@ -60,12 +64,12 @@ public class AffiliationRepository{
         //TODO: rekening houden met restzetels
     }
 
-    public void insertDummyData(){
-        String[] affiliationNames = new String[] {
-                "PVV", "GLPVDA", "VVD", "NSC", "D66", "BBB", "CDA", "SP", "FVD", "PVDD"
-        };
+    public void insertDummyData() {
+        String[] affiliationNames = {"PVV", "GLPVDA", "VVD", "NSC", "D66", "BBB", "CDA", "SP", "FVD", "PVDD"};
         for (String name : affiliationNames) {
-            em.persist(new Affiliation(name));
+            Affiliation affiliation = new Affiliation();
+            affiliation.setName(name);
+            em.persist(affiliation);
         }
     }
 }

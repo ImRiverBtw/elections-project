@@ -12,14 +12,15 @@ import java.util.List;
 public class Affiliation {
 
     @Id
-    @GeneratedValue
-    @Column(unique = true, nullable = false, name="affiliation_id")
-    private Long affiliationId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String name;
+    private int seatCount;
+    private int voteCount;
 
     @OneToMany(mappedBy = "affiliation", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<Candidate> candidates = new ArrayList<>();
+    private List<Candidate> candidates;
 
     public Affiliation() {
     }
@@ -29,7 +30,11 @@ public class Affiliation {
     }
 
     public Long getId() {
-        return affiliationId;
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -38,6 +43,18 @@ public class Affiliation {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setSeatCount(int seatCount) {
+        this.seatCount = seatCount;
+    }
+
+    public int getVoteCount() {
+        return voteCount;
+    }
+
+    public void setVoteCount(int voteCount) {
+        this.voteCount = voteCount;
     }
 
     public List<Candidate> getCandidates() {

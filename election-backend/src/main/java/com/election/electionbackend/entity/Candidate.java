@@ -14,11 +14,14 @@ public class Candidate {
     @EmbeddedId
     private CandidateId id;
 
+    @Column(name = "candidate_number", insertable = false, updatable = false)
+    private Long candidateNumber;
+
     private String name;
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "affiliation_id", referencedColumnName ="affiliation_id")
+    @JoinColumn(name = "affiliation_id", referencedColumnName ="id", insertable = false, updatable = false)
     @MapsId("affiliationId")
     private Affiliation affiliation;
 
@@ -31,13 +34,17 @@ public class Candidate {
 
     public Candidate(Long candidateNumber, String name, Affiliation affiliation) {
         this.id = new CandidateId(affiliation.getId(), candidateNumber);
+        this.candidateNumber = candidateNumber;
         this.name = name;
         this.affiliation = affiliation;
-
     }
 
     public CandidateId getId() {
         return id;
+    }
+
+    public void setId(CandidateId id) {
+        this.id = id;
     }
 
     public String getName() {

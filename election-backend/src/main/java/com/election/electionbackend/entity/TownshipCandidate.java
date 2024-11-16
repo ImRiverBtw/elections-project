@@ -14,7 +14,6 @@ public class TownshipCandidate {
     private Township township;
 
     @ManyToOne
-    @MapsId("candidateId")
     @JoinColumns({
             @JoinColumn(name = "affiliation_id", referencedColumnName = "affiliation_id"),
             @JoinColumn(name = "candidate_number", referencedColumnName = "candidate_number")
