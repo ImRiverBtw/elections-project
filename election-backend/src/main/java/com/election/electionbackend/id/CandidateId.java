@@ -8,10 +8,7 @@ import java.util.Objects;
 
 @Embeddable
 public class CandidateId implements Serializable {
-    @Column(name="affiliation_id")
     private Long affiliationId;
-
-    @Column(name = "candidate_number")
     private Long candidateNumber;
 
     public CandidateId() {

@@ -1,44 +1,39 @@
 package com.election.electionbackend.entity;
 
+import com.election.electionbackend.jpa.AffiliationRepository;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class Township {
     @Id
     @GeneratedValue
     private Long id;
-    private String PollingStation;
+
     private String location;
 
     @ManyToOne
     @JoinColumn(name = "constituency_id")
     private Constituency constituency;
 
-    @OneToMany(mappedBy = "township")
-    private Set<TownshipCandidate> townshipCandidates = new HashSet<>();
+    @OneToMany(mappedBy = "township", cascade = CascadeType.ALL)
+    private Set<TownshipCandidate> townshipCandidates;
 
     public Township() {
+        this.townshipCandidates = new HashSet<>();
     }
 
-    public Township(Constituency constituency, String name, String townshipNames) {
+    public Township(Constituency constituency, String location) {
         this.constituency = constituency;
-        this.PollingStation = name;
-        this.location = townshipNames;
+        this.location = location;
+        this.townshipCandidates = new HashSet<>();
     }
 
     public Long getId() {
         return id;
-    }
-
-    public String getPollingStation() {
-        return PollingStation;
-    }
-
-    public void setPollingStation(String PollingStation) {
-        this.PollingStation = PollingStation;
     }
 
     public String getLocation() {
@@ -67,5 +62,20 @@ public class Township {
 
     public void removeTownship_Candidate(TownshipCandidate townshipCandidate) {
         townshipCandidates.remove(townshipCandidate);
+    }
+
+    public String getLargestParty() {
+        return townshipCandidates.stream()
+                .collect(
+                        Collectors.groupingBy(
+                                tc -> tc.getCandidate().getAffiliation().getName(),
+                                Collectors.summingInt(TownshipCandidate::getVotes)
+                        )
+                )
+                .entrySet()
+                .stream()
+                .max((entry1, entry2) -> entry1.getValue() - entry2.getValue())
+                .map(entry -> entry.getKey() + " with " + entry.getValue() + " votes")
+                .orElse("No votes recorded");
     }
 }

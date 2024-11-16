@@ -1,7 +1,6 @@
 package com.election.electionbackend.jpa;
 
-import com.election.electionbackend.entity.Constituency;
-import com.election.electionbackend.entity.Township;
+import com.election.electionbackend.entity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -19,6 +18,9 @@ public class TownshipRepository {
     @Autowired
     ConstituencyRepository constituencyRepository;
 
+    @Autowired
+    private AffiliationRepository affiliationRepository;
+
     public Township findById(Long id) {
         return em.find(Township.class, id);
     }
@@ -28,18 +30,8 @@ public class TownshipRepository {
     }
 
     public void insertDummyData() {
-        String[] pollingStationNames = new String[]{
-                "Groningen1", "Groningen2",
-                "Leeuwarden1", "Leeuwarden2",
-                "Assen1", "Assen2",
-                "Zwolle1", "Zwolle2",
-                "Lelystad1", "Lelystad2",
-                "Nijmegen1", "Nijmegen2",
-                "Arnhem1", "Arnhem2",
-                "Utrecht1", "Utrecht2",
-                "Amsterdam1", "Amsterdam2"
-        };
-        String[] townshipsName = new String[] {
+        String[] affiliationNames = {"PVV", "GLPVDA", "VVD", "NSC", "D66", "BBB", "CDA", "SP", "FVD", "PVDD"};
+        String[] townshipsName = new String[]{
                 "Aa en Hunze",
                 "Aalsmeer",
                 "Aalten",
@@ -384,31 +376,35 @@ public class TownshipRepository {
                 "Zwijndrecht",
                 "Zwolle"
         };
-        int pollingIndex  = 0;
+
+        for (String name : affiliationNames) {
+            em.persist(new Affiliation(name));
+        }
 
         for (String townshipName : townshipsName) {
-            Constituency constituency = new Constituency(townshipName);
+            Constituency constituency = new Constituency("Constituency for " + townshipName);
             em.persist(constituency);
 
-            Township township = new Township(constituency, null, townshipName);
-            constituency.addTownship(township);
+            Township township = new Township(constituency, townshipName);
             em.persist(township);
 
-            if (pollingIndex < pollingStationNames.length && shouldHavePollingStation(townshipName)) {
-                township.setPollingStation(pollingStationNames[pollingIndex]);
-                pollingIndex++;
+            long candidateNumber = 1L; // Candidate numbering starts at 1
+            for (String affiliationName : affiliationNames) {
+                Affiliation affiliation = em.createQuery(
+                                "SELECT a FROM Affiliation a WHERE a.name = :name", Affiliation.class)
+                        .setParameter("name", affiliationName)
+                        .getSingleResult();
 
-                if (pollingIndex < pollingStationNames.length) {
-                    Township secondPollingStation = new Township(constituency, pollingStationNames[pollingIndex], townshipName);
-                    pollingIndex++;
+                Candidate candidate = new Candidate(candidateNumber++, "Candidate of " + affiliationName, affiliation);
+                em.persist(candidate);
 
-                    constituency.addTownship(secondPollingStation);
-                    em.persist(secondPollingStation);
-                }
+                int votes = (int) (Math.random() * 1000);
+                TownshipCandidate townshipCandidate = new TownshipCandidate(township, candidate, votes);
+                em.persist(townshipCandidate);
             }
+
+            String largestParty = township.getLargestParty();
+            System.out.println("Largest party in " + townshipName + ": " + largestParty);
         }
-    }
-    private boolean shouldHavePollingStation(String townshipName) {
-        return townshipName.startsWith("A") || townshipName.endsWith("1");
     }
 }

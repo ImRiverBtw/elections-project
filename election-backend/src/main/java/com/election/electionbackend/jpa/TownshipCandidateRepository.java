@@ -56,12 +56,19 @@ public class TownshipCandidateRepository {
     public void insertDummyData() {
         List<Township> townships = townshipRepository.findAll();
         List<Candidate> candidates = candidateRepository.findAll();
+
+        Random random = new Random();
+
         for (Township township : townships) {
             for (Candidate candidate : candidates) {
-                TownshipCandidate townshipCandidate = new TownshipCandidate(township, candidate);
-                Random random = new Random();
-                int randomVoteCount = random.nextInt(100000);
+                int randomVoteCount = new Random().nextInt(100000);
+
+                TownshipCandidate townshipCandidate = new TownshipCandidate(township, candidate, randomVoteCount);
+
+                em.persist(townshipCandidate);
+
                 townshipCandidate.setVotes(randomVoteCount);
+
                 save(townshipCandidate);
             }
         }

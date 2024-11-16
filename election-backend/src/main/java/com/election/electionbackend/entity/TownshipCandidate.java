@@ -26,9 +26,10 @@ public class TownshipCandidate {
     public TownshipCandidate() {
     }
 
-    public TownshipCandidate(Township township, Candidate candidate) {
+    public TownshipCandidate(Township township, Candidate candidate, int votes) {
         this.township = township;
         this.candidate = candidate;
+        this.votes = votes;
         this.townshipCandidateId = new TownshipCandidateId(township.getId(), candidate.getId());
     }
 
