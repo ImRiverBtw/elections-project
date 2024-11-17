@@ -1,13 +1,17 @@
 package com.election.electionbackend.id;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
 public class CandidateId implements Serializable {
-
+    @Column(name="affiliation_id")
     private Long affiliationId;
+
+    @Column(name = "candidate_number")
     private Long candidateNumber;
 
     public CandidateId() {
@@ -39,8 +43,7 @@ public class CandidateId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CandidateId that = (CandidateId) o;
-        return Objects.equals(affiliationId, that.affiliationId) &&
-                Objects.equals(candidateNumber, that.candidateNumber);
+        return Objects.equals(affiliationId, that.affiliationId) && Objects.equals(candidateNumber, that.candidateNumber);
     }
 
     @Override

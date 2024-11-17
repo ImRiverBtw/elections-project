@@ -7,7 +7,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 @Repository
 @Transactional
@@ -15,22 +17,11 @@ public class TownshipRepository {
     @PersistenceContext
     private EntityManager em;
 
-    @Autowired
-    ConstituencyRepository constituencyRepository;
-
-    @Autowired
-    private AffiliationRepository affiliationRepository;
-
-    public Township findById(Long id) {
-        return em.find(Township.class, id);
-    }
-
     public List<Township> findAll() {
         return em.createQuery("from Township", Township.class).getResultList();
     }
 
     public void insertDummyData() {
-        String[] affiliationNames = {"PVV", "GLPVDA", "VVD", "NSC", "D66", "BBB", "CDA", "SP", "FVD", "PVDD"};
         String[] townshipsName = new String[]{
                 "Aa en Hunze",
                 "Aalsmeer",
@@ -377,34 +368,23 @@ public class TownshipRepository {
                 "Zwolle"
         };
 
-        for (String name : affiliationNames) {
-            em.persist(new Affiliation(name));
+        List<Affiliation> affiliations = em.createQuery("from Affiliation", Affiliation.class).getResultList();
+
+        if (affiliations.isEmpty()) {
+            throw new IllegalStateException("No affiliations found in the database");
         }
 
+        Random random = new Random();
+
         for (String townshipName : townshipsName) {
+            Affiliation affiliation = affiliations.get(random.nextInt(affiliations.size()));
+
             Constituency constituency = new Constituency("Constituency for " + townshipName);
             em.persist(constituency);
 
-            Township township = new Township(constituency, townshipName);
+            Township township = new Township(constituency, townshipName, affiliation);
             em.persist(township);
-
-            long candidateNumber = 1L; // Candidate numbering starts at 1
-            for (String affiliationName : affiliationNames) {
-                Affiliation affiliation = em.createQuery(
-                                "SELECT a FROM Affiliation a WHERE a.name = :name", Affiliation.class)
-                        .setParameter("name", affiliationName)
-                        .getSingleResult();
-
-                Candidate candidate = new Candidate(candidateNumber++, "Candidate of " + affiliationName, affiliation);
-                em.persist(candidate);
-
-                int votes = (int) (Math.random() * 1000);
-                TownshipCandidate townshipCandidate = new TownshipCandidate(township, candidate, votes);
-                em.persist(townshipCandidate);
-            }
-
-            String largestParty = township.getLargestParty();
-            System.out.println("Largest party in " + townshipName + ": " + largestParty);
         }
     }
+
 }

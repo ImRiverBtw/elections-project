@@ -14,6 +14,7 @@ public class TownshipCandidate {
     private Township township;
 
     @ManyToOne
+    @MapsId("candidateId")
     @JoinColumns({
             @JoinColumn(name = "affiliation_id", referencedColumnName = "affiliation_id"),
             @JoinColumn(name = "candidate_number", referencedColumnName = "candidate_number")
@@ -25,10 +26,9 @@ public class TownshipCandidate {
     public TownshipCandidate() {
     }
 
-    public TownshipCandidate(Township township, Candidate candidate, int votes) {
+    public TownshipCandidate(Township township, Candidate candidate) {
         this.township = township;
         this.candidate = candidate;
-        this.votes = votes;
         this.townshipCandidateId = new TownshipCandidateId(township.getId(), candidate.getId());
     }
 
