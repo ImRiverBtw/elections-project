@@ -1,5 +1,6 @@
 package com.election.electionbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ public class Constituency {
     private String name;
 
     @OneToMany(mappedBy = "constituency")
-    private List<Township> townships = new ArrayList<>();
+    @JsonManagedReference
+    private List<Township> townships;
 
     public Constituency() {
     }

@@ -1,5 +1,8 @@
 package com.election.electionbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -13,7 +16,7 @@ public class Township {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "constituency_id")
+    @JsonBackReference
     private Constituency constituency;
 
     @ManyToOne
@@ -21,6 +24,7 @@ public class Township {
     private Affiliation affiliation;
 
     @OneToMany(mappedBy = "township")
+    @JsonIgnore
     private Set<TownshipCandidate> townshipCandidates = new HashSet<>();
 
     public Township() {
@@ -40,33 +44,20 @@ public class Township {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Constituency getConstituency() {
         return constituency;
     }
 
-    public void setConstituency(Constituency constituency) {
-        this.constituency = constituency;
+    public Affiliation getAffiliation() {
+        return affiliation;
+    }
+
+    public String getAffiliationName() {
+        return affiliation != null ? affiliation.getName() : null;
     }
 
     public Set<TownshipCandidate> getTownshipCandidates() {
         return townshipCandidates;
-    }
-
-    public void addTownship_Candidate(TownshipCandidate townshipCandidate) {
-        townshipCandidates.add(townshipCandidate);
-    }
-
-    public void removeTownship_Candidate(TownshipCandidate townshipCandidate) {
-        townshipCandidates.remove(townshipCandidate);
-    }
-
-
-    public Affiliation getAffiliation() {
-        return affiliation;
     }
 
     public void setAffiliation(Affiliation affiliation) {

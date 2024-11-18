@@ -65,8 +65,8 @@ class ElectionResultController {
     @Autowired
     private AffiliationRepository affiliationRepo;
 
-//    @Autowired
-//    private TownshipRepository townshipRepo;
+    @Autowired
+    private TownshipRepository townshipRepo;
 //
 //    @Autowired
 //    private TownshipCandidateRepository townshipCandidateRepo;
@@ -76,7 +76,6 @@ class ElectionResultController {
 
     @Autowired
     private CandidateRepository candidateRepo;
-
 
     @GetMapping("/electionresult/constituency/{constituency_id}")
     public Map<String, Integer> getElectionResults(@PathVariable String constituency_id) {
@@ -120,6 +119,16 @@ class ElectionResultController {
 //        }
 //        return votes;
         return affiliationRepo.getVoteCount(affiliation_id);
+    }
+
+    @GetMapping("/electionresult/townships")
+    public List<Township> getAllTownships() {
+        return townshipRepo.findAll();
+    }
+
+    @GetMapping("/electionresult/townships/{township_id}")
+    public Optional<Township> getTownshipById(@PathVariable Long township_id) {
+        return townshipRepo.findById(township_id);
     }
 
     @GetMapping("/electionresult/affiliation/{affiliation_id}/{candidate_id}")

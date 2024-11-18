@@ -5,17 +5,25 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import com.election.electionbackend.entity.Township;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Repository
 @Transactional
-public class TownshipRepository {
+public class TownshipRepository{
     @PersistenceContext
     private EntityManager em;
+
+    public Optional<Township> findById(Long id) {
+        Township township = em.find(Township.class, id);
+        return Optional.ofNullable(township);
+    }
 
     public List<Township> findAll() {
         return em.createQuery("from Township", Township.class).getResultList();

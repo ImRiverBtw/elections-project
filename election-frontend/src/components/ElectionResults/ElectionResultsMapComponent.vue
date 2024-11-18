@@ -15,396 +15,50 @@ import Fuse from 'fuse.js';
 export default {
   data() {
     return {
-      geojson: null,  // GeoJSON data voor de kaart
-      gemeentenVotesMap: {}, // Opslag van willekeurige partijen per gemeente
+      geojson: null,
+      gemeentenVotesMap: {},
       gekozenGemeentens: new Set(),
       fuse: null,
+      data: null
     };
   },
   created() {
-    // Partijen voor de verkiezing
-    const partijen = [
-      "NSC",
-      "PVV",
-      "GLPVDA",
-      "SGP",
-      "VVD",
-      "D66"
-    ];
+    // Ophalen van de verkiezingsresultaten
+    fetch('http://localhost:8080/electionresult/townships')
+        .then(response => response.json())
+        .then(jsonData => {
+          jsonData.forEach(gemeente => {
+            const partijNaam = gemeente.affiliationName || gemeente.affiliation?.name || 'Onbekend';
+            this.gemeentenVotesMap[gemeente.name] = partijNaam;
+          });
 
-    // Lijst van gemeenten (verkorte versie, voeg alle gemeenten toe indien nodig)
-    const gemeenten = [
-      "Aa en Hunze",
-      "Aalsmeer",
-      "Aalten",
-      "Achtkarspelen",
-      "Alblasserdam",
-      "Albrandswaard",
-      "Alkmaar",
-      "Almelo",
-      "Almere",
-      "Alphen aan den Rijn",
-      "Alphen-Chaam",
-      "Altena",
-      "Ameland",
-      "Amersfoort",
-      "Amstelveen",
-      "Amsterdam",
-      "Apeldoorn",
-      "Arnhem",
-      "Assen",
-      "Asten",
-      "Baarle-Nassau",
-      "Baarn",
-      "Barendrecht",
-      "Barneveld",
-      "Beek",
-      "Beekdaelen",
-      "Beesel",
-      "Berg en Dal",
-      "Bergeijk",
-      "Bergen (L)",
-      "Bergen NH",
-      "Bergen op Zoom",
-      "Berkelland",
-      "Bernheze",
-      "Best",
-      "Beuningen",
-      "Beverwijk",
-      "Bladel",
-      "Blaricum",
-      "Bloemendaal",
-      "Bodegraven-Reeuwijk",
-      "Boekel",
-      "Borger-Odoorn",
-      "Borne",
-      "Borsele",
-      "Boxtel",
-      "Breda",
-      "Bronckhorst",
-      "Brummen",
-      "Brunssum",
-      "Bunnik",
-      "Bunschoten",
-      "Buren",
-      "Capelle aan den IJssel",
-      "Castricum",
-      "Coevorden",
-      "Cranendonck",
-      "Culemborg",
-      "Dalfsen",
-      "Dantumadiel",
-      "De Bilt",
-      "De Fryske Marren",
-      "De Ronde Venen",
-      "De Wolden",
-      "Delft",
-      "Den Haag",
-      "Den Helder",
-      "Deurne",
-      "Deventer",
-      "Diemen",
-      "Dijk en Waard",
-      "Dinkelland",
-      "Doesburg",
-      "Doetinchem",
-      "Dongen",
-      "Dordrecht",
-      "Drechterland",
-      "Drimmelen",
-      "Dronten",
-      "Druten",
-      "Duiven",
-      "Echt-Susteren",
-      "Edam-Volendam",
-      "Ede",
-      "Eemnes",
-      "Eemsdelta",
-      "Eersel",
-      "Eijsden-Margraten",
-      "Eindhoven",
-      "Elburg",
-      "Emmen",
-      "Enkhuizen",
-      "Enschede",
-      "Epe",
-      "Ermelo",
-      "Etten-Leur",
-      "fictief",
-      "Geertruidenberg",
-      "Geldrop-Mierlo",
-      "Gemert-Bakel",
-      "Gennep",
-      "Gilze en Rijen",
-      "Goeree-Overflakkee",
-      "Goes",
-      "Goirle",
-      "Gooise Meren",
-      "Gorinchem",
-      "Gouda",
-      "Groningen",
-      "Gulpen-Wittem",
-      "Haaksbergen",
-      "Haarlem",
-      "Haarlemmermeer",
-      "Halderberge",
-      "Hardenberg",
-      "Harderwijk",
-      "Hardinxveld-Giessendam",
-      "Harlingen",
-      "Hattem",
-      "Heemskerk",
-      "Heemstede",
-      "Heerde",
-      "Heerenveen",
-      "Heerlen",
-      "Heeze-Leende",
-      "Heiloo",
-      "Hellendoorn",
-      "Helmond",
-      "Hendrik-Ido-Ambacht",
-      "Hengelo",
-      "'s-Hertogenbosch",
-      "Het Hogeland",
-      "Heumen",
-      "Heusden",
-      "Hillegom",
-      "Hilvarenbeek",
-      "Hilversum",
-      "Hoeksche Waard",
-      "Hof van Twente",
-      "Hollands Kroon",
-      "Hoogeveen",
-      "Hoorn",
-      "Horst aan de Maas",
-      "Houten",
-      "Huizen",
-      "Hulst",
-      "IJsselstein",
-      "Kaag en Braassem",
-      "Kampen",
-      "Kapelle",
-      "Katwijk",
-      "Kerkrade",
-      "Koggenland",
-      "Krimpen aan den IJssel",
-      "Krimpenerwaard",
-      "Laarbeek",
-      "Land van Cuijk",
-      "Landgraaf",
-      "Landsmeer",
-      "Lansingerland",
-      "Laren",
-      "Leeuwarden",
-      "Leiden",
-      "Leiderdorp",
-      "Leidschendam-Voorburg",
-      "Lelystad",
-      "Leudal",
-      "Leusden",
-      "Lingewaard",
-      "Lisse",
-      "Lochem",
-      "Loon op Zand",
-      "Lopik",
-      "Losser",
-      "Maasdriel",
-      "Maasgouw",
-      "Maashorst",
-      "Maassluis",
-      "Maastricht",
-      "Medemblik",
-      "Meerssen",
-      "Meierijstad",
-      "Meppel",
-      "Middelburg",
-      "Midden-Delfland",
-      "Midden-Drenthe",
-      "Midden-Groningen",
-      "Moerdijk",
-      "Molenlanden",
-      "Montferland",
-      "Montfoort",
-      "Mook en Middelaar",
-      "Neder-Betuwe",
-      "Nederweert",
-      "Nieuwegein",
-      "Nieuwkoop",
-      "Nijkerk",
-      "Nijmegen",
-      "Nissewaard",
-      "Noardeast-Fryslân",
-      "Noord-Beveland",
-      "Noordenveld",
-      "Noordoostpolder",
-      "Noordwijk",
-      "Nuenen, Gerwen en Nederwetten",
-      "Nunspeet",
-      "Oegstgeest",
-      "Oirschot",
-      "Oisterwijk",
-      "Oldambt",
-      "Oldebroek",
-      "Oldenzaal",
-      "Olst-Wijhe",
-      "Ommen",
-      "Oost Gelre",
-      "Oosterhout",
-      "Ooststellingwerf",
-      "Oostzaan",
-      "Opmeer",
-      "Opsterland",
-      "Oss",
-      "Oude IJsselstreek",
-      "Ouder-Amstel",
-      "Oudewater",
-      "Overbetuwe",
-      "Papendrecht",
-      "Peel en Maas",
-      "Pekela",
-      "Pijnacker-Nootdorp",
-      "Purmerend",
-      "Putten",
-      "Raalte",
-      "Reimerswaal",
-      "Renkum",
-      "Renswoude",
-      "Reusel-De Mierden",
-      "Rheden",
-      "Rhenen",
-      "Ridderkerk",
-      "Rijssen-Holten",
-      "Rijswijk",
-      "Roerdalen",
-      "Roermond",
-      "Roosendaal",
-      "Rotterdam",
-      "Rozendaal",
-      "Rucphen",
-      "Schagen",
-      "Scherpenzeel",
-      "Schiedam",
-      "Schiermonnikoog",
-      "Schouwen-Duiveland",
-      "Simpelveld",
-      "Sint-Michielsgestel",
-      "Sittard-Geleen",
-      "Sliedrecht",
-      "Sluis",
-      "Smallingerland",
-      "Soest",
-      "Someren",
-      "Son en Breugel",
-      "Stadskanaal",
-      "Staphorst",
-      "Stede Broec",
-      "Steenbergen",
-      "Steenwijkerland",
-      "Stein",
-      "Stichtse Vecht",
-      "Súdwest-Fryslân",
-      "Terneuzen",
-      "Terschelling",
-      "Texel",
-      "Teylingen",
-      "Tholen",
-      "Tiel",
-      "Tilburg",
-      "Tubbergen",
-      "Twenterand",
-      "Tynaarlo",
-      "Tytsjerksteradiel",
-      "Uitgeest",
-      "Uithoorn",
-      "Urk",
-      "Utrecht",
-      "Utrechtse Heuvelrug",
-      "Vaals",
-      "Valkenburg aan de Geul",
-      "Valkenswaard",
-      "Veendam",
-      "Veenendaal",
-      "Veere",
-      "Veldhoven",
-      "Velsen",
-      "Venlo",
-      "Venray",
-      "Vijfheerenlanden",
-      "Vlaardingen",
-      "Vlieland",
-      "Vlissingen",
-      "Voerendaal",
-      "Voorne aan Zee",
-      "Voorschoten",
-      "Voorst",
-      "Vught",
-      "Waadhoeke",
-      "Waalre",
-      "Waalwijk",
-      "Waddinxveen",
-      "Wageningen",
-      "Wassenaar",
-      "Waterland",
-      "Weert",
-      "West Betuwe",
-      "West Maas en Waal",
-      "Westerkwartier",
-      "Westerveld",
-      "Westervoort",
-      "Westerwolde",
-      "Westland",
-      "Weststellingwerf",
-      "Wierden",
-      "Wijchen",
-      "Wijdemeren",
-      "Wijk bij Duurstede",
-      "Winterswijk",
-      "Woensdrecht",
-      "Woerden",
-      "Wormerland",
-      "Woudenberg",
-      "Zaanstad",
-      "Zaltbommel",
-      "Zandvoort",
-      "Zeewolde",
-      "Zeist",
-      "Zevenaar",
-      "Zoetermeer",
-      "Zoeterwoude",
-      "Zuidplas",
-      "Zundert",
-      "Zutphen",
-      "Zwartewaterland",
-      "Zwijndrecht",
-      "Zwolle"
-    ];
+          const normalizedGemeenten = jsonData.map(gemeente => ({
+            name: this.normalize(gemeente.name),
+            original: gemeente.name
+          }));
 
-    gemeenten.forEach(gemeente => {
-      this.gemeentenVotesMap[gemeente] = this.shuffleArray([...partijen])[0];
-    });
+          console.log("Election Results Map:", this.gemeentenVotesMap);
 
-    const normalizedGemeenten = gemeenten.map(gemeente => ({
-      name: this.normalize(gemeente),
-      original: gemeente
-    }))
+          const fuseOptions = {
+            keys: ['name'],
+            threshold: 0.4
+          };
 
-    const fuseOptions = {
-      keys: ['name'],
-      threshold: 0.4 //percentatie hoe erg de namen op elkaar mogelijk lijken.
-    };
-    this.fuse = new Fuse(normalizedGemeenten, fuseOptions);
+          this.fuse = new Fuse(normalizedGemeenten, fuseOptions);
+        })
+        .catch(error => {
+          console.error('Error fetching election results:', error);
+        });
   },
   mounted() {
-    // boundary van de kaart
     let bounds = [[50.5, 3.2], [53.7, 7.2]];
 
     let map = L.map('map', {
-      center: [52.1, 5.3],  // Centraal op Nederland
-      zoom: 7,              // Standaard zoomniveau
-      minZoom: 7            // Minimale zoomniveau
+      center: [52.1, 5.3],
+      zoom: 7,
+      minZoom: 7
     });
 
-    // Stel zichtbare grenzen in op Nederland
     map.setMaxBounds(bounds);
 
     // Voeg OpenStreetMap tegels toe
@@ -412,7 +66,6 @@ export default {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Functie om kleur te bepalen op basis van de winnende partij
     function getColor(party) {
       return party === 'NSC' ? '#FFDD00' :   // Geel voor NSC
           party === 'PVV' ? '#1E90FF' :   // Blauw voor PVV
@@ -430,28 +83,16 @@ export default {
     const style = (feature) => {
       let gemeenteNaam = feature.properties.name;
 
-      let normalizedGemeenteNaam = this.normalize(gemeenteNaam)
-      let winningParty = this.gemeentenVotesMap[gemeenteNaam] || this.gemeentenVotesMap[normalizedGemeenteNaam];
 
-      if (this.gemeentenVotesMap[gemeenteNaam]) {
-        directMatch.push(gemeenteNaam);
-      }
+      let winningParty = this.gemeentenVotesMap[gemeenteNaam] || this.gemeentenVotesMap[this.normalize(gemeenteNaam)];
 
       if (!winningParty && !this.gekozenGemeentens.has(gemeenteNaam)) {
         const fuzzyResult = this.fuse.search(this.normalize(gemeenteNaam));
 
         if (fuzzyResult.length > 0) {
           const bestMatch = fuzzyResult[0].item.original;
-          fuzzyMatch.push(gemeenteNaam + " & " + bestMatch);
-
           winningParty = this.gemeentenVotesMap[bestMatch];
-        } else {
-          noMatch.push(gemeenteNaam);
         }
-      }
-
-      if (winningParty) {
-        this.gekozenGemeentens.add(gemeenteNaam);
       }
 
       feature.properties.winning_party = winningParty || 'Onbekend';
