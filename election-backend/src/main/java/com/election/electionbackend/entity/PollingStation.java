@@ -12,6 +12,8 @@ public class PollingStation {
     private Long id;
     private String name;
 
+    private String location;
+
     @ManyToOne
     @JoinColumn(name = "constituency_id")
     private Constituency constituency;

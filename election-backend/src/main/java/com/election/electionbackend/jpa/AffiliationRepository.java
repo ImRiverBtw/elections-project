@@ -2,6 +2,7 @@ package com.election.electionbackend.jpa;
 
 import com.election.electionbackend.entity.Affiliation;
 import com.election.electionbackend.entity.Candidate;
+import com.election.electionbackend.entity.PollingStation;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -42,6 +43,8 @@ public class AffiliationRepository{
         }
         return affiliation;
     }
+
+
 
     public int getVoteCount(Long affiliationId){
         Affiliation affiliation = findById(affiliationId);

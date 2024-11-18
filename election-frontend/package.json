@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "chart.js": "^4.4.6",
+    "chart.js-plugin-labels-dv": "^5.0.1-beta",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "fuse.js": "^7.0.0",
     "leaflet": "^1.9.4",
     "vue": "^3.4.29",
