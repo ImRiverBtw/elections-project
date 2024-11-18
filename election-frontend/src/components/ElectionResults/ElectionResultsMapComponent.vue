@@ -67,12 +67,16 @@ export default {
     }).addTo(map);
 
     function getColor(party) {
-      return party === 'NSC' ? '#FFDD00' :   // Geel voor NSC
-          party === 'PVV' ? '#1E90FF' :   // Blauw voor PVV
-              party === 'GLPVDA' ? '#FF0000' :   // Rood voor GLPVDA
-                  party === 'SGP' ? '#FF6600' :   // Oranje voor SGP
-                      party === 'VVD' ? '#0000FF' :   // Donkerblauw voor VVD
-                          party === 'D66' ? '#00FF00' :   // Groen voor D66
+      return party === 'NSC' ? '#FFDD00' :
+          party === 'PVV' ? '#1E90FF' :
+              party === 'GLPVDA' ? '#FF0000' :
+                  party === 'SP' ? '#FF3300' :
+                      party === 'VVD' ? '#003399' :
+                          party === 'D66' ? '#32CD32' :
+                              party === 'BBB' ? '#4CAF50' :
+                                  party === 'CDA' ? '#006400' :
+                                      party === 'FVD' ? '#800020' :
+                                          party === 'PVDD' ? '#00A86B' :
                               '#CCCCCC';  // Grijs als default
     }
 
