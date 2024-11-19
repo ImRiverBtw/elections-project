@@ -13,7 +13,11 @@
         <i class="fa fa-times-circle" @click="clearSearch"></i>
       </div>
       <ul v-if="filteredMunicipalities.length" class="municipality-list">
-        <li v-for="(municipality, index) in filteredMunicipalities" :key="index" @click="selectMunicipality(municipality)">
+        <li
+            v-for="(municipality, index) in filteredMunicipalities"
+            :key="index"
+            @click="selectMunicipality(municipality)"
+        >
           {{ municipality }}
         </li>
       </ul>
@@ -40,9 +44,15 @@
     <!-- Chart for Top-10 Selection -->
     <div v-if="selectedMunicipality && selected === 'top10'" class="chart-container">
       <h3>Uitslag gemeente {{ selectedMunicipality }}</h3>
-      <p>595.930 kiesgerechtigden</p>
-      <p>opkomst <strong>71,0%</strong></p>
-      <BarChart :data="chartData" :options="chartOptions" />
+      <p>{{ electionData.current.voters }} kiesgerechtigden</p>
+      <p>opkomst <strong>{{ electionData.current.turnout }}</strong></p>
+      <div v-if="chartData && chartData.labels.length > 0">
+        <BarChart :data="chartData" :options="chartOptions" />
+      </div>
+      <div v-else class="info-box">
+        <i class="fa fa-info-circle"></i>
+        <span>No data available to display the chart.</span>
+      </div>
     </div>
 
     <!-- Table for Alle Cijfers Selection -->
@@ -53,19 +63,16 @@
           <span>{{ electionData.current.turnout }} opkomst</span>
           <span>{{ electionData.current.voters }} kiesgerechtigden</span>
         </div>
-        <div class="previous-election">
-          <span>{{ electionData.previous.turnout }} opkomst</span>
-          <span>{{ electionData.previous.voters }} kiesgerechtigden</span>
-        </div>
-      </div>
-      <div class="election-results">
-        <div v-for="(result, index) in electionData.results" :key="index" class="party-result">
-          <span>{{ result.party }}</span>
-          <span>{{ result.votes }} stemmen</span>
-          <span>{{ result.percentage }}%</span>
-          <span :class="result.change > 0 ? 'increase' : 'decrease'">
-            {{ result.change > 0 ? '+' : '' }}{{ result.change }}%
-          </span>
+        <div class="election-results">
+          <div
+              v-for="(result, index) in electionData.results"
+              :key="index"
+              class="party-result"
+          >
+            <span>{{ result.party }}</span>
+            <span>{{ result.votes }} stemmen</span>
+            <span>{{ result.percentage }}%</span>
+          </div>
         </div>
       </div>
     </div>
@@ -73,68 +80,148 @@
 </template>
 
 <script>
-import { Bar } from 'vue-chartjs';
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+import { Bar } from "vue-chartjs";
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 export default {
   name: "MunicipalityFinder",
   components: {
-    BarChart: Bar
+    BarChart: Bar,
   },
   data() {
     return {
-      selected: 'top10',
+      selected: "top10",
       selectedMunicipality: null,
-      searchQuery: '',
-      municipalities: ["Amsterdam", "Rotterdam", "Den Haag", "Utrecht", "Eindhoven", "Tilburg"],
+      searchQuery: "",
+      municipalities: [], // Populated from the backend
       filteredMunicipalities: [],
       chartData: {
-        labels: ["GLPVDA", "VVD", "D66", "PVV", "DENK", "NSC", "PVDD", "VOLT", "SP", "BIJ1"],
+        labels: [], // Default structure
         datasets: [
-          {label: '2021', backgroundColor: '#b3b3b3', data: [17.6, 13.0, 22.7, 5.1, 6.6, 0.0, 7.0, 5.9, 4.9, 5.7]},
-          {label: '2023', backgroundColor: '#d20f0f', data: [33.8, 11.8, 9.9, 9.6, 7.5, 6.6, 4.8, 3.8, 3.2, 2.3]}
-        ]
+          {
+            label: "Votes",
+            backgroundColor: "#d20f0f",
+            data: [],
+          },
+        ],
       },
       chartOptions: {
         responsive: true,
+        maintainAspectRatio: false,
         scales: {
-          y: {beginAtZero: true, max: 40}
-        }
+          y: {
+            beginAtZero: true,
+          },
+        },
+        plugins: {
+          legend: {
+            position: "top",
+          },
+        },
       },
       electionData: {
-        current: {turnout: "71,0%", voters: "595.930"},
-        previous: {turnout: "75,9%", voters: "597.205"},
-        results: [
-          {party: "GLPVDA", votes: "141.976", percentage: "33,8", change: 16.2},
-          {party: "VVD", votes: "49.517", percentage: "11,8", change: -1.2},
-          {party: "D66", votes: "41.418", percentage: "9,9", change: -12.8},
-          {party: "PVV", votes: "40.470", percentage: "9,6", change: 4.5},
-          {party: "DENK", votes: "31.272", percentage: "7,5", change: 1.4}
-        ]
-      }
+        current: { turnout: "", voters: "" },
+        results: [],
+      },
     };
   },
+  async mounted() {
+    try {
+      console.log("Fetching municipalities...");
+      const response = await fetch("http://localhost:8080/api/municipalities");
+      console.log("Response:", response);
+
+      if (!response.ok) {
+        throw new Error(`Error fetching municipalities: ${response.status}`);
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Invalid JSON response from backend.");
+      }
+
+      const data = await response.json();
+      console.log("Municipality Data:", data);
+
+      this.municipalities = data;
+      this.filteredMunicipalities = this.municipalities;
+    } catch (error) {
+      console.error("Error fetching municipalities:", error);
+      alert("An error occurred while fetching municipalities.");
+    }
+  },
   methods: {
-    selectOption(option) {
-      this.selected = option;
-    },
-    filterMunicipalities() {
-      this.filteredMunicipalities = this.searchQuery
-          ? this.municipalities.filter(m => m.toLowerCase().includes(this.searchQuery.toLowerCase()))
-          : [];
-    },
-    clearSearch() {
-      this.searchQuery = '';
-      this.filteredMunicipalities = [];
-    },
-    selectMunicipality(municipality) {
+    async selectMunicipality(municipality) {
       this.selectedMunicipality = municipality;
       this.filteredMunicipalities = [];
       this.searchQuery = municipality;
-    }
-  }
+      await this.fetchElectionData(municipality);
+    },
+    async fetchElectionData(municipality) {
+      try {
+        console.log(`Fetching election data for: ${municipality}`);
+        const response = await fetch(
+            `http://localhost:8080/api/municipalities/results/${municipality}`
+        );
+        console.log("Response:", response);
+
+        if (!response.ok) {
+          throw new Error(
+              `Error fetching election data: ${response.statusText}`
+          );
+        }
+
+        const data = await response.json();
+        console.log("Election Data:", data);
+
+        if (!data || data.length === 0) {
+          console.warn(`No election data available for ${municipality}.`);
+          alert(`No election data available for ${municipality}.`);
+          this.chartData.labels = [];
+          this.chartData.datasets[0].data = [];
+          return;
+        }
+
+        // Update electionData
+        this.electionData.current.voters = data.reduce(
+            (sum, result) => sum + result.votes,
+            0
+        );
+        this.electionData.results = data;
+
+        // Update chartData
+        this.chartData.labels = data.map((result) => result.party);
+        this.chartData.datasets[0].data = data.map((result) => result.votes);
+        console.log("Updated Chart Data:", this.chartData);
+      } catch (error) {
+        console.error("Error fetching election data:", error);
+        alert("An error occurred while fetching election data.");
+      }
+    },
+    filterMunicipalities() {
+      this.filteredMunicipalities = this.searchQuery
+          ? this.municipalities.filter((m) =>
+              m.toLowerCase().includes(this.searchQuery.toLowerCase())
+          )
+          : [];
+    },
+    clearSearch() {
+      this.searchQuery = "";
+      this.filteredMunicipalities = [];
+    },
+    selectOption(option) {
+      this.selected = option;
+    },
+  },
 };
 </script>
 
@@ -294,20 +381,13 @@ export default {
 }
 
 .more-info {
-  margin-top: 20px;
-  cursor: pointer;
+  margin-top: 15px;
+  background-color: #f1f1f1;
+  padding: 10px;
+  border-radius: 5px;
 }
 
-.more-info a {
-  color: #d20f0f;
-  text-decoration: none;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.info-text {
-  margin-top: 10px;
-  color: #333;
-  font-size: 14px;
+.more-info p {
+  margin: 0;
 }
 </style>
