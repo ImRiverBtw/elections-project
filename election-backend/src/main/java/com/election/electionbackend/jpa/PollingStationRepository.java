@@ -1,12 +1,10 @@
 package com.election.electionbackend.jpa;
 
-import com.election.electionbackend.entity.Affiliation;
 import com.election.electionbackend.entity.Constituency;
 import com.election.electionbackend.entity.PollingStation;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,22 +18,42 @@ import java.util.List;
 @Transactional
 public class PollingStationRepository {
     @PersistenceContext
-    private EntityManager em;
+    private EntityManager em;  // Injects the EntityManager to interact with the database.
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     ConstituencyRepository constituencyRepository;
 
+    /**
+     * Finds a PollingStation by its ID.
+     *
+     * @param id the ID of the PollingStation.
+     * @return the PollingStation entity or null if not found.
+     */
     public PollingStation findById(Long id) {
         return em.find(PollingStation.class, id);
     }
 
+    /**
+     * Retrieves all PollingStation records from the database.
+     *
+     * @return a list of all PollingStation entities.
+     */
     public List<PollingStation> findAll() {
         return em.createQuery("from PollingStation", PollingStation.class).getResultList();
     }
-    public Object[] getBiggestAffiliation(Long polingStationId){
-        PollingStation pollingStation = findById(polingStationId);
+
+    /**
+     * Finds the affiliation with the highest number of votes in a specific polling station.
+     *
+     * @param pollingStationId the ID of the polling station.
+     * @return an Object array where:
+     * - result[0]: the affiliation entity.
+     * - result[1]: the total votes for that affiliation.
+     */
+    public Object[] getBiggestAffiliation(Long pollingStationId) {
+        PollingStation pollingStation = findById(pollingStationId);
         Query query = em.createQuery(
                 "SELECT psc.candidate.affiliation, SUM(psc.votes) " +
                         "FROM PollingStationCandidate psc " +
@@ -51,6 +69,8 @@ public class PollingStationRepository {
         logger.info(Arrays.toString(result));
         return result;
     }
+//TODO: save method
+
 
     public void insertDummyData() {
         String[] pollingStationNames = new String[]{

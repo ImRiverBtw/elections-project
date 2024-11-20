@@ -19,7 +19,7 @@ public class PollingStation {
     private Constituency constituency;
 
     @OneToMany(mappedBy = "pollingStation")
-    private Set<PollingStationCandidate> pollingStationCandidates = new HashSet<>();
+    private Set<PollingStationCandidate> pollingStationCandidates = new HashSet<>(); //join entity for many to many relation between pollingstation and candidate
 
     public PollingStation() {
     }
