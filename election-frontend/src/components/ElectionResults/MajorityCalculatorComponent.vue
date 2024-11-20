@@ -18,7 +18,7 @@
           <!-- Background semi-circle -->
           <path
               d="M10,100 A90,90 0 0,1 190,100"
-              fill="#333"
+              fill="#d4dfef"
           ></path>
           <!-- Dynamic sections for selected parties -->
           <path
@@ -28,7 +28,7 @@
               :fill="party.color"
           ></path>
           <!-- Majority line -->
-          <line x1="100" y1="100" x2="100" y2="10" stroke="white" stroke-width="1"></line>
+          <line x1="100" y1="100" x2="100" y2="5" stroke="black" stroke-width="0.25"></line>
         </svg>
         </div>
 
