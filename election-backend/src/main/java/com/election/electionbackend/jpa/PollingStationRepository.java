@@ -1,13 +1,19 @@
 package com.election.electionbackend.jpa;
 
+import com.election.electionbackend.entity.Affiliation;
 import com.election.electionbackend.entity.Constituency;
 import com.election.electionbackend.entity.PollingStation;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -15,6 +21,8 @@ import java.util.List;
 public class PollingStationRepository {
     @PersistenceContext
     private EntityManager em;
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     ConstituencyRepository constituencyRepository;
@@ -25,6 +33,23 @@ public class PollingStationRepository {
 
     public List<PollingStation> findAll() {
         return em.createQuery("from PollingStation", PollingStation.class).getResultList();
+    }
+    public Object[] getBiggestAffiliation(Long polingStationId){
+        PollingStation pollingStation = findById(polingStationId);
+        Query query = em.createQuery(
+                "SELECT psc.candidate.affiliation, SUM(psc.votes) " +
+                        "FROM PollingStationCandidate psc " +
+                        "WHERE psc.pollingStation = :pollingStation " +
+                        "GROUP BY psc.candidate.affiliation " +
+                        "ORDER BY SUM(psc.votes) DESC"
+        );
+        query.setParameter("pollingStation", pollingStation);
+        query.setMaxResults(1);
+
+        Object[] result = (Object[]) query.getSingleResult();
+
+        logger.info(Arrays.toString(result));
+        return result;
     }
 
     public void insertDummyData() {

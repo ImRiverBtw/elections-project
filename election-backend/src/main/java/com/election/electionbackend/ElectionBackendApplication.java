@@ -9,12 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +35,7 @@ public class ElectionBackendApplication implements CommandLineRunner {
 
     @Autowired
     private CandidateRepository candidateRepo;
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -66,17 +64,19 @@ class ElectionResultController {
     @Autowired
     private AffiliationRepository affiliationRepo;
 
-//    @Autowired
-//    private PollingStationRepository pollingStationRepo;
-//
-//    @Autowired
-//    private PollingStationCandidateRepository pollingStationCandidateRepo;
+    @Autowired
+    private PollingStationRepository pollingStationRepo;
+
+    @Autowired
+    private PollingStationCandidateRepository pollingStationCandidateRepo;
 //
 //    @Autowired
 //    private ConstituencyRepository constituencyRepo;
 
     @Autowired
     private CandidateRepository candidateRepo;
+    @Autowired
+    private PollingStationRepository pollingStationRepository;
 
 
     @GetMapping("/electionresult/constituency/{constituency_id}")
@@ -128,14 +128,8 @@ class ElectionResultController {
         return candidateRepo.findById(new CandidateId(affiliation_id, candidate_id));
     }
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**").allowedOrigins("http://localhost:8080");
-            }
-        };
+    @GetMapping("electionresult/pollingstation/{pollingstation_id}/largest_affiliation")
+    public Object[] getLargestAffiliation(@PathVariable Long pollingstation_id) {
+        return pollingStationRepo.getBiggestAffiliation(pollingstation_id);
     }
-
 }
