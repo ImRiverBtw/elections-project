@@ -1,6 +1,7 @@
 <template>
   <div class="electionresults-container">
     <div class="content">
+      <h1>Verkiezingsuitslagen 2023</h1>
       <router-view />
     </div>
     <div class="election-results-nav">

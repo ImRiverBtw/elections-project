@@ -1,8 +1,3 @@
-<!--
-Todo:
-      1: Visuele grafiek maken
--->
-
 <template>
 
   <div class="top">
@@ -18,10 +13,27 @@ Todo:
 
     <div class="graphWrapper">
 
-      <p class="graph"> Grafiek placeholder</p>
-<!--      <SeatsGraphComponent :data="chartData" :max="150" :size="400"> </SeatsGraphComponent>-->
+      <div class="chart-container">
+        <svg :width=400 :height=200 viewBox="0 0 200 100">
+          <!-- Background semi-circle -->
+          <path
+              d="M10,100 A90,90 0 0,1 190,100"
+              fill="#333"
+          ></path>
+          <!-- Dynamic sections for selected parties -->
+          <path
+              v-for="(party, index) in this.selectedParties"
+              :key="party.name"
+              :d="calculateArcPath(index)"
+              :fill="party.color"
+          ></path>
+          <!-- Majority line -->
+          <line x1="100" y1="100" x2="100" y2="10" stroke="white" stroke-width="1"></line>
+        </svg>
+        </div>
 
-      <h2 id="seatsCounter"> ({{ this.totalAccumulatedSeats }} Zetels)</h2>
+
+      <h2 id="seatsCounter"> {{ this.totalAccumulatedSeats }} Zetels</h2>
 
     </div>
 
@@ -31,9 +43,11 @@ Todo:
 
         <div class="activatedPartiesWrapper">
 <!--          makes a "tag" for every party in activatedParties array -->
-          <p class="activatedParty" v-for="party in selectedParties" :key="party.id"> {{ party.name }} </p>
+          <p class="activatedParty" v-for="party in selectedParties"
+             :key="party.id"
+             :style="{ backgroundColor: party.color }"
+          > {{ party.name }} ({{ party.seatAmount }}) </p>
 
-<!--          <p class="activatedParty" v-for="party in parties.filter(p => p.selected)" :key="party.id"> {{ party.name }} </p>-->
         </div>
 
     </div>
@@ -50,12 +64,11 @@ Todo:
 <!--        makes a party tag for every party in the parties array and binds click method to it when it is clicked -->
         <PartyTag class="partyTag"
                   v-for="party in parties"
-                  @click="handlePartyTagClick(party); addSegment()"
+                  @click="handlePartyTagClick(party);"
                   :class="{active: party.selected}"
         > <p class="partyName"> {{ party.name }} </p>
         </PartyTag>
 
-<!--        moet een bug fixen waarbij het niet de kleur van de tag veranderd-->
         <button class="resetButton" @click="handleResetButtonClick"> Reset </button>
 
       </div>
@@ -64,19 +77,22 @@ Todo:
 
 </template>
 
-<script >
+<script>
 import PartyTag from "@/components/PartyTag.vue";
-import SeatsGraphComponent from "@/components/SeatsGraphComponent.vue";
 
 export default {
   name: "MajorityCalulator",
-  components: {PartyTag, SeatsGraphComponent},
+  components: {PartyTag},
+
+  async created() {
+    await this.fetchAffiliations();
+  },
 
   data() {
 
     return {
 
-      maxSeats: 150,
+      // maxSeats: 150,
 
       totalAccumulatedSeats: 0,
 
@@ -84,25 +100,8 @@ export default {
 
       defaultTagColor: "#d4dfef",
 
-      parties: [
+      parties: [],
 
-        {id: "1", name: "PVV", seatAmount: 37, selected: false, color: ""},
-        {id: "2", name: "GL/PVDA", seatAmount: 25, selected: false, color: ""},
-        {id: "3", name: "VVD", seatAmount: 24, selected: false, color: ""},
-        {id: "4", name: "NSC", seatAmount: 20, selected: false, color: ""},
-        {id: "5", name: "D66", seatAmount: 9, selected: false, color: ""},
-        {id: "6", name: "BBB", seatAmount: 7, selected: false, color: ""},
-        {id: "7", name: "CDA", seatAmount: 5, selected: false, color: ""},
-        {id: "8", name: "SP", seatAmount: 5, selected: false, color: ""},
-        {id: "9", name: "DENK", seatAmount: 3, selected: false, color: ""},
-        {id: "10", name: "PVDD", seatAmount: 3, selected: false, color: ""},
-        {id: "11", name: "FVD", seatAmount: 3, selected: false, color: ""},
-        {id: "12", name: "SGP", seatAmount: 3, selected: false, color: ""},
-        {id: "13", name: "CU", seatAmount: 3, selected: false, color: ""},
-        {id: "14", name: "VOLT", seatAmount: 2, selected: false, color: ""},
-        {id: "15", name: "JA21", seatAmount: 1, selected: false, color: ""},
-      ],
-      chartData: [],
     }
   },
 
@@ -119,13 +118,12 @@ export default {
       } else {
 
         this.selectParty(party)
-
       }
-
     },
 
     // method that selects the clicked party //
     selectParty(party) {
+      console.log(party)
 
       // add up the seat amount of the selected party to the total accumulated seats //
       this.totalAccumulatedSeats = this.totalAccumulatedSeats + party.seatAmount;
@@ -135,7 +133,6 @@ export default {
 
       // change the "selected" attribute of the party (to change the background of the tag) //
       party.selected = !party.selected;
-
     },
 
     // method that deselects the clicked party //
@@ -156,33 +153,136 @@ export default {
 
     handleResetButtonClick() {
 
-      console.log("test")
-
       this.selectedParties = [];
       this.totalAccumulatedSeats = 0;
 
-      console.log("beforeloop");
-
       for (let i = 0; i < this.parties.length; i++) {
 
-        console.log("loop")
         this.parties[i].selected = false;
       }
     },
-    addSegment() {
-      // Add a new segment dynamically
-      this.chartData.push({
-        value: 20,
-        color: '#FFA726',
-      });
 
+    // Get a list of parties with their name and id
+    async fetchAffiliations() {
+      try {
+        const response = await fetch('http://localhost:8080/electionresult/affiliation');
+        if (!response.ok) {
+          throw new Error(response.status);
+        }
+        const affiliations = await response.json();
+        this.affiliations = affiliations.map(aff => ({ ...aff, seats: 0 }));
+
+        // get the amount of seats per party //
+        for (let i = 0; i < this.affiliations.length; i++) {
+
+          let party = {
+            id: this.affiliations[i].id,
+            name: this.affiliations[i].name,
+            seatAmount: await this.fetchSeatCountById(this.affiliations[i].id),
+            selected: false,
+            color: this.assignColorToParty(this.affiliations[i].name),
+          };
+
+          this.parties.push(party);
+        }
+
+      } catch (error) {
+        console.error('Error fetching affiliations: ', error);
+      }
     },
 
-    watch: {},
+    async fetchSeatCountById(id) {
+      try {
+        const response = await fetch(`http://localhost:8080/electionresults/affiliation/${id}/seats`);
+        if (!response.ok) {
+          throw new Error(response.status);
+        }
 
-    computed: {},
+        return await response.json();
 
+      } catch (error) {
+        console.error('Error fetching seats: ', error);
+
+      }
+    },
+
+    calculateArcPath(index) {
+      const totalSeats = this.parties.reduce((sum, party) => sum + party.seatAmount, 0);
+      const anglePerSeat = 180 / totalSeats;
+      const startAngle = this.getStartAngle(index);
+      const endAngle = this.getEndAngle(index);
+      const start = this.polarToCartesian(100, 100, 90, startAngle);
+      const end = this.polarToCartesian(100, 100, 90, endAngle);
+      const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+      return `M ${start.x} ${start.y} A 90 90 0 ${largeArcFlag} 1 ${end.x} ${end.y} L 100 100 Z`;
+    },
+
+    getStartAngle(index) {
+      const totalSeats = this.parties.reduce((sum, party) => sum + party.seatAmount, 0);
+      const anglePerSeat = 180 / totalSeats;
+      return -90 +
+          this.selectedParties
+              .slice(0, index)
+              .reduce((sum, party) => sum + party.seatAmount * anglePerSeat, 0);
+    },
+
+    getEndAngle(index) {
+      const totalSeats = this.parties.reduce((sum, party) => sum + party.seatAmount, 0);
+      const anglePerSeat = 180 / totalSeats;
+      return this.getStartAngle(index) + this.selectedParties[index].seatAmount * anglePerSeat;
+    },
+
+    polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+      const angleInRadians = (angleInDegrees - 90) * (Math.PI / 180.0);
+      return {
+        x: centerX + radius * Math.cos(angleInRadians),
+        y: centerY + radius * Math.sin(angleInRadians),
+      };
+  },
+
+  assignColorToParty (partyName){
+
+    switch(partyName) {
+      case "PVV":
+        return "#5fefde"
+      case "GLPVDA":
+        return "#e02121";
+      case "VVD":
+        return "#f18f35"
+      case "NSC":
+        return "#f6cb3d";
+      case "D66":
+        return "#17af17"
+      case "BBB":
+        return "#97e972"
+      case "CDA":
+        return "#d9ffca";
+      case "SP":
+        return "#9347e7"
+      case "FVD":
+        return "#ffa395"
+      case "PVDD":
+        return "#debbbb"
+      case "DENK":
+        return "#f6f6f6"
+      case "CU":
+        return "#a7bfd7"
+      case "SGP":
+        return "#ff6800"
+      case "VOLT":
+        return "#fffd72"
+      case "JA21":
+        return "#dbcafa"
+
+      default:
+        return "white"
+    }
   }
+
+
+
+},
+
 }
 
 </script>
@@ -220,8 +320,8 @@ export default {
 
 
 .graphWrapper {
-  border: 1px solid red;
-  height: 350px;
+  //border: 1px solid red;
+  height: 220px;
   width: 100%;
   text-align: center;
 }
@@ -239,13 +339,14 @@ export default {
   display: inline-block;
   font-weight: 400;
   //border: 1px solid red;
-  margin-top: 11px;
+  margin-top: 30px;
   margin-bottom: 11px;
+  //border: 1px solid red;
 
 }
 .activatedPartiesWrapper {
   display: inline-block;
-  //border: 1px solid red;
+
 }
 .activatedParty {
   display: inline-block;
@@ -256,6 +357,7 @@ export default {
   text-align: center;
   font-size: 12px;
   font-weight: bold;
+  color: black;
 }
 
 
@@ -265,7 +367,7 @@ export default {
   margin: 0 auto;
 }
 #bottomWrapperTop {
-  margin-top: 0;
+  margin-top: 15px;
   padding: 0;
 }
 #title-seperator1 {
@@ -276,7 +378,7 @@ export default {
 .tagsWrapper {
   min-width: 250px;
   padding: 10px;
-//border: 1px solid red;
+  //border: 1px solid red;
 }
 .active{
   background: #FFCC00;
@@ -317,6 +419,11 @@ export default {
     width: 40%;
   }
 
+}
+
+#seatsCounter{
+  margin-top: 1%;
+  //border: 1px solid red;
 }
 
 
