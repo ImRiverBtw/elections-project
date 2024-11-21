@@ -9,66 +9,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @Transactional
 public class CandidateRepository {
-
     @PersistenceContext
-    private EntityManager em;
+    private EntityManager em;  // Injects the EntityManager to interact with the database.
 
     @Autowired
     private AffiliationRepository affiliationRepository;
 
-    // Find candidate by composite ID (Affiliation ID and Candidate ID)
-    public Optional<Candidate> findById(CandidateId id) {
-        return Optional.ofNullable(em.find(Candidate.class, id));  // Wrap the result in Optional
+    /**
+     * Finds a Candidate by its composite ID.
+     * @param id the composite ID of the Candidate (e.g., candidate number and affiliation ID).
+     * @return the Candidate entity or null if not found.
+     */
+    public Candidate findById(CandidateId id) {
+        return em.find(Candidate.class, id);
     }
 
-
-    // Find all candidates
+    /**
+     * Retrieves all Candidate records from the database.
+     * @return a list of all Candidate entities.
+     */
     public List<Candidate> findAll() {
         return em.createQuery("select c from Candidate c", Candidate.class).getResultList();
     }
 
-    // Insert dummy data for testing
     public void insertDummyData() {
-        // Define the candidate data
-        Object[][] candidateData = {
-                {1L, "Geert Wilders", 1L},
-                {1L, "Frans Timmermans", 2L},
-                {2L, "Esmah Lahlah", 2L},
-                {1L, "Dilan Yesilgoz", 3L},
-                {2L, "Sophie Hermans", 3L},
-                {1L, "Pieter Omtzigt", 4L},
-                {2L, "Nicolien van Vroonhoven-Kok", 4L},
-                {1L, "Rob Jetten", 5L},
-                {2L, "Jan Paternotte", 5L},
-                {1L, "Caroline van der Plas", 6L},
-                {2L, "Mona Keijzer", 6L},
-                {1L, "Henri Bontenbal", 7L},
-                {2L, "Eline Vedder", 7L},
-                {1L, "Lilian Marijnissen", 8L},
-                {2L, "Sandra Beckerman", 8L},
-                {1L, "Thierry Baudet", 9L},
-                {2L, "Freek Jansen", 9L},
-                {1L, "Anja Hazekamp", 10L},
-                {2L, "Frank Wassenberg", 10L}
-        };
+        em.persist(new Candidate(1L,"Geert Wilders", affiliationRepository.findById(1L)));
+        em.persist(new Candidate(1L,"Frans Timmermans", affiliationRepository.findById(2L)));
+        em.persist(new Candidate(2L,"Esmah Lahlah", affiliationRepository.findById(2L)));
+        em.persist(new Candidate(1L,"Dilan Yesilgoz", affiliationRepository.findById(3L)));
+        em.persist(new Candidate(2L,"Sophie Hermans", affiliationRepository.findById(3L)));
+        em.persist(new Candidate(1L,"Pieter Omtzigt", affiliationRepository.findById(4L)));
+        em.persist(new Candidate(2L,"Nicolien van Vroonhoven-Kok", affiliationRepository.findById(4L)));
+        em.persist(new Candidate(1L,"Rob Jetten", affiliationRepository.findById(5L)));
+        em.persist(new Candidate(2L,"Jan Paternotte", affiliationRepository.findById(5L)));
+        em.persist(new Candidate(1L,"Caroline van der Plas", affiliationRepository.findById(6L)));
+        em.persist(new Candidate(2L,"Mona Keijzer", affiliationRepository.findById(6L)));
+        em.persist(new Candidate(1L,"Henri Bontenbal", affiliationRepository.findById(7L)));
+        em.persist(new Candidate(2L,"Eline Vedder", affiliationRepository.findById(7L)));
+        em.persist(new Candidate(1L,"Lilian Marijnissen", affiliationRepository.findById(8L)));
+        em.persist(new Candidate(2L,"Sandra Beckerman", affiliationRepository.findById(8L)));
+        em.persist(new Candidate(1L,"Thierry Baudet", affiliationRepository.findById(9L)));
+        em.persist(new Candidate(2L,"Freek Jansen", affiliationRepository.findById(9L)));
+        em.persist(new Candidate(1L,"Anja Hazekamp", affiliationRepository.findById(10L)));
+        em.persist(new Candidate(2L,"Frank Wassenberg", affiliationRepository.findById(10L)));
 
-        // Insert candidates into the database
-        for (Object[] data : candidateData) {
-            Long candidateId = (Long) data[0];
-            String name = (String) data[1];
-            Long affiliationId = (Long) data[2];
-
-            // Fetch the affiliation, and ensure it's not null
-            var affiliation = affiliationRepository.findById(affiliationId)
-                    .orElseThrow(() -> new IllegalArgumentException("Affiliation not found with ID " + affiliationId));
-                Candidate candidate = new Candidate(candidateId, name, affiliation);
-                em.persist(candidate);
-
-        }
     }
 }

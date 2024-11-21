@@ -7,11 +7,15 @@
 
 <script>
 import {Chart} from "chart.js/auto";
+import * as helpers from "chart.js/helpers";
 
 export default {
   name: "SeatDistribution",
-  created() {
-    this.fetchAffiliations();
+  async created() {
+    await this.fetchAffiliations();
+    window.Chart = Chart;
+    Chart.helpers = helpers;
+    await import("chart.js-plugin-labels-dv");
   },
   data() {
     return {
@@ -58,30 +62,27 @@ export default {
     createChart() {
       const ctx = this.$refs.barChart.getContext("2d");
       const labels = this.affiliations.map(affiliation => affiliation.name);
-      const data = this.affiliations.map(affiliation => affiliation.seats);
-      console.log(labels);
-      console.log(data)
+      const electionData = this.affiliations.map(affiliation => affiliation.seats);
 
-      new Chart(ctx, {
+      const data = {
+        labels: labels,
+        datasets: [{
+          label: "Aantal zetels 2023",
+          data: electionData,
+          borderWidth: 1,
+          borderColor: '#B9C5E9',
+          borderRadius: 2,
+          backgroundColor: 'rgba(185, 197, 233, 0.5)',
+        }]
+      }
+
+      const config = {
         type: "bar",
-        data: {
-          labels: labels,
-          datasets: [{
-            label: "Aantal zetels 2023",
-            data: data,
-            borderWidth: 1,
-            borderColor: '#B9C5E9',
-            borderRadius: 2,
-            backgroundColor: 'rgba(185, 197, 233, 0.5)',
-          }]
-        },
+        data: data,
         options: {
-          scales: {
-            y: {
-              beginAtZero: true,
-            }
-          },
           plugins: {
+            afterDraw: {
+            },
             legend: {
               labels: {
                 font: {
@@ -90,9 +91,15 @@ export default {
                 }
               }
             }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+            }
           }
         }
-      })
+      }
+      new Chart(ctx, config)
     }
   }
 }
