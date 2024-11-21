@@ -25,9 +25,10 @@ export default {
   },
   created() {
     // Ophalen van de verkiezingsresultaten
-    fetch('http://localhost:8080/electionresult/townships')
+    fetch('http://localhost:8080/electionresult/pollingStation')
         .then(response => response.json())
         .then(jsonData => {
+          console.log('Fetched election results:', jsonData);
           jsonData.forEach(gemeente => {
             const partijNaam = gemeente.affiliationName || gemeente.affiliation?.name || 'Onbekend';
             this.gemeentenVotesMap[gemeente.name] = partijNaam;

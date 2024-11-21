@@ -24,7 +24,7 @@ public class Candidate {
 
     @OneToMany(mappedBy = "candidate")
     @JsonIgnore
-    private Set<TownshipCandidate> townshipCandidates = new HashSet<>();
+    private Set<PollingStationCandidate> pollingStationCandidates = new HashSet<>();
 
     public Candidate() {
     }
@@ -56,16 +56,16 @@ public class Candidate {
         this.affiliation = affiliation;
     }
 
-    public Set<TownshipCandidate> getTownshipCandidates() {
-        return townshipCandidates;
+    public Set<PollingStationCandidate> getPollingStationCandidates() {
+        return pollingStationCandidates;
     }
 
-    public void addTownship_Candidate(TownshipCandidate townshipCandidate) {
-        townshipCandidates.add(townshipCandidate);
+    public void addPollingStation_Candidate(PollingStationCandidate pollingStationCandidate) {
+        pollingStationCandidates.add(pollingStationCandidate);
     }
 
-    public void removeTownship_Candidate(TownshipCandidate townshipCandidate) {
-        townshipCandidates.remove(townshipCandidate);
+    public void removePollingStation_Candidate(PollingStationCandidate pollingStationCandidate) {
+        pollingStationCandidates.remove(pollingStationCandidate);
     }
 
 }

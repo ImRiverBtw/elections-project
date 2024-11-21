@@ -41,7 +41,8 @@ export default {
     async fetchSeatCount() {
       try {
         const promises = this.affiliations.map(async (affiliation) => {
-          const response = await fetch(`http://localhost:8080/electionresults/affiliation/${affiliation.id}/seats`);
+          const response = await fetch(`http://localhost:8080/electionresult/affiliation/${affiliation.id}/seats`);
+
           if (!response.ok) {
             throw new Error(response.status);
           }
