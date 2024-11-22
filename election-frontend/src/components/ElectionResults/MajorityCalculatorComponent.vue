@@ -1,44 +1,41 @@
 <template>
 
-<!--  The -->
   <div class="top">
 
     <h2 class="topTitle"> Meerderheidszoeker </h2>
     <hr class="title-seperator">
 
-    <p class="topInstruction"> Klik op de partijen en bekijk de mogelijke formaties om een kabinet <br>
+    <p v-if="affiliations && !err" class="topInstruction"> Klik op de partijen en bekijk de mogelijke formaties om een
+      kabinet <br>
       te vormen met een meerderheid in de tweede kamer</p>
   </div>
+  <error-component v-if="err" :err="err.message"/>
+  <loading v-if="loading"></loading>
 
-  <div class="content">
+  <div v-if="affiliations && !err" class="content">
 
     <div class="graphWrapper">
 
       <div class="chart-container">
-
         <svg :width=400 :height=200 viewBox="0 0 200 100">
-
           <!-- Background semi-circle -->
           <path
               d="M10,100 A90,90 0 0,1 190,100"
               fill="#d4dfef"
           ></path>
-
-          <!-- Sections for selected parties -->
+          <!-- Dynamic sections for selected affiliations -->
           <path
-              v-for="(party, index) in this.selectedParties"
-              :key="party.name"
+              v-for="(affiliation, index) in this.selectedParties"
+              :key="affiliation.name"
               :d="calculateArcPath(index)"
-              :fill="party.color"
+              :fill="assignColorToAffiliation(affiliation.name)"
           ></path>
-
           <!-- Majority line -->
           <line x1="100" y1="100" x2="100" y2="5" stroke="black" stroke-width="0.25"></line>
         </svg>
-
       </div>
 
-      <!--      The total seats that have been accumulated by clicking on the party tags -->
+
       <h2 id="seatsCounter"> {{ this.totalAccumulatedSeats }} Zetels</h2>
 
     </div>
@@ -48,12 +45,11 @@
       <p id="graphFooterTitle"> Formatie: </p>
 
       <div class="activatedPartiesWrapper">
-
-        <!--          Makes a "tag" for every party in activatedParties array and gives every tag its own color -->
-        <p class="activatedParty" v-for="party in selectedParties"
-           :key="party.id"
-           :style="{ backgroundColor: party.color }"
-        > {{ party.name }} ({{ party.seatAmount }}) </p>
+        <!--          makes a "tag" for every affiliation in activatedParties array -->
+        <p class="activatedAffiliation" v-for="affiliation in selectedParties"
+           :key="affiliation.id"
+           :style="{ backgroundColor: assignColorToAffiliation(affiliation.name) }"
+        > {{ affiliation.name }} ({{ affiliation.seatCount }}) </p>
 
       </div>
 
@@ -68,14 +64,13 @@
 
       <div class="tagsWrapper">
 
-        <!--        Makes a party tag for every party in the parties array and binds click method to it when it is clicked -->
-        <PartyTag class="partyTag"
-                  v-for="party in parties"
-                  @click="handlePartyTagClick(party);"
-                  :class="{active: party.selected}"
-        ><p class="partyName"> {{ party.name }} </p>
-        </PartyTag>
-
+        <!--        makes a affiliation tag for every affiliation in the affiliations array and binds click method to it when it is clicked -->
+        <AffiliationTag class="affiliationTag"
+                        v-for="affiliation in affiliations"
+                        @click="handleAffiliationTagClick(affiliation);"
+                        :class="{active: affiliation.selected}"
+        ><p class="affiliationName"> {{ affiliation.name }} </p>
+        </AffiliationTag>
 
         <button class="resetButton" @click="handleResetButtonClick"> Reset</button>
 
@@ -86,141 +81,93 @@
 </template>
 
 <script>
-import PartyTag from "@/components/PartyTag.vue";
+import AffiliationTag from "@/components/AffiliationTag.vue";
+import {useAffiliations} from "@/Composables/useAffiliations.js";
+import {onMounted, provide} from "vue";
+import Loading from "@/components/Status/Loading.vue";
+import ErrorComponent from "@/components/Status/ErrorComponent.vue";
 
 export default {
   name: "MajorityCalulator",
-  components: {PartyTag},
+  components: {Loading, ErrorComponent, AffiliationTag},
+  setup() {
+    const {affiliations, err, loading, fetchAffiliationResults} = useAffiliations();
+    provide("err", err)
 
-  async created() {
-    await this.fetchAffiliations();
+    onMounted(async () => {
+      await fetchAffiliationResults();
+
+    })
+    return {affiliations, err, loading}
   },
-
   data() {
 
     return {
-
       totalAccumulatedSeats: 0,
 
       selectedParties: [],
 
       defaultTagColor: "#d4dfef",
-
-      parties: [],
-
     }
   },
 
   methods: {
 
     // method that handles clicking on a tag by the user //
-    handlePartyTagClick(party) {
+    handleAffiliationTagClick(affiliation) {
 
-      // check if the party should be selected or deselected //
-      if (this.selectedParties.includes(party)) {
+      // check if the affiliation should be selected or deselected //
+      if (this.selectedParties.includes(affiliation)) {
 
-        this.deselectParty(party)
+        this.deselectAffiliation(affiliation)
 
       } else {
 
-        this.selectParty(party)
+        this.selectAffiliation(affiliation)
       }
     },
 
-    // method that selects the clicked party //
-    selectParty(party) {
-      console.log(party)
+    // method that selects the clicked affiliation //
+    selectAffiliation(affiliation) {
+      console.log(affiliation)
 
-      // add up the seat amount of the selected party to the total accumulated seats //
-      this.totalAccumulatedSeats = this.totalAccumulatedSeats + party.seatAmount;
+      // add up the seat amount of the selected affiliation to the total accumulated seats //
+      this.totalAccumulatedSeats = this.totalAccumulatedSeats + affiliation.seatCount;
 
-      // put the party in the selected parties array //
-      this.selectedParties.push(party)
+      // put the affiliation in the selected affiliations array //
+      this.selectedParties.push(affiliation)
 
-      // change the "selected" attribute of the party (to change the background of the tag) //
-      party.selected = !party.selected;
+      // change the "selected" attribute of the affiliation (to change the background of the tag) //
+      affiliation.selected = !affiliation.selected;
     },
 
-    // method that deselects the clicked party //
-    deselectParty(party) {
+    // method that deselects the clicked affiliation //
+    deselectAffiliation(affiliation) {
 
-      // subtract the seat amount of the selected party from the total accumulated seats //
-      this.totalAccumulatedSeats = this.totalAccumulatedSeats - party.seatAmount;
+      // subtract the seat amount of the selected affiliation from the total accumulated seats //
+      this.totalAccumulatedSeats = this.totalAccumulatedSeats - affiliation.seatCount;
 
-      // remove the party from the selected parties array //
+      // remove the affiliation from the selected affiliations array //
       this.selectedParties = this.selectedParties.filter(
-          activeParty => activeParty.id !== party.id
+          activeAffiliation => activeAffiliation.id !== affiliation.id
       );
 
-      // change the "selected" attribute of the party (to change the background of the tag) //
-      party.selected = !party.selected;
+      // change the "selected" attribute of the affiliation (to change the background of the tag) //
+      affiliation.selected = !affiliation.selected;
 
     },
 
-    // method that handles clicking on the reset button
     handleResetButtonClick() {
 
-      // clears the selectedParties array and sets the accumulated seats to 0 //
       this.selectedParties = [];
       this.totalAccumulatedSeats = 0;
 
-      // makes the selected attribute of every party false, which makes it change the color of the tags
-      for (let i = 0; i < this.parties.length; i++) {
+      for (let i = 0; i < this.affiliations.length; i++) {
 
-        this.parties[i].selected = false;
+        this.affiliations[i].selected = false;
       }
     },
-
-    // Get a list of parties with their name and id
-    async fetchAffiliations() {
-      try {
-        const response = await fetch('http://localhost:8080/electionresult/affiliation');
-        if (!response.ok) {
-          throw new Error(response.status);
-        }
-        const affiliations = await response.json();
-        this.affiliations = affiliations.map(aff => ({...aff, seats: 0}));
-
-        // loop that iterates all parties from the database and inserts all parties to the parties array//
-        for (let i = 0; i < this.affiliations.length; i++) {
-
-          // make a party object and assign attributes to it //
-          let party = {
-            id: this.affiliations[i].id,
-            name: this.affiliations[i].name,
-            seatAmount: await this.fetchSeatCountById(this.affiliations[i].id),
-            selected: false,
-            color: this.assignColorToParty(this.affiliations[i].name),
-          };
-
-          this.parties.push(party);
-        }
-
-      } catch (error) {
-        console.error('Error fetching affiliations: ', error);
-      }
-    },
-
-    // method that gets the amount of seats by using an endpoint with the id as parameter //
-    async fetchSeatCountById(id) {
-      try {
-        const response = await fetch(`http://localhost:8080/electionresults/affiliation/${id}/seats`);
-        if (!response.ok) {
-          throw new Error(response.status);
-        }
-
-        return await response.json();
-
-      } catch (error) {
-        console.error('Error fetching seats: ', error);
-
-      }
-    },
-
-    // method that calculates the segments per party - from existing source
     calculateArcPath(index) {
-      const totalSeats = this.parties.reduce((sum, party) => sum + party.seatAmount, 0);
-      const anglePerSeat = 180 / totalSeats;
       const startAngle = this.getStartAngle(index);
       const endAngle = this.getEndAngle(index);
       const start = this.polarToCartesian(100, 100, 90, startAngle);
@@ -229,21 +176,21 @@ export default {
       return `M ${start.x} ${start.y} A 90 90 0 ${largeArcFlag} 1 ${end.x} ${end.y} L 100 100 Z`;
     },
 
-    // method that calculates the segments per party - from existing source
     getStartAngle(index) {
-      const totalSeats = this.parties.reduce((sum, party) => sum + party.seatAmount, 0);
+      const totalSeats = this.affiliations.reduce((sum, affiliation) => sum + affiliation.seatCount, 0);
       const anglePerSeat = 180 / totalSeats;
       return -90 +
           this.selectedParties
               .slice(0, index)
-              .reduce((sum, party) => sum + party.seatAmount * anglePerSeat, 0);
+              .reduce((sum, affiliation) => sum + affiliation.seatCount * anglePerSeat, 0);
     },
-    // method that calculates the segments per party - from existing source
+
     getEndAngle(index) {
-      const totalSeats = this.parties.reduce((sum, party) => sum + party.seatAmount, 0);
+      const totalSeats = this.affiliations.reduce((sum, affiliation) => sum + affiliation.seatCount, 0);
       const anglePerSeat = 180 / totalSeats;
-      return this.getStartAngle(index) + this.selectedParties[index].seatAmount * anglePerSeat;
+      return this.getStartAngle(index) + this.selectedParties[index].seatCount * anglePerSeat;
     },
+
     polarToCartesian(centerX, centerY, radius, angleInDegrees) {
       const angleInRadians = (angleInDegrees - 90) * (Math.PI / 180.0);
       return {
@@ -252,9 +199,9 @@ export default {
       };
     },
 
-    // method that assigns a specific color for a certain party //
-    assignColorToParty(partyName) {
-      switch (partyName) {
+    assignColorToAffiliation(affiliationName) {
+
+      switch (affiliationName) {
         case "PVV":
           return "#5fefde"
         case "GLPVDA":
@@ -290,10 +237,7 @@ export default {
           return "white"
       }
     }
-
-
   },
-
 }
 
 </script>
@@ -302,6 +246,7 @@ export default {
 
 .top {
   margin-top: 10px;
+  padding: 10px;
 }
 
 .topTitle {
@@ -333,7 +278,8 @@ export default {
 
 
 .graphWrapper {
-//border: 1px solid red; height: 220px;
+//border: 1px solid red;
+  height: 220px;
   width: 100%;
   text-align: center;
 }
@@ -345,13 +291,15 @@ export default {
 
 .graphFooter {
   width: 100%;
+//border: 1px solid red;
 
 }
 
 #graphFooterTitle {
   display: inline-block;
   font-weight: 400;
-//border: 1px solid red; margin-top: 30px;
+//border: 1px solid red;
+  margin-top: 30px;
   margin-bottom: 11px;
 //border: 1px solid red;
 
@@ -362,7 +310,7 @@ export default {
 
 }
 
-.activatedParty {
+.activatedAffiliation {
   display: inline-block;
   padding: 10px;
   margin: 2px;
@@ -376,7 +324,8 @@ export default {
 
 
 .bottomWrapper {;
-//border: 1px solid red; width: 55%;
+//border: 1px solid red;
+  width: 55%;
   margin: 0 auto;
 }
 
@@ -427,7 +376,7 @@ export default {
     display: inline-block;
   }
 
-  .partyTag {
+  .affiliationTag {
     width: 70px;
   }
 
@@ -443,6 +392,7 @@ export default {
 
 #seatsCounter {
   margin-top: 1%;
+//border: 1px solid red;
 }
 
 
