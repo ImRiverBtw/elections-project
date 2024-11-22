@@ -21,7 +21,7 @@
         <div class="inputText password">Password</div>
         <input class="inputField password" placeholder="Password"></input>
 
-        <button class="Button sumbitLogin">Login</button>
+        <button class="Button submitLogin">Login</button>
       </div>
     </div>
   </div>
@@ -86,10 +86,16 @@ export default {
   .inputBox {
     padding-left: 1rem;
     padding-right: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .inputText {
+    align-self: flex-start;
     padding-top: 0.8rem;
+
   }
 
   .inputField {
@@ -104,6 +110,11 @@ export default {
   ::placeholder {
     color: #333333;
   }
+
+  .submitLogin {
+    align-items: center;
+    margin-top: 2rem;
+  }
 }
 
 .popup-header {
@@ -116,15 +127,30 @@ export default {
   }
 }
 
+.Button {
+  background-color: #004494;
+  padding: 0.5rem 1rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border: 2px solid #231F20;
+  color: white;
+}
+
+.Button:hover {
+  background-color: #CCD5EF;
+  color: #231F20;
+}
+
 .Button.Close {
   background-color: transparent;
   border: none;
   font-size: 16px;
   color: #333333;
   cursor: pointer;
+  box-shadow: none;
 }
 
 .Button.Close:hover {
-  color: red;
+  color: #004494;
 }
 </style>
