@@ -18,8 +18,8 @@
         <div class="inputText email">Email-addres</div>
         <input class="inputField email" v-model="loginEmail" placeholder="Email-addres"/>
 
-        <div class="inputText password">Password</div>
-        <input class="inputField password" v-model="loginPassword" placeholder="Password"/>
+        <div class="inputText password">Wachtwoord</div>
+        <input class="inputField password" v-model="loginPassword" placeholder="Wachtwoord"/>
 
         <button class="Button submitLogin" @click="submitLogin">Login</button>
       </div>
@@ -35,20 +35,24 @@
       <div class="line"></div>
 
       <div class="inputBox">
-        <div class="inputText username">Username</div>
-        <input class="inputField usernaem" v-model="registerUsername" placeholder="Username" />
+        <div v-if="Error" class="password-error">
+          <p>{{passwordError}}</p>
+          <p>{{usernameError}}</p>
+        </div>
 
+        <div class="inputText username">Gebruikersname</div>
+        <input class="inputField usernaem" v-model="registerUsername" placeholder="Gebruikersname" />
 
         <div class="inputText email">Email-addres</div>
         <input class="inputField email" v-model="registerEmail" placeholder="Email-addres"/>
 
-        <div class="inputText password">Password</div>
-        <input class="inputField password" v-model="registerPassword" placeholder="Password"/>
+        <div class="inputText password">Wachtwoord</div>
+        <input class="inputField password" v-model="registerPassword" placeholder="Wachtwoord"/>
 
-        <div class="inputText confirm-password">Confirm Password</div>
-        <input class="inputField confirm-password" v-model="registerConfirmPassword" placeholder="Confirm Password"/>
+        <div class="inputText confirm-password">Confirm Wachtwoord</div>
+        <input class="inputField confirm-password" v-model="registerConfirmPassword" placeholder="Confirm Wachtwoord"/>
 
-        <button class="Button submitLogin">Login</button>
+        <button class="Button submitLogin" @click="sumbitRegister">Register</button>
       </div>
     </div>
   </div>
@@ -60,6 +64,7 @@ export default {
     return {
       showLoginPopup: false,
       showRegisterPopup: false,
+      Error: false,
 
       loginEmail: '',
       loginPassword: '',
@@ -68,6 +73,9 @@ export default {
       registerEmail: '',
       registerPassword: '',
       registerConfirmPassword: '',
+
+      passwordError: "",
+      usernameError: ""
     };
   },
   methods: {
@@ -83,9 +91,23 @@ export default {
       this.showLoginPopup = false;
       this.showRegisterPopup = false;
     },
+
     submitLogin() {
+      //TODO error voor niet correct email en password
       console.log('Login email: ', this.loginEmail);
       console.log('Login password: ', this.loginPassword);
+    },
+
+    sumbitRegister() {
+      if(this.registerPassword === this.registerConfirmPassword) {
+        this.usernameError = "Deze gebruikers naam is al in gebruik";
+        this.passwordError = "";
+      }
+      //TODO error maken voor dubbel username.
+      else {
+        this.passwordError = "De wachtwoorden zijn niet het zelfde"
+        this.Error = true;
+      }
     }
   }
 }
@@ -155,6 +177,17 @@ export default {
 
   ::placeholder {
     color: #333333;
+  }
+
+  .password-error {
+    width: 100%;
+    margin-top: 0.8rem;
+    border: 2px solid red;
+    color: red;
+
+    p {
+      padding-bottom: 10px;
+    }
   }
 
   .submitLogin {
