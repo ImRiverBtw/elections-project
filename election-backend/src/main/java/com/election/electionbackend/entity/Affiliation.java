@@ -14,6 +14,7 @@ public class Affiliation {
     @Column(unique = true, nullable = false, name="affiliation_id")
     private Long affiliationId;
     private String name;
+    private Integer seatCount;
 
     @OneToMany(mappedBy = "affiliation", fetch = FetchType.LAZY)
     @JsonBackReference
@@ -48,5 +49,12 @@ public class Affiliation {
 
     public void removeCandidate(Candidate candidate) {
         candidates.remove(candidate);
+    }
+
+    public Integer getSeatCount() {
+        return seatCount;
+    }
+    public void setSeatCount(int seatCount) {
+        this.seatCount = seatCount;
     }
 }

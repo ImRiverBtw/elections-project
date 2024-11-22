@@ -64,6 +64,10 @@ class ElectionResultController {
     public int getTotalSeatsForAffiliation(@PathVariable Long affiliation_id) {
         return affiliationRepo.getSeatCount(affiliation_id);
     }
+    @GetMapping("/affiliation/seats")
+    public List<Affiliation> getAllSeats(){
+        return affiliationRepo.getSeatResults();
+    }
 
 
     @GetMapping("/affiliation/{affiliation_id}/votes")

@@ -193,7 +193,7 @@ export default {
 
     async fetchSeatCountById(id) {
       try {
-        const response = await fetch(`http://localhost:8080/electionresults/affiliation/${id}/seats`);
+        const response = await fetch(`http://localhost:8080/electionresult/affiliation/${id}/seats`);
         if (!response.ok) {
           throw new Error(response.status);
         }

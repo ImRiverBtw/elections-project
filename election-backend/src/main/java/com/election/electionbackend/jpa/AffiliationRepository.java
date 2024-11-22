@@ -77,6 +77,16 @@ public class AffiliationRepository{
         return query.getSingleResult().intValue();
 
     }
+    public int getVoteCount(Long affiliationId, Long PollingStationId){
+        Affiliation affiliation = findById(affiliationId);
+        PollingStation pollingStation = em.find(PollingStation.class, PollingStationId);
+        TypedQuery<Long> query = em.createQuery( "Select sum(psc.votes) From PollingStationCandidate psc JOIN psc.candidate c WHERE  c.affiliation = :affiliation AND  psc.pollingStation = :pollingStation ", Long.class );
+        query.setParameter("affiliation", affiliation);
+        query.setParameter("pollingStation", pollingStation);
+        logger.info(String.valueOf(query.getSingleResult()));
+        return query.getSingleResult().intValue();
+
+    }
 
 
     /**
@@ -88,9 +98,32 @@ public class AffiliationRepository{
         //get the total amount of votes across all affiliations
         TypedQuery<Long> query = em.createQuery( "Select sum(psc.votes) From PollingStationCandidate psc", Long.class );
         int totalVotes = query.getSingleResult().intValue();
-        int votesPerSeat = (int) Math.ceil((double) totalVotes / 150); //calculate the amount of votes needed to get a seat
+        int votesPerSeat = (int) Math.ceil((double) totalVotes / 150);//calculate the amount of votes needed to get a seat
+        System.out.println(getVoteCount(affiliationId) / votesPerSeat);
         return getVoteCount(affiliationId) / votesPerSeat; //return the number of seats
         //TODO: adjust calculations to account for residual seats.
+    }
+
+    /**
+     * Creates a trimmed and sorted list off affiliations and assigns their seatcount
+     * @return A list of Affiliation entities with updated seatCount values
+     */
+    public List<Affiliation> getSeatResults(){
+        //fetch all affiliations
+        List<Affiliation> affiliations = findAll();
+
+        //add seatcount to affiliation if it doesnt exist
+        for (Affiliation affiliation : affiliations) {
+            if (affiliation.getSeatCount() == null) {
+                int seatCount = getSeatCount(affiliation.getId());
+                affiliation.setSeatCount(seatCount);
+                save(affiliation);
+            }
+        }
+        //trim and sort the list before returning
+        affiliations.removeIf(affiliation -> affiliation.getSeatCount() == 0);
+        affiliations.sort((a, b ) -> Integer.compare(b.getSeatCount(), a.getSeatCount()));
+        return affiliations;
     }
 
     public void insertDummyData(){
