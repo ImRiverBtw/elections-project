@@ -2,10 +2,10 @@
   <div class="about">
     <h1>This is the test page</h1>
     <button class="Button Login" @click="loginButtonClick">Login</button>
-    <button class="Button Register">Register</button>
+    <button class="Button Register" @click="RegisterButtonClick">Register</button>
   </div>
 
-  <div v-if="showPopup" class="popup">
+  <div v-if="showLoginPopup" class="popup">
     <div class="popup-content">
       <div class="popup-header">
         <h2>Login</h2>
@@ -16,10 +16,37 @@
       <div class="inputBox">
 
         <div class="inputText email">Email-addres</div>
-        <input class="inputField email" placeholder="Email-addres"></input>
+        <input class="inputField email" placeholder="Email-addres"/>
 
         <div class="inputText password">Password</div>
-        <input class="inputField password" placeholder="Password"></input>
+        <input class="inputField password" placeholder="Password"/>
+
+        <button class="Button submitLogin">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showRegisterPopup" class="popup">
+    <div class="popup-content">
+      <div class="popup-header">
+        <h2>Register</h2>
+        <button class="Button Close" @click="closePopup">Close</button>
+      </div>
+      <div class="line"></div>
+
+      <div class="inputBox">
+        <div class="inputText username">Username</div>
+        <input class="inputField usernaem" placeholder="Username" />
+
+
+        <div class="inputText email">Email-addres</div>
+        <input class="inputField email" placeholder="Email-addres"/>
+
+        <div class="inputText password">Password</div>
+        <input class="inputField password" placeholder="Password"/>
+
+        <div class="inputText confirm-password">Confirm Password</div>
+        <input class="inputField confirm-password" placeholder="Confirm Password"/>
 
         <button class="Button submitLogin">Login</button>
       </div>
@@ -31,15 +58,22 @@
 export default {
   data() {
     return {
-      showPopup: false,
+      showLoginPopup: false,
+      showRegisterPopup: false,
     };
   },
   methods: {
     loginButtonClick() {
-      this.showPopup = true;
+      this.showLoginPopup = true;
+      this.showRegisterPopup = false;
+    },
+    RegisterButtonClick() {
+      this.showLoginPopup = false;
+      this.showRegisterPopup = true;
     },
     closePopup() {
-      this.showPopup = false;
+      this.showLoginPopup = false;
+      this.showRegisterPopup = false;
     },
   }
 }
