@@ -1,6 +1,6 @@
-package com.election.electionbackend.jpa;
+package com.election.electionbackend.jpa.electionresults;
 
-import com.election.electionbackend.entity.MunicipalityElectionResult;
+import com.election.electionbackend.models.electionresults.MunicipalityElectionResult;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

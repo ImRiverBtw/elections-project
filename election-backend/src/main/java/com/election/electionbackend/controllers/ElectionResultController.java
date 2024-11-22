@@ -1,14 +1,14 @@
 package com.election.electionbackend.controllers;
 
 import com.election.electionbackend.ElectionResultParser;
-import com.election.electionbackend.entity.Affiliation;
-import com.election.electionbackend.entity.Candidate;
-import com.election.electionbackend.entity.PollingStation;
+import com.election.electionbackend.models.electionresults.Affiliation;
+import com.election.electionbackend.models.electionresults.Candidate;
+import com.election.electionbackend.models.electionresults.PollingStation;
 import com.election.electionbackend.id.CandidateId;
-import com.election.electionbackend.jpa.AffiliationRepository;
-import com.election.electionbackend.jpa.CandidateRepository;
-import com.election.electionbackend.jpa.PollingStationCandidateRepository;
-import com.election.electionbackend.jpa.PollingStationRepository;
+import com.election.electionbackend.jpa.electionresults.AffiliationRepository;
+import com.election.electionbackend.jpa.electionresults.CandidateRepository;
+import com.election.electionbackend.jpa.electionresults.PollingStationCandidateRepository;
+import com.election.electionbackend.jpa.electionresults.PollingStationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

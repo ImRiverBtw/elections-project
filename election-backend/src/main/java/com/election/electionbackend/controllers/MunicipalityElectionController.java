@@ -1,7 +1,7 @@
 package com.election.electionbackend.controllers;
 
-import com.election.electionbackend.entity.MunicipalityElectionResult;
-import com.election.electionbackend.jpa.MunicipalityElectionResultRepository;
+import com.election.electionbackend.models.electionresults.MunicipalityElectionResult;
+import com.election.electionbackend.jpa.electionresults.MunicipalityElectionResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

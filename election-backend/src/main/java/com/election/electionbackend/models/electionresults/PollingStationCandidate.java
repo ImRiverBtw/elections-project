@@ -1,4 +1,4 @@
-package com.election.electionbackend.entity;
+package com.election.electionbackend.models.electionresults;
 
 import com.election.electionbackend.id.PollingStationCandidateId;
 import com.fasterxml.jackson.annotation.JsonIgnore;
