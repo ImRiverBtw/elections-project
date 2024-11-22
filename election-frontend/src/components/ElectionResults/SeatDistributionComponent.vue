@@ -9,7 +9,7 @@
 
 <script>
 import {Chart} from "chart.js/auto";
-import {useSeatResults} from "@/Composables/useSeatResults.js";
+import {useAffiliations} from "@/Composables/useAffiliations.js";
 import ErrorComponent from "@/components/Status/ErrorComponent.vue";
 import Loading from "@/components/Status/Loading.vue";
 import {nextTick, onMounted, provide, ref} from "vue";
@@ -18,7 +18,7 @@ export default {
   name: "SeatDistribution",
   components: {Loading, ErrorComponent},
   setup() {
-    const {affiliations, err, loading, fetchSeatResults} = useSeatResults();
+    const {affiliations, err, loading, fetchAffiliationResults} = useAffiliations();
     const barChart = ref(null);
     provide("err", err)
 
@@ -66,7 +66,7 @@ export default {
       }
 
     onMounted(async () => {
-      await fetchSeatResults();
+      await fetchAffiliationResults();
       window.Chart = Chart;
       await import("chart.js-plugin-labels-dv");
       if (affiliations.value.length > 0 && !err.value) {

@@ -34,7 +34,8 @@ public class AffiliationRepository{
      * @return a list of all Affiliation entities.
      */
     public List<Affiliation> findAll() {
-        return em.createQuery("from Affiliation").getResultList();
+        List<Affiliation> affiliations = em.createQuery("from Affiliation").getResultList();
+        return affiliations;
     }
 
     /**
@@ -100,16 +101,34 @@ public class AffiliationRepository{
         return votes / votesPerSeat;
     }
 
+    /**
+     * Creates a trimmed and sorted list off affiliations and assigns their voteCount
+     *
+     */
+    public void updateVoteResults() {
+        //fetch all affiliations
+        List<Affiliation> affiliations = findAll();
+
+        //add voteCount to affiliation if it doesn't exist
+        for (Affiliation affiliation : affiliations) {
+            if (affiliation.getVotes() == null) {
+                int voteCount = getVoteCount(affiliation.getId());
+                affiliation.setVotes(voteCount);
+                save(affiliation);
+            }
+        }
+    }
+
 
     /**
      * Creates a trimmed and sorted list off affiliations and assigns their seatcount
      * @return A list of Affiliation entities with updated seatCount values
      */
-    public List<Affiliation> getSeatResults(){
+    public void updateSeatResults(){
         //fetch all affiliations
         List<Affiliation> affiliations = findAll();
 
-        //add seatcount to affiliation if it doesnt exist
+        //add seatcount to affiliation if it doesn't exist.
         for (Affiliation affiliation : affiliations) {
             if (affiliation.getSeatCount() == null) {
                 int seatCount = getSeatCount(affiliation.getId());
@@ -117,10 +136,6 @@ public class AffiliationRepository{
                 save(affiliation);
             }
         }
-        //trim and sort the list before returning
-        affiliations.removeIf(affiliation -> affiliation.getSeatCount() == 0);
-        affiliations.sort((a, b ) -> Integer.compare(b.getSeatCount(), a.getSeatCount()));
-        return affiliations;
     }
 
     public void insertDummyData(){

@@ -1,6 +1,8 @@
 <template>
   <h2>Totaaltabel</h2>
-  <div class="total-table">
+  <error-component v-if="err" :err="err.message"/>
+  <loading v-if="loading"></loading>
+  <div v-if="affiliations && !err" class="total-table">
     <div class=" header">
       <p>Partij</p>
       <p class="right">Totaal aantal Stemmen: {{ totalVoteCount }}</p>
@@ -20,7 +22,7 @@
       <tbody>
       <tr
           v-for="affiliation in sortedAffiliations"
-          :key="affiliation.shortName"
+          :key="affiliation.name"
       >
         <th>{{ affiliation.name }}</th>
         <td>{{ affiliation.votes }} stemmen <br> {{ getVotePercentage(affiliation) }}%</td>
@@ -31,52 +33,29 @@
 </template>
 
 <script>
-
+import Loading from "@/components/Status/Loading.vue";
+import ErrorComponent from "@/components/Status/ErrorComponent.vue";
+import {useAffiliations} from "@/Composables/useAffiliations.js";
+import {onMounted, provide} from "vue";
 export default {
   name: "TotalTable",
-  created() {
-    this.fetchAffiliations();
+  components: {Loading, ErrorComponent},
+  setup() {
+    const {affiliations, err, loading, fetchAffiliationResults} = useAffiliations();
+    provide("err", err)
+
+    onMounted(async () => {
+      await fetchAffiliationResults();
+    })
+    return {affiliations, err, loading}
   },
   data() {
     return {
-      affiliations: [],
       totalVoteCount: 0,
       selectedSort: "alphabeticalAsc"
     }
   },
   methods: {
-    async fetchAffiliations() {
-      try {
-        const response = await fetch('http://localhost:8080/electionresult/affiliation');
-        if (!response.ok) {
-          throw new Error(response.status);
-        }
-        const affiliations = await response.json();
-        console.log(affiliations)
-        this.affiliations = affiliations.map(aff => ({ ...aff, votes: 0 }));
-
-        await this.fetchVoteCount()
-      } catch (error) {
-        console.error('Error fetching afiliations: ', error)
-      }
-    },
-    async fetchVoteCount() {
-      try {
-        const promises = this.affiliations.map(async (affiliation) => {
-          const response = await fetch(`http://localhost:8080/electionresult/affiliation/${affiliation.id}/votes`);
-          if (!response.ok) {
-            throw new Error(response.status);
-          }
-          const votes = await response.json();
-          console.log(votes)
-          affiliation.votes = votes;
-        })
-        await Promise.all(promises);
-        this.totalVoteCount = this.affiliations.reduce((total, affiliation) => total + affiliation.votes, 0);
-      } catch (error) {
-        console.error('Error fetching votes: ', error)
-      }
-    },
     getVotePercentage(affiliation) {
       if (this.totalVoteCount === 0) {
         return 0;

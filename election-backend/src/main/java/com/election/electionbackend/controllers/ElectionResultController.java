@@ -52,7 +52,11 @@ class ElectionResultController {
     @GetMapping("/affiliation")
     //return all affiliations
     public List<Affiliation> getAffiliations() {
-        return affiliationRepo.findAll();
+        affiliationRepo.updateVoteResults();
+        affiliationRepo.updateSeatResults();
+        List<Affiliation> affiliations = affiliationRepo.findAll();
+        affiliations.sort((a, b ) -> Integer.compare(b.getVotes(), a.getVotes()));
+        return affiliations;
     }
 
     @GetMapping("/affiliation/{affiliation_id}")
@@ -68,10 +72,15 @@ class ElectionResultController {
         }
         return affiliationRepo.getSeatCount(affiliation_id);
     }
-    @GetMapping("/affiliation/seats")
-    public List<Affiliation> getAllSeats(){
-        return affiliationRepo.getSeatResults();
-    }
+
+//    @GetMapping("/affiliation/votes")
+//    public List<Affiliation> getAllVotes(){
+//        return affiliationRepo.getVoteResults();
+//    }
+//    @GetMapping("/affiliation/seats")
+//    public List<Affiliation> getAllSeats(){
+//        return affiliationRepo.getSeatResults();
+//    }
 
 
     @GetMapping("/affiliation/{affiliation_id}/votes")

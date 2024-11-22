@@ -1,15 +1,15 @@
 import {ref} from "vue";
 
-export function useSeatResults() {
+export function useAffiliations() {
     const affiliations = ref([]);
     const err = ref(null);
     const loading = ref(true);
 
-    const fetchSeatResults = async () => {
+    const fetchAffiliationResults = async () => {
         loading.value = true;
         err.value = null;
         try {
-            const response = await fetch('http://localhost:8080/electionresult/affiliation/seats');
+            const response = await fetch('http://localhost:8080/electionresult/affiliation');
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -22,5 +22,5 @@ export function useSeatResults() {
             console.log("test" + err.value)
         }
     };
-    return {affiliations, fetchSeatResults, err, loading}
+    return {affiliations, fetchAffiliationResults, err, loading}
 }

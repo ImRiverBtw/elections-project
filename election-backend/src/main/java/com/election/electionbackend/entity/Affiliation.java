@@ -15,6 +15,7 @@ public class Affiliation {
     private Long affiliationId;
     private String name;
     private Integer seatCount;
+    private Integer Votes;
 
     @OneToMany(mappedBy = "affiliation", fetch = FetchType.LAZY)
     @JsonBackReference
@@ -56,5 +57,11 @@ public class Affiliation {
     }
     public void setSeatCount(int seatCount) {
         this.seatCount = seatCount;
+    }
+    public Integer getVotes() {
+        return Votes;
+    }
+    public void setVotes(Integer votes) {
+        Votes = votes;
     }
 }
