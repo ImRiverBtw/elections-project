@@ -16,12 +16,12 @@
       <div class="inputBox">
 
         <div class="inputText email">Email-addres</div>
-        <input class="inputField email" placeholder="Email-addres"/>
+        <input class="inputField email" v-model="loginEmail" placeholder="Email-addres"/>
 
         <div class="inputText password">Password</div>
-        <input class="inputField password" placeholder="Password"/>
+        <input class="inputField password" v-model="loginPassword" placeholder="Password"/>
 
-        <button class="Button submitLogin">Login</button>
+        <button class="Button submitLogin" @click="submitLogin">Login</button>
       </div>
     </div>
   </div>
@@ -36,17 +36,17 @@
 
       <div class="inputBox">
         <div class="inputText username">Username</div>
-        <input class="inputField usernaem" placeholder="Username" />
+        <input class="inputField usernaem" v-model="registerUsername" placeholder="Username" />
 
 
         <div class="inputText email">Email-addres</div>
-        <input class="inputField email" placeholder="Email-addres"/>
+        <input class="inputField email" v-model="registerEmail" placeholder="Email-addres"/>
 
         <div class="inputText password">Password</div>
-        <input class="inputField password" placeholder="Password"/>
+        <input class="inputField password" v-model="registerPassword" placeholder="Password"/>
 
         <div class="inputText confirm-password">Confirm Password</div>
-        <input class="inputField confirm-password" placeholder="Confirm Password"/>
+        <input class="inputField confirm-password" v-model="registerConfirmPassword" placeholder="Confirm Password"/>
 
         <button class="Button submitLogin">Login</button>
       </div>
@@ -60,6 +60,14 @@ export default {
     return {
       showLoginPopup: false,
       showRegisterPopup: false,
+
+      loginEmail: '',
+      loginPassword: '',
+
+      registerUsername: '',
+      registerEmail: '',
+      registerPassword: '',
+      registerConfirmPassword: '',
     };
   },
   methods: {
@@ -75,6 +83,10 @@ export default {
       this.showLoginPopup = false;
       this.showRegisterPopup = false;
     },
+    submitLogin() {
+      console.log('Login email: ', this.loginEmail);
+      console.log('Login password: ', this.loginPassword);
+    }
   }
 }
 </script>
