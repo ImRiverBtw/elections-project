@@ -36,7 +36,7 @@
 import Loading from "@/components/Status/Loading.vue";
 import ErrorComponent from "@/components/Status/ErrorComponent.vue";
 import {useAffiliations} from "@/Composables/useAffiliations.js";
-import {onMounted, provide} from "vue";
+import {onMounted, provide, ref} from "vue";
 export default {
   name: "TotalTable",
   components: {Loading, ErrorComponent},
@@ -44,14 +44,19 @@ export default {
     const {affiliations, err, loading, fetchAffiliationResults} = useAffiliations();
     provide("err", err)
 
+    let totalVoteCount = ref(0);
     onMounted(async () => {
       await fetchAffiliationResults();
+
+      //calculate total number of votes
+        totalVoteCount.value = affiliations.value.reduce((totalVotes, affiliation) => {
+          return totalVotes + affiliation.votes; // Accumulate votes
+        }, 0);
     })
-    return {affiliations, err, loading}
+    return {affiliations, err, loading, totalVoteCount}
   },
   data() {
     return {
-      totalVoteCount: 0,
       selectedSort: "alphabeticalAsc"
     }
   },
