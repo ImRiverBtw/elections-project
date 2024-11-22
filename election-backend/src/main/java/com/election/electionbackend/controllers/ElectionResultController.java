@@ -3,6 +3,7 @@ package com.election.electionbackend.controllers;
 import com.election.electionbackend.ElectionResultParser;
 import com.election.electionbackend.entity.Affiliation;
 import com.election.electionbackend.entity.Candidate;
+import com.election.electionbackend.entity.PollingStation;
 import com.election.electionbackend.id.CandidateId;
 import com.election.electionbackend.jpa.AffiliationRepository;
 import com.election.electionbackend.jpa.CandidateRepository;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/electionresult")
@@ -60,8 +62,10 @@ class ElectionResultController {
     }
 
     @GetMapping("/affiliation/{affiliation_id}/seats")
-    //return the amount of seats for a specific affiliation
     public int getTotalSeatsForAffiliation(@PathVariable Long affiliation_id) {
+        if (affiliationRepo == null) {
+            throw new IllegalStateException("AffiliationRepository is not initialized!");
+        }
         return affiliationRepo.getSeatCount(affiliation_id);
     }
     @GetMapping("/affiliation/seats")
@@ -87,4 +91,18 @@ class ElectionResultController {
     public Object[] getLargestAffiliation(@PathVariable Long pollingstation_id) {
         return pollingStationRepo.getBiggestAffiliation(pollingstation_id);
     }
+
+    @GetMapping("/pollingStation")
+    public List<PollingStation> getAllTownships() {
+        List<PollingStation> pollingStations = pollingStationRepo.findAll();
+        System.out.println("Fetched polling stations: " + pollingStations); // Debugging log
+        return pollingStations;
+    }
+
+
+    @GetMapping("/pollingStation/{pollingstation_id}")
+    public Optional<PollingStation> getPollingStationById(@PathVariable Long pollingstation_id) {
+        return pollingStationRepo.findById(pollingstation_id);
+    }
+
 }

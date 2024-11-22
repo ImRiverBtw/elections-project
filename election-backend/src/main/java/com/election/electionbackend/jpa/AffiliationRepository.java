@@ -2,7 +2,6 @@ package com.election.electionbackend.jpa;
 
 import com.election.electionbackend.entity.Affiliation;
 import com.election.electionbackend.entity.Candidate;
-import com.election.electionbackend.entity.PollingStation;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -77,16 +76,6 @@ public class AffiliationRepository{
         return query.getSingleResult().intValue();
 
     }
-    public int getVoteCount(Long affiliationId, Long PollingStationId){
-        Affiliation affiliation = findById(affiliationId);
-        PollingStation pollingStation = em.find(PollingStation.class, PollingStationId);
-        TypedQuery<Long> query = em.createQuery( "Select sum(psc.votes) From PollingStationCandidate psc JOIN psc.candidate c WHERE  c.affiliation = :affiliation AND  psc.pollingStation = :pollingStation ", Long.class );
-        query.setParameter("affiliation", affiliation);
-        query.setParameter("pollingStation", pollingStation);
-        logger.info(String.valueOf(query.getSingleResult()));
-        return query.getSingleResult().intValue();
-
-    }
 
 
     /**
@@ -94,15 +83,23 @@ public class AffiliationRepository{
      * @param affiliationId the ID of the Affiliation.
      * @return the number of seats allocated to the Affiliation.
      */
-    public int getSeatCount(Long affiliationId){
-        //get the total amount of votes across all affiliations
-        TypedQuery<Long> query = em.createQuery( "Select sum(psc.votes) From PollingStationCandidate psc", Long.class );
-        int totalVotes = query.getSingleResult().intValue();
-        int votesPerSeat = (int) Math.ceil((double) totalVotes / 150);//calculate the amount of votes needed to get a seat
-        System.out.println(getVoteCount(affiliationId) / votesPerSeat);
-        return getVoteCount(affiliationId) / votesPerSeat; //return the number of seats
-        //TODO: adjust calculations to account for residual seats.
+    public int getSeatCount(Long affiliationId) {
+        System.out.println("Calculating seats for affiliation ID: " + affiliationId);
+        int votes = getVoteCount(affiliationId);
+        System.out.println("Total votes for affiliation: " + votes);
+
+        TypedQuery<Long> query = em.createQuery("Select sum(psc.votes) From PollingStationCandidate psc", Long.class);
+        Long totalVotes = query.getSingleResult();
+        System.out.println("Total votes across all affiliations: " + totalVotes);
+
+        if (totalVotes == null || totalVotes == 0) {
+            System.out.println("No votes recorded; returning 0 seats.");
+            return 0;
+        }
+        int votesPerSeat = (int) Math.ceil((double) totalVotes / 150);
+        return votes / votesPerSeat;
     }
+
 
     /**
      * Creates a trimmed and sorted list off affiliations and assigns their seatcount

@@ -12,14 +12,11 @@ public class ElectionResultParser {
     public Map<String, Integer> parseElectionResults(String filePath) {
         Map<String, Integer> results = new HashMap<>();
         try {
-            File xmlFile = new File(filePath);
-            System.out.println("Checking file path: " + xmlFile.getAbsolutePath());
+            File xmlFile = new File(getClass().getClassLoader().getResource(filePath).getFile());
             if (!xmlFile.exists()) {
-                System.out.println("File not found: " + xmlFile.getAbsolutePath());
-                return results;
-            } else {
-                System.out.println("File found: " + xmlFile.getAbsolutePath());
+                return results;  // File not found
             }
+
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dbFactory.setNamespaceAware(true);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
