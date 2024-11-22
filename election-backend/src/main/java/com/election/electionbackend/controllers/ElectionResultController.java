@@ -34,6 +34,7 @@ class ElectionResultController {
 
     @Autowired
     private CandidateRepository candidateRepo;
+
     @Autowired
     private PollingStationRepository pollingStationRepository;
 
