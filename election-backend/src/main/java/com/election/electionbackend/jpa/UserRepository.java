@@ -33,6 +33,19 @@ public class UserRepository {
         }
     }
 
+    public Users findByEmail(String email) {
+        return em.createQuery("SELECT u from Users u WHERE u.email = :email", Users.class)
+                .setParameter("email", email)
+                .getResultList()
+                .stream()
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void save(Users users) {
+        em.persist(users);
+    }
+
     public List<Users> findAll() {
         return em.createQuery("from Users", Users.class).getResultList();
     }

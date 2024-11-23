@@ -1,116 +1,30 @@
 <template>
   <div class="about">
     <h1>This is the test page</h1>
-    <button class="Button Login" @click="loginButtonClick">Login</button>
-    <button class="Button Register" @click="RegisterButtonClick">Register</button>
-  </div>
+    <button class="Button Login" @click="showLoginPopup = true">Login</button>
+    <button class="Button Register" @click="showRegisterPopup = true">Register</button>
 
-  <div v-if="showLoginPopup" class="popup">
-    <div class="popup-content">
-      <div class="popup-header">
-        <h2>Login</h2>
-        <button class="Button Close" @click="closePopup">Close</button>
-      </div>
-      <div class="line"></div>
-
-      <div class="inputBox">
-
-        <div class="inputText email">Email-addres</div>
-        <input class="inputField email" v-model="loginEmail" placeholder="Email-addres"/>
-
-        <div class="inputText password">Wachtwoord</div>
-        <input class="inputField password" v-model="loginPassword" placeholder="Wachtwoord"/>
-
-        <button class="Button submitLogin" @click="submitLogin">Login</button>
-      </div>
-    </div>
-  </div>
-
-  <div v-if="showRegisterPopup" class="popup">
-    <div class="popup-content">
-      <div class="popup-header">
-        <h2>Register</h2>
-        <button class="Button Close" @click="closePopup">Close</button>
-      </div>
-      <div class="line"></div>
-
-      <div class="inputBox">
-        <div v-if="Error" class="password-error">
-          <p>{{passwordError}}</p>
-          <p>{{usernameError}}</p>
-        </div>
-
-        <div class="inputText username">Gebruikersname</div>
-        <input class="inputField usernaem" v-model="registerUsername" placeholder="Gebruikersname" />
-
-        <div class="inputText email">Email-addres</div>
-        <input class="inputField email" v-model="registerEmail" placeholder="Email-addres"/>
-
-        <div class="inputText password">Wachtwoord</div>
-        <input class="inputField password" v-model="registerPassword" placeholder="Wachtwoord"/>
-
-        <div class="inputText confirm-password">Confirm Wachtwoord</div>
-        <input class="inputField confirm-password" v-model="registerConfirmPassword" placeholder="Confirm Wachtwoord"/>
-
-        <button class="Button submitLogin" @click="sumbitRegister">Register</button>
-      </div>
-    </div>
+    <LoginPopup :visible="showLoginPopup" @close="showLoginPopup = false" />
+    <RegisterPopup :visible="showRegisterPopup" @close="showRegisterPopup = false" />
   </div>
 </template>
 
 <script>
+import LoginPopup from '../components/LoginPopup.vue';
+import RegisterPopup from '../components/RegisterenPopup.vue';
+
 export default {
+  components: {
+    LoginPopup,
+    RegisterPopup,
+  },
   data() {
     return {
       showLoginPopup: false,
       showRegisterPopup: false,
-      Error: false,
-
-      loginEmail: '',
-      loginPassword: '',
-
-      registerUsername: '',
-      registerEmail: '',
-      registerPassword: '',
-      registerConfirmPassword: '',
-
-      passwordError: "",
-      usernameError: ""
     };
   },
-  methods: {
-    loginButtonClick() {
-      this.showLoginPopup = true;
-      this.showRegisterPopup = false;
-    },
-    RegisterButtonClick() {
-      this.showLoginPopup = false;
-      this.showRegisterPopup = true;
-    },
-    closePopup() {
-      this.showLoginPopup = false;
-      this.showRegisterPopup = false;
-    },
-
-    submitLogin() {
-      //TODO error voor niet correct email en password
-      console.log('Login email: ', this.loginEmail);
-      console.log('Login password: ', this.loginPassword);
-    },
-
-    sumbitRegister() {
-      if(this.registerPassword === this.registerConfirmPassword) {
-        this.usernameError = "Deze gebruikers naam is al in gebruik";
-        this.passwordError = "";
-      }
-      //TODO error maken voor dubbel username.
-      else {
-        this.passwordError = "De wachtwoorden zijn niet het zelfde"
-        this.Error = true;
-      }
-    }
-  }
-}
+};
 </script>
 
 <style>
