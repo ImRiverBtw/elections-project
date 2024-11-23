@@ -33,6 +33,22 @@ public class UserRepository {
         }
     }
 
+    public Users findByUsername(String username) {
+        return em.createQuery("SELECT u from Users u where u.username = :username", Users.class)
+                .setParameter("username", username)
+                .getResultList()
+                .stream()
+                .findFirst()
+                .orElse(null);
+    }
+
+    public boolean existsByUsernameOrEmail(String username, String email) {
+        return em.createQuery("SELECT COUNT(u) FROM Users u WHERE u.username = :username OR u.email = :email", Long.class)
+                .setParameter("username", username)
+                .setParameter("email", email)
+                .getSingleResult() > 0;
+    }
+
     public Users findByEmail(String email) {
         return em.createQuery("SELECT u from Users u WHERE u.email = :email", Users.class)
                 .setParameter("email", email)

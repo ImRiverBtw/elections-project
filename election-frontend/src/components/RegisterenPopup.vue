@@ -68,8 +68,12 @@ export default {
             body: JSON.stringify(registerData),
           });
 
-          const result = await response.text();
-          console.log(result);
+          if(!response.ok) {
+            const errorText = await response.text();
+            alert("Error: " + errorText);
+          } else("Registratie succesvol"); {
+
+          }
         } catch (error) {
           console.error('Error during registration:', error);
         }

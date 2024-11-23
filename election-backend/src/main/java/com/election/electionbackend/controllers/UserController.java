@@ -3,6 +3,7 @@ package com.election.electionbackend.controllers;
 import com.election.electionbackend.entity.Users;
 import com.election.electionbackend.jpa.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,9 +16,12 @@ public class UserController {
     private UserRepository userRepo;
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody Users user) {
+    public ResponseEntity<String> registerUser(@RequestBody Users user) {
+        if (userRepo.existsByUsernameOrEmail(user.getUsername(), user.getEmail())) {
+            return ResponseEntity.badRequest().body("Gebruiksnaam of emailadres is al in gebruik.");
+        }
         userRepo.save(user);
-        return "User registered successfully";
+        return ResponseEntity.ok("User registered successfully");
     }
 
     @PostMapping("/login")
@@ -35,6 +39,7 @@ public class UserController {
         return "Dummy data inserted succesfully";
     }
 
+    //TODO moet aan het einde verwijderd worden.
     @GetMapping("/getAllUsers")
     public List<Users> getAllUsers() {
         return userRepo.findAll();
