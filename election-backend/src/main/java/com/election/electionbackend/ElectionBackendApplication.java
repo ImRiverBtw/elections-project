@@ -1,6 +1,6 @@
 package com.election.electionbackend;
 
-import com.election.electionbackend.jpa.electionresults.*;
+import com.election.electionbackend.repositories.electionresults.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,10 @@
-package com.election.electionbackend.jpa.electionresults;
+package com.election.electionbackend.repositories.electionresults;
 
 import com.election.electionbackend.models.electionresults.Candidate;
 import com.election.electionbackend.models.electionresults.PollingStation;
 import com.election.electionbackend.models.electionresults.PollingStationCandidate;
-import com.election.electionbackend.id.CandidateId;
-import com.election.electionbackend.id.PollingStationCandidateId;
+import com.election.electionbackend.models.id.CandidateId;
+import com.election.electionbackend.models.id.PollingStationCandidateId;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;

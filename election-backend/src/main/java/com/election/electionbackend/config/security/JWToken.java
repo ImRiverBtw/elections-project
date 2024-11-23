@@ -1,4 +1,4 @@
-package com.election.electionbackend.security;
+package com.election.electionbackend.config.security;
 
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;

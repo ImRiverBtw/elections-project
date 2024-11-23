@@ -1,6 +1,6 @@
 package com.election.electionbackend.models.electionresults;
 
-import com.election.electionbackend.id.PollingStationCandidateId;
+import com.election.electionbackend.models.id.PollingStationCandidateId;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 

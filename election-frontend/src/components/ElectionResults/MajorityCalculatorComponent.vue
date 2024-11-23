@@ -83,7 +83,6 @@ import PartyTag from "@/components/PartyTag.vue";
 export default {
   name: "MajorityCalulator",
   components: {PartyTag},
-
   async created() {
     await this.fetchAffiliations();
   },

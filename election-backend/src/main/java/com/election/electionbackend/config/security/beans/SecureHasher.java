@@ -1,4 +1,4 @@
-package com.election.electionbackend.security;
+package com.election.electionbackend.config.security.beans;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

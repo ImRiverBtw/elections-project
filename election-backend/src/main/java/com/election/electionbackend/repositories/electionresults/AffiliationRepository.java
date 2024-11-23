@@ -1,4 +1,4 @@
-package com.election.electionbackend.jpa.electionresults;
+package com.election.electionbackend.repositories.electionresults;
 
 import com.election.electionbackend.models.electionresults.Affiliation;
 import com.election.electionbackend.models.electionresults.Candidate;
