@@ -1,7 +1,5 @@
 package com.election.electionbackend.jpa;
 
-
-import com.election.electionbackend.entity.Affiliation;
 import com.election.electionbackend.entity.ForumPost;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

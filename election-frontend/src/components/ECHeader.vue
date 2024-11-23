@@ -27,7 +27,7 @@ function myFunction() {
     <div class="containernav">
       <RouterLink to="/">Home</RouterLink>
       <RouterLink to="/electionresults/resultsmap">Verkiezingsuitslagen</RouterLink>
-      <RouterLink to="/test">Forum</RouterLink>
+      <RouterLink to="/forum">Forum</RouterLink>
       <RouterLink to="/parsetest">Parse Test</RouterLink>
       <!-- Icon for responsive menu -->
       <a href="javascript:void(0);" class="icon" @click="myFunction">
