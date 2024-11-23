@@ -10,25 +10,21 @@
 
     <div class="modal-content">
 
-      <div class="modalTopWrapper">
+      <div class="modalTop">
         <h2> Nieuwe Post</h2>
         <hr>
       </div>
 
       <form>
 
-        <label for="postTitel">Titel: </label>
+        <label for="postTitel">Titel</label>
         <input type="text" id="postTitel" name="postTitel" placeholder="Titel" v-model="post.title"><br><br>
 
-        <div class="form-group">
-          <label for="name">Tags</label>
-          <input type="text" id="tags" name="tags" placeholder="Tags" v-model="post.tags">
-        </div>
+        <label for="tags">Tags</label>
+        <input type="text" id="tags" name="tags" placeholder="Typ en klik op een tag" v-model="post.tags"><br><br>
 
-        <div class="form-group">
-          <label for="message">Tekst</label>
-          <textarea id="message" name="message" placeholder="Schrijf hier uw tekst" v-model="post.body"></textarea>
-        </div>
+        <label for="body">Tekst</label>
+        <textarea id="body" name="body" placeholder="Schrijf hier uw tekst" v-model="post.body"></textarea>
 
       </form>
 
@@ -66,7 +62,7 @@ export default {
         tags: [],
         body: "",
 
-      }
+      },
     }
 
   },
@@ -140,7 +136,7 @@ export default {
   animation: fadeIn 0.3s ease;
 }
 
-.modalTopWrapper {
+.modalTop {
   margin-bottom: 10px;
 }
 
@@ -190,10 +186,6 @@ hr{
   margin: 10px;
 }
 
-.form-group {
-  margin-bottom: 15px;
-}
-
 label {
   display: block;
   font-weight: bold;
@@ -215,7 +207,7 @@ textarea {
   resize: vertical;
 }
 
-#message {
+#body {
   height: 250px;
 }
 
