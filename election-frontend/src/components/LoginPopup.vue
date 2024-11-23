@@ -34,16 +34,19 @@ export default {
     };
   },
   methods: {
+    //Close te popup
     close() {
       this.$emit('close');
     },
     async submit() {
+      //verzamelen van gegevens van de inputs
       const loginData = {
         email: this.loginEmail,
         password: this.loginPassword,
       };
 
       try {
+        //verzamelde gegevens naar de backend sturen.
         const response = await fetch('http://localhost:8080/userdata/login', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
