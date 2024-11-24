@@ -1,3 +1,7 @@
+/**
+ * ForumPost entity
+ */
+
 package com.election.electionbackend.entity;
 
 import jakarta.persistence.Column;
@@ -10,6 +14,9 @@ import java.time.LocalDateTime;
 @Entity
 public class ForumPost {
 
+    /**
+     * Attributes
+     */
 
     @Id
     @GeneratedValue
@@ -18,20 +25,30 @@ public class ForumPost {
     @Column(nullable = false)
     private String title;
 
-    private String tag; // tijdelijk een string //
+    private String tag; // tijdelijk een string, moet entiteit tag worden//
 
     @Column(nullable = false)
-    private String author; // tijdelijk een string //
+    private String author; // tijdelijk een string, moet entiteit user.id worden//
 
     @Column(nullable = false)
     private String textContent;
 
+    @Column(nullable = false)
     private LocalDateTime creationDate;
 
     public ForumPost() {
 
     }
 
+    /**
+     * Constructor for creating a new ForumPost Object
+     * @param id - the id of post
+     * @param title - the title of the post
+     * @param tag - the tags that are associated with the post
+     * @param author - the author of the post
+     * @param textContent - the content of the post
+     * @param creationDate - the time when the post is created
+     */
     public ForumPost(Long id, String title, String tag, String author, String textContent, LocalDateTime creationDate) {
         this.id = id;
         this.title = title;
@@ -41,6 +58,7 @@ public class ForumPost {
         this.creationDate = creationDate;
     }
 
+    
     public String getTitle() {
         return title;
     }

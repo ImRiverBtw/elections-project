@@ -18,17 +18,37 @@
       <form>
 
         <label for="postTitel">Titel</label>
-        <input type="text" id="postTitel" name="postTitel" placeholder="Titel" v-model="post.title"><br><br>
+        <input
+            type="text"
+            id="postTitel"
+            name="postTitel"
+            placeholder="Titel"
+            v-model="post.title"
+            :class="{'border-red': showError.title}"
+            @input="clearError('title')"><br><br>
 
         <label for="tags">Tags</label>
-        <input type="text" id="tags" name="tags" placeholder="Typ en klik op een tag" v-model="post.tags"><br><br>
+        <input
+            type="text"
+            id="tags"
+            name="tags"
+            placeholder="Typ en klik op een tag"
+            v-model="post.tags"
+            :class="{'border-red': showError.tags}"
+            @input="clearError('tags')"><br><br>
 
         <label for="body">Tekst</label>
-        <textarea id="body" name="body" placeholder="Schrijf hier uw tekst" v-model="post.body"></textarea>
+        <textarea
+            id="body"
+            name="body"
+            placeholder="Schrijf hier uw tekst"
+            v-model="post.body"
+            :class="{'border-red': showError.body}"
+            @input="clearError('body')"></textarea>
 
       </form>
 
-      <button @click="submitPost" class="submit-button"> Maak post aan</button>
+      <button @click="handleSubmitPost" class="submit-button"> Maak post aan</button>
       <button @click="closeModalNewPost" class="close-button"> Annuleer </button>
 
 
@@ -52,17 +72,22 @@ export default {
 
       showModal: false,
 
-      existingTags: ["PVV", "VVD", "PVDA"],
-      customTag: "",
-      selectedTags: [],
+      showError: {
+        title: false,
+        tags: false,
+        body: false,
+      },
 
       post: {
-
+        id: null,
         title: "",
-        tags: [],
+        tags: "",
         body: "",
-
       },
+
+      userid: null,
+      creationTime: null,
+
     }
 
   },
@@ -78,13 +103,90 @@ export default {
     closeModalNewPost() {
 
       this.showModal = false;
+      this.clearInputFields()
 
     },
 
-    submitPost() {
 
-      console.log(this.post)
+    handleSubmitPost(){
+
+      if (this.isValid()) {
+
+        this.submitPost();
+
+      } else {
+
+      }
+
     },
+
+    async submitPost() {
+
+
+      const postData = {
+
+        // attributes need to match columns in db //
+        title: this.post.title,
+        tag: this.post.tags,
+        author: "test",
+        textContent: this.post.body,
+        creationDate: new Date(),
+
+      };
+
+      try {
+
+        const response = await fetch('http://localhost:8080/forumNewPost', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(postData),
+        });
+
+        if(!response.ok) {
+          const errorText = await response.text();
+          alert("Error: " + errorText);
+        } else("Post aanmaken succesvol"); {
+
+          this.clearInputFields()
+
+        }
+      } catch (error) {
+        console.error('Post aanmaken niet gelukt', error);
+      }
+    },
+
+
+    clearInputFields() {
+
+      this.post.title = "";
+      this.post.body = "";
+      this.post.tags = "";
+
+      this.showModal = false;
+    },
+
+    isValid() {
+
+
+      if (this.post.title === "" || this.post.body === "" || this.post.tags === "") {
+        console.log("alle velden moeten ingevuld zijn")
+
+        this.showError.title = this.post.title.trim() === '';
+        this.showError.tags = this.post.tags.trim() === '';
+        this.showError.body = this.post.body.trim() === '';
+
+
+        return false;
+      } else {
+        return true;
+      }
+
+
+    },
+
+    clearError(field) {
+      this.showError[field] = false;
+    }
 
   },
 }
@@ -209,6 +311,10 @@ textarea {
 
 #body {
   height: 250px;
+}
+
+.border-red {
+  border: 2px solid red;
 }
 
 </style>
