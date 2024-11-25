@@ -19,8 +19,10 @@ public class ConstituencyRepository {
     }
 
     public List<Constituency> findAll() {
-        return em.createQuery("from Constituency").getResultList();
+        return em.createQuery("FROM Constituency", Constituency.class).getResultList();
     }
+
+
 
     public void insertDummyData() {
         String[] constituencyNames = new String[]{
