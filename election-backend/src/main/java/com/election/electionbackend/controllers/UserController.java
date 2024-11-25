@@ -1,7 +1,7 @@
 package com.election.electionbackend.controllers;
 
-import com.election.electionbackend.entity.Users;
-import com.election.electionbackend.jpa.UserRepository;
+import com.election.electionbackend.models.forum.Users;
+import com.election.electionbackend.repositories.forum.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

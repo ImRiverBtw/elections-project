@@ -5,14 +5,15 @@ import com.election.electionbackend.models.forum.Account;
 import com.election.electionbackend.repositories.forum.AccountRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import java.util.UUID;
 
+import java.util.List;
 import static org.springframework.util.StringUtils.hasLength;
 
 @Service
@@ -28,6 +29,11 @@ public class AccountService implements UserDetailsService {
         this.accountRepository = accountRepository;
     }
 
+    public List<Account> findAll(){
+        TypedQuery<Account> query = this.em.createQuery("select a from Account a", Account.class);
+        return query.getResultList();
+    }
+
     /**
      * Returns a user entity, with the provided userName if it exists, otherwise null.
      */
@@ -40,7 +46,7 @@ public class AccountService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFound(Account.class.getSimpleName(), "email", email));
     }
 
-    public Account findById(UUID id) {
+    public Account findById(Long id) {
         return accountRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFound(Account.class.getSimpleName(), "id", id.toString()));
     }
@@ -82,7 +88,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public Account save(Account account) {
-        if (account.getId() == null) {
+        if (account.getUserID() == null) {
             //insert a new affiliation
             em.persist(account);
         } else {

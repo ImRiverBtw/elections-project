@@ -1,4 +1,4 @@
-package com.election.electionbackend.config.security;
+package com.election.electionbackend.security;
 
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,12 +10,9 @@ import java.security.Key;
 import java.util.Date;
 
 public class JWToken {
-    private static final String JWT_ISSUER_CLAIM = "iss";
-    private static final String JWT_CALLNAME_CLAIM = "sub";
-    private static final String JWT_ACCOUNTID_CLAIM = "id";
     private static final String JWT_ROLE_CLAIM = "role";
     private static final String JWT_IPADDRESS_CLAIM = "ipa";
-
+    private static final String JWT_ISSUER_CLAIM = "iss";
     public static final String JWT_ATTRIBUTE_NAME = "JWTokenInfo";
 
     private String callName = null;
@@ -35,13 +32,13 @@ public class JWToken {
         Key key = getKey(passphrase);
 
         return Jwts.builder()
-                .claim(JWT_CALLNAME_CLAIM, this.callName)
-                .claim(JWT_ACCOUNTID_CLAIM, this.accountId)
+                .subject(this.callName)
+                .id(this.accountId.toString())
                 .claim(JWT_ROLE_CLAIM, this.role)
                 .claim(JWT_IPADDRESS_CLAIM, this.ipAddress != null ? this.ipAddress : "1.1.1.1")
-                .setIssuer(issuer)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000L))
+                .issuer(issuer)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expiration * 1000L))
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
@@ -55,7 +52,8 @@ public class JWToken {
             throws ExpiredJwtException, MalformedJwtException {
         // Validate the token string and extract the claims
         Key key = getKey(passphrase);
-        Jws<Claims> jws = Jwts.parser().setSigningKey(key).build()
+        Jws<Claims> jws = Jwts.parser().
+                setSigningKey(key).build()
                 .parseClaimsJws(token);
         Claims claims = jws.getBody();
 
@@ -64,8 +62,8 @@ public class JWToken {
         }
         // build our token from the extracted claims
         JWToken jwToken = new JWToken(
-                claims.get(JWT_CALLNAME_CLAIM).toString(),
-                Long.valueOf(claims.get(JWT_ACCOUNTID_CLAIM).toString()),
+                claims.getSubject(),
+                Long.valueOf(claims.getId()),
                 claims.get(JWT_ROLE_CLAIM).toString()
         );
         jwToken.setIpAddress((String) claims.get(JWT_IPADDRESS_CLAIM));

@@ -1,116 +1,94 @@
 package com.election.electionbackend.models.forum;
 
 
-import com.election.electionbackend.config.security.beans.SecureHasher;
+import com.election.electionbackend.security.SecureHasher;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.*;
 
-import static jakarta.persistence.FetchType.EAGER;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
 public class Account implements UserDetails {
+
 
     @GeneratedValue
     @Id
-    private UUID id;
-
-    private String userName;
+    private Long userID;
+    private String displayName;
     private String email;
-
     @JsonIgnore
     private String hashedPassword = null;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
-
-    @ManyToMany(fetch = EAGER)
-    private HashSet<UserRole> authorities = new HashSet<>();
-
-    private boolean enabled = true;
-    private boolean accountNonExpired = true;
-    private boolean accountNonLocked = true;
-    private boolean credentialsNonExpired = true;
-
-    public Account() {}
-    public Account(String name, String email) {
-        this.userName = name;
-        this.email = email;
+    public String hashPassword(String password){
+        return SecureHasher.secureHash("Id-" + this.getUserID() + ":" + password);
     }
 
-    public String hashPassword(String password) throws InterruptedException {
-        return SecureHasher.secureHash("Id-" + this.getId() + ":" + password, 0);
-    }
-    public void setPassword(String password) throws InterruptedException {
-        this.setHashedPassword(hashPassword(password));
+    public void setPassword(String newPassword) {
+        this.setHashedPassword(hashPassword(newPassword));
     }
 
-
-    @Override
-    public HashSet<UserRole> getAuthorities() {
-        return authorities;
-    }
-
-    public void setAuthorities(HashSet<UserRole> authorities) {
-        this.authorities = authorities;
-    }
-
-    @Override
-    public String getPassword() {
-        return hashedPassword;
-    }
-
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
+    public String getPassword(){
+        return this.getHashedPassword();
     }
 
     @Override
     public String getUsername() {
-        return userName;
+        return this.email;
     }
-    public void setUserName(String name) {
-        this.userName = name;
+
+    public boolean verifyPassword(String password){
+        return this.hashPassword(password).equals(this.getHashedPassword());
+    }
+
+    public Account createSample(long id, String displayName){
+        Account newAccount = new Account(
+                id,
+                displayName,
+                displayName + "@hva.nl",
+                hashPassword("Welkom1@"),
+                UserRole.USER_ROLE);
+        return newAccount;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
         return true;
     }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
     @Override
-    public int hashCode() {
-        return Objects.hashCode(getId());
+    public String toString() {
+        return String.format("{ login=%s, callName=%s, id=%d }", this.email, this.displayName, this.userID);
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Account account)) return false;
-        return getId() == account.getId();
-    }
-
-    public void addRole(UserRole role) {
-        if (getAuthorities() == null || !(getAuthorities() instanceof HashSet))
-            setAuthorities(new HashSet<>(Objects.requireNonNullElse(getAuthorities(), new HashSet<>())));
-
-        getAuthorities().add(role);
-    }
-
-
 }

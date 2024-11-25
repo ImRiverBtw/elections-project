@@ -13,8 +13,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface AccountRepository extends  JpaRepository<Account, UUID> {
-    @Query("SELECT a FROM Account a WHERE a.userName = ?1")
+public interface AccountRepository extends  JpaRepository<Account, Long> {
+    @Query("SELECT a FROM Account a WHERE a.username = ?1")
     Optional<Account> findByUsername(String username);
 
     @Query("SELECT a FROM Account a WHERE a.email = ?1")

@@ -1,4 +1,4 @@
-package com.election.electionbackend.config.security;
+package com.election.electionbackend.security;
 
 public class GenericConfig {
 

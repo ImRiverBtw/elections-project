@@ -1,10 +1,9 @@
-package com.election.electionbackend.jpa;
+package com.election.electionbackend.repositories.forum;
 
 import com.election.electionbackend.entity.Affiliation;
-import com.election.electionbackend.entity.Users;
+import com.election.electionbackend.models.forum.Users;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

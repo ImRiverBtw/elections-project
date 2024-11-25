@@ -1,4 +1,4 @@
-package com.election.electionbackend.config.security.beans;
+package com.election.electionbackend.security;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -43,11 +43,10 @@ public class SecureHasher {
      * @param source
      * @return
      */
-    public static String secureHash(String source, long delay) throws InterruptedException {
+    public static String secureHash(String source) {
         if (md == null || source == null) return null;
         // hash the source using the salted SHA hasher
         byte[] hashedResult = md.digest(source.getBytes(StandardCharsets.UTF_8));
-        Thread.sleep(delay);
         // convert the hashed result to a string
         String result = Base64.getEncoder().encodeToString(hashedResult);
         //System.out.println(source + " was hashed into " + result);
