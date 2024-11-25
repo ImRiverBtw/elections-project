@@ -7,10 +7,6 @@
       </div>
       <div class="line"></div>
       <div class="inputBox">
-        <div v-if="error" class="password-error">
-          <p>{{ passwordError }}</p>
-          <p>{{ usernameError }}</p>
-        </div>
 
         <div class="inputText username">Gebruikersnaam</div>
         <input class="inputField username" v-model="registerUsername" placeholder="Gebruikersnaam" />
@@ -44,9 +40,6 @@ export default {
       registerEmail: '',
       registerPassword: '',
       registerConfirmPassword: '',
-      passwordError: '',
-      usernameError: '',
-      error: false,
     };
   },
   methods: {
@@ -83,8 +76,7 @@ export default {
           console.error('Error during registration:', error);
         }
       } else {
-        this.passwordError = 'De wachtwoorden zijn niet hetzelfde';
-        this.error = true;
+        alert('De wachtwoorden zijn niet hetzelfde');
       }
     },
   },
