@@ -38,6 +38,7 @@
             @input="clearError('tags')"><br><br>
 
         <label for="body">Tekst</label>
+
         <textarea
             id="body"
             name="body"
@@ -85,8 +86,7 @@ export default {
         body: "",
       },
 
-      userid: null,
-      creationTime: null,
+      existingTags: {},
 
     }
 
@@ -167,7 +167,6 @@ export default {
 
     isValid() {
 
-
       if (this.post.title === "" || this.post.body === "" || this.post.tags === "") {
         console.log("alle velden moeten ingevuld zijn")
 
@@ -175,20 +174,39 @@ export default {
         this.showError.tags = this.post.tags.trim() === '';
         this.showError.body = this.post.body.trim() === '';
 
-
         return false;
       } else {
         return true;
       }
-
-
     },
 
     clearError(field) {
       this.showError[field] = false;
     }
-
   },
+
+  // todo - 
+  async insertExistingTags() {
+
+    try {
+
+      const response = await fetch('http://localhost:8080/forum/tags', {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'},
+      });
+
+      if(!response.ok) {
+        const errorText = await response.text();
+        alert("Error: " + errorText);
+      } else("Tags ophalen succesvol "); {
+
+        console.log()
+
+      }
+    } catch (error) {
+      console.error('Tags ophalem niet gelukt', error);
+    }
+  }
 }
 
 </script>

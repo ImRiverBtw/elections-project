@@ -39,6 +39,8 @@ public class ElectionBackendApplication implements CommandLineRunner {
     @Autowired
     private ForumPostRepository forumPostRepository;
 
+    @Autowired
+    private ForumTagRepository forumTagRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -51,7 +53,10 @@ public class ElectionBackendApplication implements CommandLineRunner {
         candidateRepo.insertDummyData();
         pollingStationRepo.insertDummyData();
         pollingStationCandidateRepo.insertDummyData();
+
         forumPostRepository.insertDummyPosts();
+        forumTagRepository.insertDummyTags();
+
     }
 
     public static void main(String[] args) {
