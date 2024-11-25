@@ -1,6 +1,5 @@
 package com.election.electionbackend.repositories.forum;
 
-import com.election.electionbackend.entity.Affiliation;
 import com.election.electionbackend.models.forum.Users;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;

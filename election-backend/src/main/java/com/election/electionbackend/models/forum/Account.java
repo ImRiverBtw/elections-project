@@ -24,16 +24,31 @@ public class Account implements UserDetails {
 
     @GeneratedValue
     @Id
-    private Long userID;
+    private Long id;
+
+    @Column(unique = true, nullable = false)
     private String displayName;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
     @JsonIgnore
+    @Column(unique = true, nullable = false)
     private String hashedPassword = null;
+
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    public Account(String displayName, String email, String password) {
+        this.displayName = displayName;
+        this.email = email;
+        this.hashedPassword = SecureHasher.secureHash(password);
+        this.role = UserRole.USER_ROLE;
+
+    }
+
     public String hashPassword(String password){
-        return SecureHasher.secureHash("Id-" + this.getUserID() + ":" + password);
+        return SecureHasher.secureHash("Id-" + this.getId() + ":" + password);
     }
 
     public void setPassword(String newPassword) {
@@ -89,6 +104,6 @@ public class Account implements UserDetails {
     }
     @Override
     public String toString() {
-        return String.format("{ login=%s, callName=%s, id=%d }", this.email, this.displayName, this.userID);
+        return String.format("{ login=%s, callName=%s, id=%d }", this.email, this.displayName, this.getId());
     }
 }

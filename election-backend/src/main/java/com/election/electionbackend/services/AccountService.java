@@ -20,18 +20,16 @@ import static org.springframework.util.StringUtils.hasLength;
 @Transactional
 public class AccountService implements UserDetailsService {
 
-    private final AccountRepository accountRepository;
+    @Autowired
+    private AccountRepository accountRepository;
     @PersistenceContext
     private EntityManager em;
 
-    @Autowired
-    public AccountService(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
-    }
+
+
 
     public List<Account> findAll(){
-        TypedQuery<Account> query = this.em.createQuery("select a from Account a", Account.class);
-        return query.getResultList();
+        return accountRepository.findAll();
     }
 
     /**
@@ -49,6 +47,18 @@ public class AccountService implements UserDetailsService {
     public Account findById(Long id) {
         return accountRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFound(Account.class.getSimpleName(), "id", id.toString()));
+    }
+
+    public boolean existsById(Long id) {
+        return accountRepository.existsById(id);
+    }
+
+    public boolean existsByDisplayName(String displayName) {
+        return accountRepository.existsByDisplayName(displayName);
+    }
+
+    public boolean existsByEmail(String email) {
+        return accountRepository.existsByEmail(email);
     }
 
 
