@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class PollingStationCandidateId implements Serializable {
+public class PollingStationCandidateId implements Serializable { //composite id for pollingstationCandidate
     private Long pollingStationId;
     private CandidateId candidateId;
 

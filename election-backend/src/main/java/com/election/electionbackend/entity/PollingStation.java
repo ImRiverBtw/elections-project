@@ -1,5 +1,6 @@
 package com.election.electionbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -12,21 +13,25 @@ public class PollingStation {
     private Long id;
     private String name;
 
-    private String location;
-
     @ManyToOne
-    @JoinColumn(name = "constituency_id")
+    @JsonBackReference
     private Constituency constituency;
 
+    @ManyToOne
+    @JoinColumn(name = "affiliation_id")
+    private Affiliation affiliation;
+
+
     @OneToMany(mappedBy = "pollingStation")
-    private Set<PollingStationCandidate> pollingStationCandidates = new HashSet<>();
+    private Set<PollingStationCandidate> pollingStationCandidates = new HashSet<>(); //join entity for many to many relation between pollingstation and candidate
 
     public PollingStation() {
     }
 
-    public PollingStation(Constituency constituency, String name) {
+    public PollingStation(Constituency constituency, String name, Affiliation affiliation) {
         this.constituency = constituency;
         this.name = name;
+        this.affiliation = affiliation;
     }
 
     public Long getId() {
@@ -47,6 +52,18 @@ public class PollingStation {
 
     public void setConstituency(Constituency constituency) {
         this.constituency = constituency;
+    }
+
+    public Affiliation getAffiliation() {
+        return affiliation;
+    }
+
+    public String getAffiliationName() {
+        return affiliation != null ? affiliation.getName() : null;
+    }
+
+    public void setAffiliation(Affiliation affiliation) {
+        this.affiliation = affiliation;
     }
 
     public Set<PollingStationCandidate> getPollingStationCandidates() {

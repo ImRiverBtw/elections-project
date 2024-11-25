@@ -42,9 +42,6 @@ public class ElectionBackendApplication implements CommandLineRunner {
         logger.info("Starting Election Backend");
         insertDummyData();
     }
-
-
-
     public void insertDummyData() {
         affiliationRepo.insertDummyData();
         constituencyRepo.insertDummyData();
@@ -56,4 +53,6 @@ public class ElectionBackendApplication implements CommandLineRunner {
     public static void main(String[] args) {
         SpringApplication.run(ElectionBackendApplication.class, args);
     }
+}
+
 }

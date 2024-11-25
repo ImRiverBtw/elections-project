@@ -12,12 +12,21 @@ import java.util.List;
 @Transactional
 public class ConstituencyRepository {
     @PersistenceContext
-    private EntityManager em;
+    private EntityManager em;  // Injects the EntityManager to interact with the database.
 
+    /**
+     * Finds a Constituency by its ID.
+     * @param id the ID of the Constituency.
+     * @return the Constituency entity or null if not found.
+     */
     public Constituency findById(Long id) {
         return em.find(Constituency.class, id);
     }
 
+    /**
+     * Retrieves all Constituency records from the database.
+     * @return a list of all Constituency entities.
+     */
     public List<Constituency> findAll() {
         return em.createQuery("FROM Constituency", Constituency.class).getResultList();
     }

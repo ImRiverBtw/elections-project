@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class CandidateId implements Serializable {
+public class CandidateId implements Serializable { //Composite id for candidate
     @Column(name="affiliation_id")
     private Long affiliationId;
 
