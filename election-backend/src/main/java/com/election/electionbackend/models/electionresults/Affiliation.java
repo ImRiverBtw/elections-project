@@ -1,4 +1,4 @@
-package com.election.electionbackend.entity;
+package com.election.electionbackend.models.electionresults;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;

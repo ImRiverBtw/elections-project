@@ -1,6 +1,6 @@
-package com.election.electionbackend.jpa;
+package com.election.electionbackend.repositories.electionresults;
 
-import com.election.electionbackend.entity.Constituency;
+import com.election.electionbackend.models.electionresults.Constituency;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;

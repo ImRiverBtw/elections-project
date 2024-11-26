@@ -1,4 +1,4 @@
-package com.election.electionbackend.id;
+package com.election.electionbackend.models.id;
 
 import jakarta.persistence.Embeddable;
 
