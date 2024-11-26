@@ -17,6 +17,7 @@ export default {
   components: {
     LoginPopup,
     RegisterPopup,
+
   },
   data() {
     return {
