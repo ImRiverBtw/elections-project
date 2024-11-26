@@ -1,4 +1,4 @@
-package com.election.electionbackend.controllers;
+package com.election.electionbackend.controllers.forum;
 
 import com.election.electionbackend.models.forum.Users;
 import com.election.electionbackend.repositories.forum.UserRepository;

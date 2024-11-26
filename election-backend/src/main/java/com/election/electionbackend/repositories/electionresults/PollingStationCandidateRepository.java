@@ -5,6 +5,7 @@ import com.election.electionbackend.models.electionresults.PollingStation;
 import com.election.electionbackend.models.electionresults.PollingStationCandidate;
 import com.election.electionbackend.models.id.CandidateId;
 import com.election.electionbackend.models.id.PollingStationCandidateId;
+import com.election.electionbackend.repositories.electionresults.AffiliationVoteDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -68,7 +69,7 @@ public class PollingStationCandidateRepository {
 
     public List<AffiliationVoteDTO> getVotesByConstituency(Long constituencyId) {
         String queryStr = """
-        SELECT new com.election.electionbackend.jpa.AffiliationVoteDTO(
+            SELECT new AffiliationVoteDTO(
             psc.candidate.affiliation.name,
             SUM(psc.votes)
         )

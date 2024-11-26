@@ -1,8 +1,7 @@
-package com.election.electionbackend.jpa;
+package com.election.electionbackend.repositories.electionresults;
 
-import com.election.electionbackend.entity.Affiliation;
-import com.election.electionbackend.entity.Candidate;
-import com.election.electionbackend.entity.PollingStation;
+import com.election.electionbackend.models.electionresults.Affiliation;
+import com.election.electionbackend.models.electionresults.Candidate;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;

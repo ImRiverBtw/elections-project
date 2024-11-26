@@ -1,6 +1,7 @@
-package com.election.electionbackend.entity;
+package com.election.electionbackend.models.electionresults;
 
-import com.election.electionbackend.id.PollingStationCandidateId;
+import com.election.electionbackend.models.electionresults.PollingStation;
+import com.election.electionbackend.models.id.PollingStationCandidateId;
 import jakarta.persistence.*;
 
 @Entity

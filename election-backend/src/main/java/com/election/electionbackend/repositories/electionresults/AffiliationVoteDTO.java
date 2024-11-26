@@ -1,4 +1,4 @@
-package com.election.electionbackend.jpa;
+package com.election.electionbackend.repositories.electionresults;
 
 public class AffiliationVoteDTO {
     private String affiliation;

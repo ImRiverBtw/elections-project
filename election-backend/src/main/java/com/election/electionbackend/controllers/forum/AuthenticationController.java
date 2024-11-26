@@ -1,10 +1,9 @@
-package com.election.electionbackend.controllers;
+package com.election.electionbackend.controllers.forum;
 
 
 import com.election.electionbackend.DTO.LoginRequest;
 import com.election.electionbackend.DTO.RegisterRequest;
 import com.election.electionbackend.models.forum.Account;
-import com.election.electionbackend.models.forum.Users;
 import com.election.electionbackend.security.SecureHasher;
 import com.election.electionbackend.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
