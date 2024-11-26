@@ -5,16 +5,14 @@ import com.election.electionbackend.models.electionresults.Affiliation;
 import com.election.electionbackend.models.electionresults.Candidate;
 import com.election.electionbackend.models.electionresults.PollingStation;
 import com.election.electionbackend.models.id.CandidateId;
-import com.election.electionbackend.repositories.electionresults.AffiliationRepository;
-import com.election.electionbackend.repositories.electionresults.CandidateRepository;
-import com.election.electionbackend.repositories.electionresults.PollingStationCandidateRepository;
-import com.election.electionbackend.repositories.electionresults.PollingStationRepository;
+import com.election.electionbackend.repositories.electionresults.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,9 +35,23 @@ class ElectionResultController {
     @Autowired
     private PollingStationRepository pollingStationRepository;
 
-//    @Autowired
-//    private ConstituencyRepository constituencyRepo;
+    @Autowired
+    private ConstituencyRepository constituencyRepository;
 
+    @GetMapping("/constituencies")
+    public List<Map<String, Object>> getConstituencies() {
+        return constituencyRepository.findAll().stream().map(constituency -> {
+            Map<String, Object> constituencyMap = new HashMap<>();
+            constituencyMap.put("id", constituency.getId());
+            constituencyMap.put("name", constituency.getName());
+            return constituencyMap;
+        }).toList();
+    }
+
+    @GetMapping("/constituency/{constituencyId}/votes")
+    public List<AffiliationVoteDTO> getVotesByConstituency(@PathVariable Long constituencyId) {
+        return pollingStationCandidateRepo.getVotesByConstituency(constituencyId);
+    }
 
 
     @GetMapping("/constituency/{constituency_id}")
@@ -110,7 +122,7 @@ class ElectionResultController {
 
 
     @GetMapping("/pollingStation/{pollingstation_id}")
-    public Optional<PollingStation> getPollingStationById(@PathVariable Long pollingstation_id) {
+    public PollingStation getPollingStationById(@PathVariable Long pollingstation_id) {
         return pollingStationRepo.findById(pollingstation_id);
     }
 
