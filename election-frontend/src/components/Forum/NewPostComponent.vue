@@ -62,6 +62,10 @@
 
 <script>
 
+import {ref} from "vue";
+
+// const showModal = ref(false)
+
 export default {
 
   name: "NewPostComponent",
@@ -96,6 +100,7 @@ export default {
 
     showModalNewPost() {
 
+      this.insertExistingTags();
       this.showModal = true;
 
     },
@@ -130,7 +135,7 @@ export default {
         tag: this.post.tags,
         author: "test",
         textContent: this.post.body,
-        creationDate: new Date(),
+        // creationDate: new Date(),
 
       };
 
@@ -182,31 +187,34 @@ export default {
 
     clearError(field) {
       this.showError[field] = false;
+    },
+
+    // todo -
+    async insertExistingTags() {
+
+      try {
+
+        const response = await fetch('http://localhost:8080/forum/tags', {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json'},
+        });
+
+        if(!response.ok) {
+          const errorText = await response.text();
+          alert("Error: " + errorText);
+        } else("Tags ophalen succesvol "); {
+
+          const data = await response.json()
+          console.log(data)
+
+        }
+      } catch (error) {
+        console.error('Tags ophalem niet gelukt', error);
+      }
     }
   },
 
-  // todo - 
-  async insertExistingTags() {
 
-    try {
-
-      const response = await fetch('http://localhost:8080/forum/tags', {
-        method: 'GET',
-        headers: {'Content-Type': 'application/json'},
-      });
-
-      if(!response.ok) {
-        const errorText = await response.text();
-        alert("Error: " + errorText);
-      } else("Tags ophalen succesvol "); {
-
-        console.log()
-
-      }
-    } catch (error) {
-      console.error('Tags ophalem niet gelukt', error);
-    }
-  }
 }
 
 </script>

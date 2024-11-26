@@ -8,6 +8,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -34,6 +35,7 @@ public class ForumPost {
     private String textContent;
 
     @Column(nullable = false)
+    @CreationTimestamp
     private LocalDateTime creationDate;
 
     public ForumPost() {
