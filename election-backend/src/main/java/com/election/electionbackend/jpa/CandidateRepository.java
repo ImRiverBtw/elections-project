@@ -14,24 +14,15 @@ import java.util.List;
 @Transactional
 public class CandidateRepository {
     @PersistenceContext
-    private EntityManager em;  // Injects the EntityManager to interact with the database.
+    private EntityManager em;
 
     @Autowired
     private AffiliationRepository affiliationRepository;
 
-    /**
-     * Finds a Candidate by its composite ID.
-     * @param id the composite ID of the Candidate (e.g., candidate number and affiliation ID).
-     * @return the Candidate entity or null if not found.
-     */
     public Candidate findById(CandidateId id) {
         return em.find(Candidate.class, id);
     }
 
-    /**
-     * Retrieves all Candidate records from the database.
-     * @return a list of all Candidate entities.
-     */
     public List<Candidate> findAll() {
         return em.createQuery("select c from Candidate c", Candidate.class).getResultList();
     }

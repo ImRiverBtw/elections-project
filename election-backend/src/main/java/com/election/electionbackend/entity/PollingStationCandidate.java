@@ -1,7 +1,6 @@
 package com.election.electionbackend.entity;
 
 import com.election.electionbackend.id.PollingStationCandidateId;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,7 +9,6 @@ public class PollingStationCandidate {
     private PollingStationCandidateId pollingStationCandidateId;
 
     @ManyToOne
-    @JsonIgnore
     @MapsId("pollingStationId")
     @JoinColumn(name = "polling_station_id", referencedColumnName = "id")
     private PollingStation pollingStation;

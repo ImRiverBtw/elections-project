@@ -1,84 +1,106 @@
 <template>
   <h2>Zetelverdeling</h2>
-  <div v-if="affiliations && !err" class="content">
+  <div class="content">
     <canvas ref="barChart" id="myChart"></canvas>
   </div>
-  <error-component v-if="err" :err="err.message"/>
-  <loading v-if="loading"></loading>
 </template>
 
 <script>
 import {Chart} from "chart.js/auto";
-import {useAffiliations} from "@/Composables/useAffiliations.js";
-import ErrorComponent from "@/components/Status/ErrorComponent.vue";
-import Loading from "@/components/Status/Loading.vue";
-import {nextTick, onMounted, provide, ref} from "vue";
+import * as helpers from "chart.js/helpers";
 
 export default {
   name: "SeatDistribution",
-  components: {Loading, ErrorComponent},
-  setup() {
-    const {affiliations, err, loading, fetchAffiliationResults} = useAffiliations();
-    const barChart = ref(null);
-    provide("err", err)
-
-    const createChart = () => {
-        const ctx = barChart.value.getContext("2d");
-        const labels = affiliations.value.map(affiliation => affiliation.name);
-        const electionData = affiliations.value.map(affiliation => affiliation.seatCount);
-
-        const data = {
-          labels: labels,
-          datasets: [{
-            label: "Aantal zetels 2023",
-            data: electionData,
-            borderWidth: 1,
-            borderColor: '#B9C5E9',
-            borderRadius: 2,
-            backgroundColor: 'rgba(185, 197, 233, 0.5)',
-          }]
+  async created() {
+    await this.fetchAffiliations();
+    window.Chart = Chart;
+    Chart.helpers = helpers;
+    await import("chart.js-plugin-labels-dv");
+  },
+  data() {
+    return {
+      affiliations: [],
+    }
+  },
+  methods: {
+    async fetchAffiliations() {
+      try {
+        const response = await fetch('http://localhost:8080/electionresult/affiliation');
+        if (!response.ok) {
+          throw new Error(response.status);
         }
+        const affiliations = await response.json();
+        this.affiliations = affiliations.map(aff => ({...aff, seats: 0}));
 
-        const config = {
-          type: "bar",
-          data: data,
-          options: {
-            plugins: {
-              afterDraw: {
-              },
-              legend: {
-                labels: {
-                  font: {
-                    size: 19,
-                    weight: 'bold',
-                  }
+        await this.fetchSeatCount()
+        this.createChart()
+      } catch (error) {
+        console.error('Error fetching afiliations: ', error)
+      }
+    },
+    async fetchSeatCount() {
+      try {
+        const promises = this.affiliations.map(async (affiliation) => {
+          const response = await fetch(`http://localhost:8080/electionresults/affiliation/${affiliation.id}/seats`);
+          if (!response.ok) {
+            throw new Error(response.status);
+          }
+          const seats = await response.json();
+          affiliation.seats = seats;
+        })
+        await Promise.all(promises);
+        this.trimAndSort()
+      } catch (error) {
+        console.error('Error fetching seats: ', error)
+      }
+    },
+    trimAndSort() {
+      this.affiliations = this.affiliations
+          .filter(affiliation => affiliation.seats > 0)
+          .sort((a, b) => b.seats - a.seats);
+    },
+    createChart() {
+      const ctx = this.$refs.barChart.getContext("2d");
+      const labels = this.affiliations.map(affiliation => affiliation.name);
+      const electionData = this.affiliations.map(affiliation => affiliation.seats);
+
+      const data = {
+        labels: labels,
+        datasets: [{
+          label: "Aantal zetels 2023",
+          data: electionData,
+          borderWidth: 1,
+          borderColor: '#B9C5E9',
+          borderRadius: 2,
+          backgroundColor: 'rgba(185, 197, 233, 0.5)',
+        }]
+      }
+
+      const config = {
+        type: "bar",
+        data: data,
+        options: {
+          plugins: {
+            afterDraw: {
+            },
+            legend: {
+              labels: {
+                font: {
+                  size: 19,
+                  weight: 'bold',
                 }
               }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
             }
           }
         }
-        new Chart(ctx, config)
       }
-
-    onMounted(async () => {
-      await fetchAffiliationResults();
-      window.Chart = Chart;
-      await import("chart.js-plugin-labels-dv");
-      if (affiliations.value.length > 0 && !err.value) {
-        console.log(affiliations.value.map(affiliation => affiliation.seatCount))
-        await nextTick()
-        createChart();
-      }
-    })
-    return {affiliations, err, loading, barChart}
-  },
-  methods: {
-
+      new Chart(ctx, config)
+    }
   }
 }
 </script>

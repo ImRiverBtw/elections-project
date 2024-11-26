@@ -1,6 +1,7 @@
 package com.election.electionbackend.entity;
 
 import com.election.electionbackend.id.CandidateId;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
