@@ -54,12 +54,16 @@ public class UserRepository {
      * Controleert of een gebruiker met de opgegeven gebruikersnaam of e-mailadres al bestaat.
      *
      * @param username de gebruikersnaam om te controleren.
-     * @param email het e-mailadres om te controleren.
      * @return true als een gebruiker met de gebruikersnaam of het e-mailadres al bestaat, anders false.
      */
-    public boolean existsByUsernameOrEmail(String username, String email) {
-        return em.createQuery("SELECT COUNT(u) FROM Users u WHERE u.username = :username OR u.email = :email", Long.class)
+    public boolean existsByUsername(String username) {
+        return em.createQuery("SELECT COUNT(u) FROM Users u WHERE u.username = :username", Long.class)
                 .setParameter("username", username)
+                .getSingleResult() > 0;
+    }
+
+    public boolean existsByEmail(String email) {
+        return em.createQuery("SELECT COUNT(u) FROM Users u WHERE u.email = :email", Long.class)
                 .setParameter("email", email)
                 .getSingleResult() > 0;
     }

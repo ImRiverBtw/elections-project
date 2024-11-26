@@ -20,6 +20,8 @@
 </template>
 
 <script>
+import { login } from '../models/authService.js';
+
 export default {
   props: {
     visible: {
@@ -34,30 +36,17 @@ export default {
     };
   },
   methods: {
-    //Close te popup
     close() {
       this.$emit('close');
     },
     async submit() {
-      //verzamelen van gegevens van de inputs
-      const loginData = {
-        email: this.loginEmail,
-        password: this.loginPassword,
-      };
-
       try {
-        //verzamelde gegevens naar de backend sturen.
-        const response = await fetch('http://localhost:8080/userdata/login', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(loginData),
-        });
-
-        const result = await response.text();
-        console.log(result);
+        const loginResponse  = await login(this.loginEmail, this.loginPassword);
+        console.log("Ingelogd succesful: ", loginResponse);
+        this.close();
       } catch (error) {
-        console.error('Error during login:', error);
-    }
+        console.log('Login mislukt: ' + error);
+      }
     },
   },
 };
