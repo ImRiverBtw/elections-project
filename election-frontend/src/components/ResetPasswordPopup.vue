@@ -12,23 +12,35 @@ defineProps({
 // Emits
 const emit = defineEmits(['close']); // Define the 'close' event
 
-// Reactive data for email input
-const email = ref('');
+// Reactive data for password inputs
+const newPassword = ref('');
+const confirmPassword = ref('');
 
-// Function to send the reset password email
+// Function to reset the password
 const submit = async () => {
+  const token = new URLSearchParams(window.location.search).get('token'); // Token from URL
+  if (!token) {
+    alert('Invalid token.');
+    return;
+  }
+
+  if (newPassword.value !== confirmPassword.value) {
+    alert('Passwords do not match.');
+    return;
+  }
+
   try {
-    const response = await fetch('http://localhost:8080/userdata/forgot-password', {
+    const response = await fetch('http://localhost:8080/userdata/reset-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value }),
+      body: JSON.stringify({ token, newPassword: newPassword.value }),
     });
 
     if (response.ok) {
-      alert('Email sent! Please check your inbox to reset your password.');
+      alert('Password reset successfully!');
       emit('close'); // Emit the 'close' event to parent
     } else {
-      alert('Failed to send email. Please try again.');
+      alert('Failed to reset password.');
     }
   } catch (error) {
     console.error(error);
@@ -41,25 +53,33 @@ const submit = async () => {
   <div v-if="visible" class="popup">
     <div class="popup-content">
       <div class="popup-header">
-        <h2>Forgot Password</h2>
+        <h2>Reset Password</h2>
         <button class="Button Close" @click="emit('close')">Close</button>
       </div>
       <div class="line"></div>
       <div class="inputBox">
-        <label class="inputText email">Enter your email to reset your password</label>
+        <label class="inputText">New Password</label>
         <input
-            class="inputField email"
-            v-model="email"
-            type="email"
-            placeholder="Email address"
+            class="inputField"
+            v-model="newPassword"
+            type="password"
+            placeholder="Enter new password"
         />
-        <button class="Button submitLogin" @click="submit">Send Email</button>
+        <label class="inputText">Confirm Password</label>
+        <input
+            class="inputField"
+            v-model="confirmPassword"
+            type="password"
+            placeholder="Confirm new password"
+        />
+        <button class="Button submitLogin" @click="submit">Reset Password</button>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* Reuse your current popup styles */
 .popup {
   position: fixed;
   top: 0;
