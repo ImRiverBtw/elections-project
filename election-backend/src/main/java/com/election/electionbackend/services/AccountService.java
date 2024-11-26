@@ -36,7 +36,7 @@ public class AccountService implements UserDetailsService {
      * Returns a user entity, with the provided userName if it exists, otherwise null.
      */
     public Account findByName(String name) {
-        return hasLength(name) ? accountRepository.findByUsername(name).orElse(null) : null;
+        return hasLength(name) ? accountRepository.findByDisplayName(name).orElse(null) : null;
     }
 
     public Account findByEmail(String email) {
@@ -65,7 +65,7 @@ public class AccountService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return accountRepository
-                .findByUsername(username)
+                .findByDisplayName(username)
                 .orElseThrow(() -> new UsernameNotFoundException(
                         String.format("User with username - %s, not found", username)
                 ));
@@ -98,7 +98,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public Account save(Account account) {
-        if (account.getUserID() == null) {
+        if (account.getId() == null) {
             //insert a new affiliation
             em.persist(account);
         } else {
