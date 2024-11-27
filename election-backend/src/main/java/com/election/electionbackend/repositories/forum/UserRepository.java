@@ -22,7 +22,7 @@ public class UserRepository {
      */
     public void insertDummyData() {
         String[] usernames = {"john_doe", "jane_doe", "alice_smith", "bob_jones"};
-        String[] emails = {"john@example.com", "jane@example.com", "alice@example.com", "bob@example.com"};
+        String[] emails = {"john@example.com", "DaveRobinKayHakanMichael@outlook.com", "jane@example.com", "alice@example.com", "bob@example.com"};
         String[] passwords = {"password123", "password456", "password789", "password101"};
 
         for (int i = 0; i < usernames.length; i++) {

@@ -13,6 +13,8 @@
         <div class="inputText password">Wachtwoord</div>
         <input class="inputField password" v-model="loginPassword" placeholder="Wachtwoord" />
 
+        <a href="#" @click.prevent="$emit('forgot-password')">Wachtwoord vergeten?</a>
+
         <button class="Button submitLogin" @click="submit">Login</button>
       </div>
     </div>

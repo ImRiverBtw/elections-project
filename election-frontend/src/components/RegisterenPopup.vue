@@ -12,8 +12,8 @@
           <p>{{ usernameError }}</p>
         </div>
 
-        <div class="inputText username">Gebruikersname</div>
-        <input class="inputField username" v-model="registerUsername" placeholder="Gebruikersname" />
+        <div class="inputText username">Gebruikersnaam</div>
+        <input class="inputField username" v-model="registerUsername" placeholder="Gebruikersnaam" />
 
         <div class="inputText email">Email-addres</div>
         <input class="inputField email" v-model="registerEmail" placeholder="Email-addres" />
@@ -72,7 +72,12 @@ export default {
             const errorText = await response.text();
             alert("Error: " + errorText);
           } else("Registratie succesvol"); {
+            this.registerUsername = '';
+            this.registerEmail = '';
+            this.registerPassword = '';
+            this.registerConfirmPassword = '';
 
+            this.close();
           }
         } catch (error) {
           console.error('Error during registration:', error);
