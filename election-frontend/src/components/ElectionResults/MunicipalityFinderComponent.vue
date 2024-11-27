@@ -46,7 +46,7 @@ export default {
     // Fetch constituencies from the backend
     async fetchConstituencies() {
       try {
-        const response = await fetch("http://localhost:8080/electionresult/constituencies");
+        const response = await fetch("http://localhost:8080/electionresult/municipalities");
         if (!response.ok) {
           throw new Error(`Failed to fetch constituencies: ${response.status}`);
         }
@@ -68,7 +68,7 @@ export default {
 
       try {
         const response = await fetch(
-            `http://localhost:8080/electionresult/constituency/${this.selectedConstituency}/votes`
+            `http://localhost:8080/electionresult/municipalities/${this.selectedConstituency}/votes`
         );
         if (!response.ok) {
           throw new Error(`Failed to fetch votes: ${response.status}`);
@@ -101,7 +101,7 @@ export default {
       }
 
       // Prepare labels and dataset for the chart
-      const labels = data.map((item) => item.affiliation);
+      const labels = data.map((item) => item.name);
       const votes = data.map((item) => item.votes);
 
       // Create new Chart.js instance

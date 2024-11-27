@@ -82,8 +82,8 @@
 
 <script>
 import PartyTag from "@/components/PartyTag.vue";
-import {useAffiliations} from "@/Composables/useAffiliations.js";
-import {onMounted, provide} from "vue";
+import { useAffiliations } from "@/composables/useAffiliations.js";
+import {onMounted, provide, ref} from "vue";
 import Loading from "@/components/Status/Loading.vue";
 import ErrorComponent from "@/components/Status/ErrorComponent.vue";
 
@@ -101,72 +101,48 @@ export default {
     return {affiliations, err, loading}
   },
   data() {
-
     return {
       totalAccumulatedSeats: 0,
-
       selectedParties: [],
-
       defaultTagColor: "#d4dfef",
+      partyColors: {}
     }
   },
 
   methods: {
-
-    // method that handles clicking on a tag by the user //
     handlePartyTagClick(affiliation) {
-
-      // check if the affiliation should be selected or deselected //
       if (this.selectedParties.includes(affiliation)) {
-
-        this.deselectAffiliation(affiliation)
-
+        this.deselectAffiliation(affiliation);
       } else {
-
-        this.selectAffiliation(affiliation)
+        this.selectAffiliation(affiliation);
       }
+      this.partyColors[affiliation.name] = this.generateRandomColor();
     },
 
-    // method that selects the clicked affiliation //
     selectAffiliation(affiliation) {
-      console.log(affiliation)
-
-      // add up the seat amount of the selected affiliation to the total accumulated seats //
-      this.totalAccumulatedSeats = this.totalAccumulatedSeats + affiliation.seatCount;
-
-      // put the affiliation in the selected affiliations array //
-      this.selectedParties.push(affiliation)
-
-      // change the "selected" attribute of the affiliation (to change the background of the tag) //
+      this.totalAccumulatedSeats += affiliation.seatCount;
+      this.selectedParties.push(affiliation);
       affiliation.selected = !affiliation.selected;
     },
 
-    // method that deselects the clicked affiliation //
     deselectAffiliation(affiliation) {
-
-      // subtract the seat amount of the selected affiliation from the total accumulated seats //
-      this.totalAccumulatedSeats = this.totalAccumulatedSeats - affiliation.seatCount;
-
-      // remove the affiliation from the selected affiliations array //
+      this.totalAccumulatedSeats -= affiliation.seatCount;
       this.selectedParties = this.selectedParties.filter(
           activeAffiliation => activeAffiliation.id !== affiliation.id
       );
-
-      // change the "selected" attribute of the affiliation (to change the background of the tag) //
       affiliation.selected = !affiliation.selected;
-
     },
 
     handleResetButtonClick() {
-
       this.selectedParties = [];
       this.totalAccumulatedSeats = 0;
+      this.partyColors = {};
 
       for (let i = 0; i < this.affiliations.length; i++) {
-
         this.affiliations[i].selected = false;
       }
     },
+
     calculateArcPath(index) {
       const startAngle = this.getStartAngle(index);
       const endAngle = this.getEndAngle(index);
@@ -200,50 +176,20 @@ export default {
     },
 
     assignColorToAffiliation(affiliationName) {
-
-      switch (affiliationName) {
-        case "PVV":
-          return "#5fefde"
-        case "GLPVDA":
-          return "#e02121";
-        case "VVD":
-          return "#f18f35"
-        case "NSC":
-          return "#f6cb3d";
-        case "D66":
-          return "#17af17"
-        case "BBB":
-          return "#97e972"
-        case "CDA":
-          return "#d9ffca";
-        case "SP":
-          return "#9347e7"
-        case "FVD":
-          return "#ffa395"
-        case "PVDD":
-          return "#debbbb"
-        case "DENK":
-          return "#f6f6f6"
-        case "CU":
-          return "#a7bfd7"
-        case "SGP":
-          return "#ff6800"
-        case "VOLT":
-          return "#fffd72"
-        case "JA21":
-          return "#dbcafa"
-
-        default:
-          return "white"
+      if (!this.partyColors[affiliationName]) {
+        this.partyColors[affiliationName] = this.generateRandomColor();
       }
+      return this.partyColors[affiliationName];
+    },
+
+    generateRandomColor() {
+      return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
     }
   },
 }
-
 </script>
 
 <style scoped>
-
 .top {
   margin-top: 10px;
   padding: 10px;
@@ -269,16 +215,13 @@ export default {
   font-weight: 400;
 }
 
-
 .content {
   padding: 20px;
   display: flex;
   flex-wrap: wrap;
 }
 
-
 .graphWrapper {
-  //border: 1px solid red;
   height: 220px;
   width: 100%;
   text-align: center;
@@ -288,26 +231,19 @@ export default {
   font-weight: normal;
 }
 
-
 .graphFooter {
   width: 100%;
-  //border: 1px solid red;
-
 }
 
 #graphFooterTitle {
   display: inline-block;
   font-weight: 400;
-  //border: 1px solid red;
   margin-top: 30px;
   margin-bottom: 11px;
-  //border: 1px solid red;
-
 }
 
 .activatedPartiesWrapper {
   display: inline-block;
-
 }
 
 .activatedAffiliation {
@@ -322,9 +258,7 @@ export default {
   color: black;
 }
 
-
-.bottomWrapper {;
-  //border: 1px solid red;
+.bottomWrapper {
   width: 55%;
   margin: 0 auto;
 }
@@ -338,11 +272,9 @@ export default {
   width: 9%;
 }
 
-
 .tagsWrapper {
   min-width: 250px;
   padding: 10px;
-  //border: 1px solid red;
 }
 
 .active {
@@ -369,15 +301,10 @@ export default {
   color: #004494;
 }
 
-
 @media (max-width: 900px) {
   .graphFooter {
     width: 40%;
     display: inline-block;
-  }
-
-  .partyTag {
-    width: 70px;
   }
 
   .resetButton {
@@ -387,13 +314,9 @@ export default {
   .tagsWrapper {
     width: 40%;
   }
-
 }
 
 #seatsCounter {
   margin-top: 1%;
-  //border: 1px solid red;
 }
-
-
 </style>
