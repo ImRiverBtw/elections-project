@@ -1,4 +1,28 @@
 <script setup>
+import { ref } from 'vue';
+
+
+// Reactive variable for dark mode state
+const isDarkMode = ref(localStorage.getItem('darkMode') === 'true');
+
+// Function to toggle dark mode
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value;
+
+  if (isDarkMode.value) {
+    document.body.classList.add('dark-mode'); // Add a class to the <body>
+    localStorage.setItem('darkMode', 'true'); // Save the preference
+  } else {
+    document.body.classList.remove('dark-mode');
+    localStorage.setItem('darkMode', 'false');
+  }
+};
+
+// Apply dark mode on page load if saved preference is dark mode
+if (isDarkMode.value) {
+  document.body.classList.add('dark-mode');
+}
+
 function myFunction() {
   var x = document.getElementById("myTopnav");
   if (x.className === "topnav") {
@@ -16,6 +40,9 @@ function myFunction() {
     <div class="container">
       <img alt="Vue logo" src="../assets/img/logo-ec-big.svg">
       <img class="imgright" alt="image right" src="../assets/img/right_header_image.svg">
+      <button class="dark-mode-toggle" @click="toggleDarkMode">
+        {{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}
+      </button>
     </div>
   </div>
 
@@ -40,6 +67,21 @@ function myFunction() {
 .topnav {
   overflow: hidden;
   background-color: #004494;
+}
+
+.dark-mode-toggle {
+  background-color: #004494;
+  color: white;
+  border: none;
+  padding: 15px 20px;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 120px;
+}
+
+.dark-mode-toggle:hover {
+  background-color: #80bfff;
 }
 
 .container{

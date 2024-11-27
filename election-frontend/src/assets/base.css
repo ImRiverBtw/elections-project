@@ -14,3 +14,91 @@ body {
     padding: 24px 16px 24px 16px;
 
 }
+
+/* Global Dark Mode Styles */
+body.dark-mode {
+    background-color: #121212; /* Dark background color */
+    color: #e0e0e0;           /* Light text color */
+}
+
+/* Links */
+body.dark-mode a {
+    color: #80bfff;
+}
+
+body.dark-mode a:hover {
+    color: #b3d9ff;
+}
+
+/* Navbar */
+body.dark-mode .topnav {
+    background-color: #1a1a1a;
+}
+
+body.dark-mode .topnav a {
+    color: #e0e0e0;
+}
+
+body.dark-mode .topnav a:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Footer */
+body.dark-mode .footer {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+body.dark-mode .footer a {
+    color: #80bfff;
+}
+
+body.dark-mode .footer a:hover {
+    color: #b3d9ff;
+}
+
+/* Toggle Button */
+.dark-mode-toggle {
+    background-color: #f0f0f0; /* Light background color */
+    color: #121212;           /* Dark text color */
+    border: 1px solid #ccc;   /* Border for better visibility */
+    padding: 8px 16px;        /* Padding for better size */
+    cursor: pointer;          /* Pointer cursor for clickability */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transitions */
+}
+
+.dark-mode-toggle:hover {
+    background-color: #e0e0e0; /* Slightly darker on hover */
+    color: #000;
+}
+
+/* Dark Mode Toggle Button */
+body.dark-mode .dark-mode-toggle {
+    background-color: #333;   /* Dark background color */
+    color: #e0e0e0;           /* Light text color */
+    border-color: #444;       /* Adjusted border color for dark mode */
+}
+
+body.dark-mode .dark-mode-toggle:hover {
+    background-color: #444;   /* Darker background on hover */
+    color: #fff;              /* Bright text color on hover */
+}
+
+/* Dark Mode Styles */
+body.dark-mode .election-results-nav a {
+    color: #e0e0e0; /* Light text color for dark mode */
+    background-color: #1a1a1a; /* Match the dark mode background */
+}
+
+body.dark-mode .election-results-nav a.active {
+    background-color: #333333; /* Slightly lighter background for active state */
+}
+
+body.dark-mode .election-results-nav a::before {
+    background-color: #80bfff; /* Adjusted for dark mode (light blue) */
+}
+
+body.dark-mode .election-results-nav a.active::before {
+    background-color: #ffc107; /* Adjusted yellow for visibility */
+}
