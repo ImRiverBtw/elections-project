@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <h3>Loading...</h3>
+<h3>Loading...</h3>
 </template>
 
 <style scoped>
