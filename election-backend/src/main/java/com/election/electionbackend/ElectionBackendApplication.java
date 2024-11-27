@@ -1,53 +1,36 @@
 package com.election.electionbackend;
 
-import com.election.electionbackend.jpa.*;
+import com.election.electionbackend.services.ElectionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import lombok.RequiredArgsConstructor;
 
-@SpringBootApplication
-public class ElectionBackendApplication implements CommandLineRunner {
+/**
+ * Main application class for the Election application.
+ * This class is responsible for bootstrapping the Spring Boot application.
+ */
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
+@RequiredArgsConstructor
+public class ElectionBackendApplication {
 
-    private Logger logger = LoggerFactory.getLogger(ElectionBackendApplication.class);
-
-    @Autowired
-    private AffiliationRepository affiliationRepo;
-
-    @Autowired
-    private PollingStationRepository pollingStationRepo;
-
-    @Autowired
-    private PollingStationCandidateRepository pollingStationCandidateRepo;
-
-    @Autowired
-    private ConstituencyRepository constituencyRepo;
-
-    @Autowired
-    private CandidateRepository candidateRepo;
-
-    @Autowired
-    private UserRepository userRepo;
-
-    @Override
-    public void run(String... args) throws Exception {
-        logger.info("Starting Election Backend");
-        insertDummyData();
-    }
-    public void insertDummyData() {
-        affiliationRepo.insertDummyData();
-        constituencyRepo.insertDummyData();
-        candidateRepo.insertDummyData();
-        pollingStationRepo.insertDummyData();
-        pollingStationCandidateRepo.insertDummyData();
-
-        userRepo.insertDummyData();
-    }
+    private static final Logger logger = LoggerFactory.getLogger(ElectionBackendApplication.class);
+    private final ElectionService electionService;
 
     public static void main(String[] args) {
         SpringApplication.run(ElectionBackendApplication.class, args);
     }
-}
 
+    @Bean
+    public CommandLineRunner processXmlFilesOnStartup() {
+        return args -> {
+            logger.info("Starting Election Backend");
+            System.out.println("Processing XML files on startup...");
+            electionService.processAllXmlFiles();
+        };
+    }
+}
