@@ -29,6 +29,10 @@ public class ElectionService {
     private final VoteRepository voteRepository;
     private final XmlParser xmlParser;
 
+    /**
+     * Retrieves the total votes by party across all municipalities.
+     * @return List of AggregatedVoteDto containing vote details for each party.
+     */
     public List<AggregatedVoteDto> getTotalVotesByParty() {
         List<Vote> allVotes = voteRepository.findAll();
         int totalValidVotes = allVotes.stream().mapToInt(Vote::getValidVotes).sum();
@@ -51,6 +55,11 @@ public class ElectionService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves the total votes by party in a specific municipality.
+     * @param municipalityId ID of the municipality.
+     * @return List of AggregatedVoteDto containing vote details for each party in the municipality.
+     */
     public List<AggregatedVoteDto> getTotalVotesByPartyInMunicipality(String municipalityId) {
         List<Vote> votes = voteRepository.findByPollingStation_Municipality_Id(municipalityId);
         int totalValidVotes = votes.stream().mapToInt(Vote::getValidVotes).sum();
@@ -73,6 +82,11 @@ public class ElectionService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves the total votes by party in a specific polling station.
+     * @param pollingStationId ID of the polling station.
+     * @return List of AggregatedVoteDto containing vote details for each party in the polling station.
+     */
     public List<AggregatedVoteDto> getTotalVotesByPartyInPollingStation(String pollingStationId) {
         List<Vote> allVotes = voteRepository.findAll();
         int totalValidVotes = allVotes.stream().mapToInt(Vote::getValidVotes).sum();
@@ -95,18 +109,33 @@ public class ElectionService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves the total number of valid votes for a specific party.
+     * @param partyId ID of the party.
+     * @return Total number of valid votes for the party.
+     */
     public int getTotalVotesForParty(String partyId) {
         return voteRepository.findByParty_Id(partyId).stream()
                 .mapToInt(Vote::getValidVotes)
                 .sum();
     }
 
+    /**
+     * Retrieves the total number of valid votes for a specific candidate.
+     * @param candidateId ID of the candidate.
+     * @return Total number of valid votes for the candidate.
+     */
     public int getTotalVotesForCandidate(String candidateId) {
         return voteRepository.findByCandidate_Id(candidateId).stream()
                 .mapToInt(Vote::getValidVotes)
                 .sum();
     }
 
+    /**
+     * Retrieves the details of a specific municipality by its ID.
+     * @param municipalityId ID of the municipality.
+     * @return MunicipalityDto containing details of the municipality.
+     */
     public MunicipalityDto getMunicipalityById(String municipalityId) {
         Municipality municipality = municipalityRepository.findById(municipalityId)
                 .orElseThrow(() -> new NoSuchElementException("Municipality not found"));
@@ -116,6 +145,11 @@ public class ElectionService {
         return dto;
     }
 
+    /**
+     * Retrieves the polling stations for a specific municipality.
+     * @param municipalityId ID of the municipality.
+     * @return List of PollingStationDto containing details of the polling stations.
+     */
     public List<PollingStationDto> getPollingStationsByMunicipality(String municipalityId) {
         return pollingStationRepository.findByMunicipality_Id(municipalityId).stream()
                 .map(pollingStation -> {
@@ -128,6 +162,10 @@ public class ElectionService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Processes all XML files in the specified directory.
+     * Reads the XML files, parses the data, and saves the votes to the database.
+     */
     public void processAllXmlFiles() {
         try {
             List<Path> xmlFiles = Files.walk(Paths.get(DIRECTORY))
@@ -144,6 +182,10 @@ public class ElectionService {
         }
     }
 
+    /**
+     * Processes the XML data and saves the votes to the database.
+     * @param xmlContent XML content as a string.
+     */
     public void processXmlData(String xmlContent) {
         List<Vote> votes = xmlParser.parseVotes(xmlContent);
 
@@ -168,6 +210,10 @@ public class ElectionService {
         }
     }
 
+    /**
+     * Retrieves the top party for each municipality.
+     * @return List of MunicipalityPartyDto containing the top party details for each municipality.
+     */
     public List<MunicipalityPartyDto> getMunicipalitiesWithTopParty() {
         List<Municipality> municipalities = municipalityRepository.findAll();
         List<MunicipalityPartyDto> result = new ArrayList<>();
@@ -197,6 +243,11 @@ public class ElectionService {
         return result;
     }
 
+    /**
+     * Retrieves the seat count for a specific party.
+     * @param partyId ID of the party.
+     * @return Number of seats allocated to the party.
+     */
     public int getSeatCountForParty(String partyId) {
         List<Vote> allVotes = voteRepository.findAll();
         int totalValidVotes = allVotes.stream().mapToInt(Vote::getValidVotes).sum();
@@ -209,6 +260,10 @@ public class ElectionService {
         return totalVotesForParty / electoralQuota;
     }
 
+    /**
+     * Retrieves all municipalities.
+     * @return List of MunicipalityDto containing details of all municipalities.
+     */
     public List<MunicipalityDto> getAllMunicipalities() {
         List<Municipality> municipalities = municipalityRepository.findAll();
         return municipalities.stream()

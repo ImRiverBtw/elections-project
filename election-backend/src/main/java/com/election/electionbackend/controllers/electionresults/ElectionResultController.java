@@ -14,7 +14,7 @@ public class ElectionResultController {
 
     private final ElectionService electionService;
 
-    // Constructor injection for ElectionServiceI
+    // Constructor injection for ElectionService
     public ElectionResultController(ElectionService electionService) {
         this.electionService = electionService;
     }
@@ -47,14 +47,22 @@ public class ElectionResultController {
         return electionService.getMunicipalitiesWithTopParty();
     }
 
+    /**
+     * Endpoint to get all municipalities.
+     * @return List of MunicipalityDto containing details of all municipalities.
+     */
     @GetMapping("/municipalities")
     public List<MunicipalityDto> getAllMunicipalities() {
         return electionService.getAllMunicipalities();
     }
 
+    /**
+     * Endpoint to get total votes by party in a specific municipality.
+     * @param municipalityId ID of the municipality.
+     * @return List of AggregatedVoteDto containing vote details for each party in the municipality.
+     */
     @GetMapping("/municipalities/{municipalityId}/votes")
     public List<AggregatedVoteDto> getVotesByPartyInMunicipality(@PathVariable String municipalityId) {
         return electionService.getTotalVotesByPartyInMunicipality(municipalityId);
     }
-
 }
