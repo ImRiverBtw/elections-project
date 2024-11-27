@@ -146,4 +146,8 @@ export default {
 .Button.Close:hover {
   color: #004494;
 }
+
+.Button.Submit {
+  margin-top: 1rem;
+}
 </style>

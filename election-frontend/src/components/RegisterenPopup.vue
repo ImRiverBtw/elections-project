@@ -24,7 +24,7 @@
         <div class="inputText confirm-password">Confirm Wachtwoord</div>
         <input class="inputField confirm-password" type="password" v-model="registerConfirmPassword" placeholder="Confirm Wachtwoord" />
 
-        <button class="Button submitRegister" @click="submit">Register</button>
+        <button class="Button Submit Register" @click="submit">Register</button>
       </div>
     </div>
   </div>

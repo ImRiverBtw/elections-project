@@ -14,7 +14,7 @@
         <div class="inputText password">Wachtwoord</div>
         <input class="inputField password" v-model="loginPassword" placeholder="Wachtwoord" />
 
-        <button class="Button submitLogin" @click="submit">Login</button>
+        <button class="Button Submit Login" @click="submit">Login</button>
       </div>
     </div>
   </div>
