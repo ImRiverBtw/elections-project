@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/userdata';
+const API_BASE_URL = 'http://localhost:8080/auth';
 
 export async function login(email, password) {
     const loginData = { email, password };
