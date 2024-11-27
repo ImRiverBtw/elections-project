@@ -6,6 +6,8 @@ import MajorityCalculator from  "@/components/ElectionResults/MajorityCalculator
 import MunicipalityFinder from "@/components/ElectionResults/MunicipalityFinderComponent.vue";
 import SeatDistribution from "@/components/ElectionResults/SeatDistributionComponent.vue";
 import TotalTable from "@/components/ElectionResults/TotalTableComponent.vue";
+import NewPostComponent from "@/components/Forum/NewPostComponent.vue";
+import ForumView from "@/components/Forum/ForumView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,11 +24,6 @@ const router = createRouter({
             // this generates a separate chunk (About.[hash].js) for this route
             // which is lazy-loaded when the route is visited.
             component: () => import('../views/AboutView.vue')
-        },
-        {
-            path: '/test',
-            name: 'test',
-            component: () => import('../views/TestView.vue')
         },
         {
             path: '/parsetest',
@@ -62,6 +59,17 @@ const router = createRouter({
                     path: "totaltable",
                     component: TotalTable
                 }
+            ]
+        },
+        {
+            path: '/forum',
+            name: 'forum',
+            component: ForumView,
+            children: [
+                {
+                    path: "newpost",
+                    component: NewPostComponent,
+                },
             ]
 
         }
