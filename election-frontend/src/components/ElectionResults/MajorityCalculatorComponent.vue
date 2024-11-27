@@ -96,7 +96,7 @@ export default {
 
     onMounted(async () => {
       await fetchAffiliationResults();
-
+      affiliations.value = affiliations.value.filter(affiliation => affiliation.seatCount > 0);
     })
     return {affiliations, err, loading}
   },
@@ -313,6 +313,8 @@ export default {
 
   .tagsWrapper {
     width: 40%;
+    display: grid;
+    grid-template-columns: auto auto auto;
   }
 }
 

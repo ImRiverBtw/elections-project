@@ -24,7 +24,6 @@ export function useAffiliations() {
 
             // Filter affiliations to include only those with a seat count greater than 0 and sort on votes descending
             affiliations.value = data
-                .filter(affiliation => affiliation.seatCount > 0)
                 .sort((a, b) => b.votes - a.votes);
         } catch (error) {
             // Capture any error that occurs and assign it to the error state
