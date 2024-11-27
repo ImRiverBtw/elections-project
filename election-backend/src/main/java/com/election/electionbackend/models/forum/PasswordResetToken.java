@@ -1,4 +1,4 @@
-package com.election.electionbackend.entity;
+package com.election.electionbackend.models.forum;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

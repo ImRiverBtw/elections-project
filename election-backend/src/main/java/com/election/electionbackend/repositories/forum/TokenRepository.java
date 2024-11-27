@@ -1,6 +1,6 @@
-package com.election.electionbackend.jpa;
+package com.election.electionbackend.repositories.forum;
 
-import com.election.electionbackend.entity.PasswordResetToken;
+import com.election.electionbackend.models.forum.PasswordResetToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

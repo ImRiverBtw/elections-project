@@ -1,7 +1,9 @@
-package com.election.electionbackend.controllers;
+package com.election.electionbackend.controllers.forum;
 
-import com.election.electionbackend.entity.Users;
-import com.election.electionbackend.jpa.UserRepository;
+import com.election.electionbackend.models.forum.PasswordResetToken;
+import com.election.electionbackend.models.forum.Users;
+import com.election.electionbackend.repositories.forum.PasswordResetTokenRepository;
+import com.election.electionbackend.repositories.forum.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,7 @@ public class UserController {
     private UserRepository userRepo;
 
     @Autowired
-    private PasswordResetTokenRepository tokenRepo;
+    private com.election.electionbackend.repositories.forum.PasswordResetTokenRepository tokenRepo;
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> request) {
@@ -32,7 +34,7 @@ public class UserController {
 
         // Generate token
         String token = UUID.randomUUID().toString();
-        PasswordResetToken resetToken = new PasswordResetToken();
+        com.election.electionbackend.models.forum.PasswordResetToken resetToken = new com.election.electionbackend.models.forum.PasswordResetToken();
         resetToken.setToken(token);
         resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(30));
         resetToken.setUser(user);

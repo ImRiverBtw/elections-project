@@ -148,39 +148,54 @@ export default {
 </script>
 
 <style scoped>
-/* General page styling */
+/* General styling for the dark theme */
 body {
   font-family: Arial, sans-serif;
-  color: #333;
+  background-color: #1b1b1b; /* Dark background */
+  color: #f1f1f1; /* Light text for readability */
   margin: 0;
   padding: 0;
 }
 
-/* Center and limit the width of the container */
-.form-group {
-  width: 60%; /* Adjusted size to be larger but not full-width */
-  max-width: 500px; /* Slightly bigger than the previous version */
-  margin: 40px auto 20px; /* Adds space from the top (40px) */
+/* Header styling */
+h2 {
+  color: #f1f1f1; /* Bright white for header */
+  font-size: 20px;
   text-align: left;
+  margin: 20px 0;
+  padding-left: 20px;
+}
+
+/* Form group container */
+.form-group {
+  background-color: #262626; /* Slightly lighter dark background */
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  margin: 20px auto;
+  width: 90%;
+  max-width: 800px;
 }
 
 /* Label styling */
 .label {
-  font-size: 16px;
-  margin-bottom: 8px;
   display: block;
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #f1f1f1;
 }
 
 /* Styled dropdown */
 .styled-select {
-  width: 100%; /* Ensures it fits the container width */
-  padding: 12px; /* Slightly more padding for a comfortable click area */
-  font-size: 16px; /* Adjusted font size for readability */
-  border: 1px solid #ddd;
+  background-color: #333333; /* Dark background for dropdown */
+  color: #f1f1f1;
+  border: 1px solid #444;
   border-radius: 5px;
-  background-color: #fff;
+  padding: 10px;
+  width: 100%;
+  font-size: 14px;
   outline: none;
-  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .styled-select:focus {
@@ -188,17 +203,72 @@ body {
   box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }
 
-/* Chart container with spacing */
+/* Chart container */
 .chart-container {
-  width: 60%; /* Matches the dropdown width */
-  max-width: 700px; /* Slightly larger for visual balance */
-  margin: 30px auto; /* Adds some space from the dropdown */
+  background-color: #262626;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  margin: 20px auto;
+  width: 90%;
+  max-width: 800px;
 }
 
+canvas {
+  background-color: transparent; /* Transparent background for the chart */
+  border-radius: 5px;
+}
+
+/* No data message styling */
 .no-data {
   text-align: center;
-  color: #999;
+  color: #aaa; /* Muted text color */
   font-size: 14px;
   margin-top: 20px;
 }
+
+/* Buttons */
+button {
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 10px 5px;
+  color: #fff;
+}
+
+button.top-10 {
+  background-color: #e74c3c; /* Bright red for the 'top-10' button */
+}
+
+button.all-data {
+  background-color: #555; /* Neutral gray for the 'all data' button */
+}
+
+/* Additional links or info box */
+.info-box {
+  background-color: #262626;
+  padding: 10px;
+  border-radius: 8px;
+  color: #aaa;
+  font-size: 14px;
+  margin: 20px auto;
+  width: 90%;
+  max-width: 800px;
+  text-align: left;
+}
+
+/* Media query for responsiveness */
+@media (max-width: 768px) {
+  .form-group, .chart-container, .info-box {
+    width: 95%;
+  }
+
+  h2 {
+    font-size: 18px;
+    padding-left: 10px;
+  }
+}
+
 </style>
