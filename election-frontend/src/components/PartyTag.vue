@@ -20,7 +20,6 @@ div {
   border-radius: 10px;
   background: #d4dfef;
   margin: 2px;
-  width: 75px;
   text-align: center;
   font-size: 16px;
   background: linear-gradient(to right, #d4dfef 75%, #d4dfef 75%);
@@ -30,8 +29,4 @@ div:hover {
   cursor: pointer;
   background: #f5c90e;
 }
-
-
-
-
 </style>
