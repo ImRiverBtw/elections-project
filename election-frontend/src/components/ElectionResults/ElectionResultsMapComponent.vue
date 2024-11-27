@@ -25,13 +25,14 @@ export default {
   },
   created() {
     // Ophalen van de verkiezingsresultaten
-    fetch('http://localhost:8080/electionresult/pollingStation')
+    fetch('http://localhost:8080/electionresult/municipalities/top-party')
         .then(response => response.json())
         .then(jsonData => {
           console.log('Fetched election results:', jsonData);
           jsonData.forEach(gemeente => {
-            const partijNaam = gemeente.affiliationName || gemeente.affiliation?.name || 'Onbekend';
-            this.gemeentenVotesMap[gemeente.name] = partijNaam;
+            const partijId = gemeente.affiliation.id || 'unknown';
+            const partijNaam = gemeente.affiliation.name || 'Onbekend';
+            this.gemeentenVotesMap[gemeente.name] = { id: partijId, name: partijNaam };
           });
 
           const normalizedGemeenten = jsonData.map(gemeente => ({
@@ -43,7 +44,7 @@ export default {
 
           const fuseOptions = {
             keys: ['name'],
-            threshold: 0.4
+            threshold: 0.1
           };
 
           this.fuse = new Fuse(normalizedGemeenten, fuseOptions);
@@ -97,10 +98,10 @@ export default {
           }
         }
 
-        feature.properties.winning_party = winningParty || 'Onbekend';
+        feature.properties.winning_party = winningParty ? winningParty.name : 'Onbekend';
 
         return {
-          fillColor: this.getColor(winningParty),
+          fillColor: this.getColor(winningParty ? winningParty.id : 'unknown'),
           weight: 2,
           opacity: 1,
           color: 'white',
@@ -143,17 +144,13 @@ export default {
         onEachFeature: onEachFeature
       }).addTo(this.map);
     },
-    getColor(party) {
-      return party === 'NSC' ? '#FFDD00' :
-          party === 'PVV' ? '#1E90FF' :
-              party === 'GLPVDA' ? '#FF0000' :
-                  party === 'SP' ? '#FF3300' :
-                      party === 'VVD' ? '#003399' :
-                          party === 'D66' ? '#32CD32' :
-                              party === 'BBB' ? '#4CAF50' :
-                                  party === 'CDA' ? '#006400' :
-                                      party === 'FVD' ? '#800020' :
-                                          party === 'PVDD' ? '#00A86B' :
+    getColor(partyId) {
+      return partyId === '1' ? '#a90000' : // GLPVDA
+          partyId === '2' ? '#70d4ff' : // PVV
+              partyId === '3' ? '#e3c40a' : // NSC
+                  partyId === '4' ? '#123de3' : // VVD
+                      partyId === '5' ? '#e16e0f' : // SGP
+                          partyId === '6' ? '#2acd19' : //D66
                                               '#CCCCCC'; // Grijs als default
     },
     normalize(name) {

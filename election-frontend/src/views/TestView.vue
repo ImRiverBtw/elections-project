@@ -4,7 +4,14 @@
     <button class="Button Login" @click="showLoginPopup = true">Login</button>
     <button class="Button Register" @click="showRegisterPopup = true">Register</button>
 
-    <LoginPopup :visible="showLoginPopup" @close="showLoginPopup = false" />
+    <LoginPopup
+        :visible="showLoginPopup"
+        @close="showLoginPopup = false"
+        @forgot-password="showForgotPasswordPopup = true"
+    />
+
+    <ForgotPasswordPopup :visible="showForgotPasswordPopup" @close="showForgotPasswordPopup = false" />
+
     <RegisterPopup :visible="showRegisterPopup" @close="showRegisterPopup = false" />
   </div>
 </template>
@@ -12,16 +19,20 @@
 <script>
 import LoginPopup from '../components/LoginPopup.vue';
 import RegisterPopup from '../components/RegisterenPopup.vue';
+import ForgotPasswordPopup from '../components/WachtwoordvvPopup.vue';
+
 
 export default {
   components: {
     LoginPopup,
     RegisterPopup,
+    ForgotPasswordPopup
   },
   data() {
     return {
       showLoginPopup: false,
       showRegisterPopup: false,
+      showForgotPasswordPopup: false,
     };
   },
 };
@@ -145,5 +156,9 @@ export default {
 
 .Button.Close:hover {
   color: #004494;
+}
+
+.Button.Submit {
+  margin-top: 1rem;
 }
 </style>
