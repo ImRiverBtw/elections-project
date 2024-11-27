@@ -18,11 +18,11 @@ const transporter = nodemailer.createTransport({
  */
 const sendEmail = async (to, subject, text, resetLink) => {
     const mailOptions = {
-        from: 'hteam1965@gmail.com', // Sender address
-        to,                          // Recipient address
-        subject,                     // Subject of the email
-        text: `${text}\nReset your password using this link: ${resetLink}`, // Include reset link in plain text
-        html: `<p>${text}</p><p><a href="${resetLink}" target="_blank">Reset your password</a></p>`, // HTML version with clickable link
+        from: 'hteam1965@gmail.com',
+        to,
+        subject,
+        text: `${text}\nReset your password using this link: ${resetLink}`,
+        html: `<p>${text}</p><p><a href="${resetLink}" target="_blank">Reset your password</a></p>`, // Proper clickable link
     };
 
     try {

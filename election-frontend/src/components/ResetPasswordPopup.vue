@@ -20,7 +20,7 @@ const submit = async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:8080/userdata/forgot-password', {
+    const response = await fetch('http://localhost:8080/userdata/reset-password', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -41,39 +41,37 @@ public class UserController {
 
         tokenRepo.save(resetToken);
 
+        // Prepare reset link
+        String resetLink = "http://127.0.0.1:5173/reset-password?token=" + token;
+
+        // Email content
+        String plainText = "Click the link to reset your password: " + resetLink;
+        String htmlText = "<p>Click the link to reset your password:</p>" +
+                "<p><a href='" + resetLink + "' target='_blank'>" + resetLink + "</a></p>";
+
         // Send reset link via Node.js backend
         RestTemplate restTemplate = new RestTemplate();
         String emailBackendUrl = "http://localhost:3000/send-email"; // Node.js email backend URL
         Map<String, String> emailRequest = new HashMap<>();
         emailRequest.put("to", email);
         emailRequest.put("subject", "Password Reset Request");
-
-        // Plain text and HTML content
-        String resetLink = "http://127.0.0.1:5173/reset-password?token=" + token;
-        String plainText = "Click the link to reset your password: " + resetLink;
-        String htmlText = "<p>Click the link to reset your password:</p>" +
-                "<p><a href='" + resetLink + "'>" + resetLink + "</a></p>";
-
-        emailRequest.put("text", plainText); // For plain text fallback
-        emailRequest.put("html", htmlText); // For HTML content
+        emailRequest.put("text", plainText); // Plain text content
+        emailRequest.put("html", htmlText); // HTML content
 
         try {
             restTemplate.postForObject(emailBackendUrl, emailRequest, String.class);
             return ResponseEntity.ok("Password reset email sent.");
         } catch (Exception e) {
+            e.printStackTrace(); // Log the error for debugging
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email.");
         }
     }
 
-
-
-    // Reset password
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> requestBody) {
         String token = requestBody.get("token");
         String newPassword = requestBody.get("newPassword");
 
-        // Validate token and password
         if (token == null || token.isEmpty()) {
             return ResponseEntity.badRequest().body("Token is required.");
         }
@@ -81,7 +79,6 @@ public class UserController {
             return ResponseEntity.badRequest().body("New password is required.");
         }
 
-        // Check token validity
         Optional<PasswordResetToken> optionalToken = tokenRepo.findByToken(token);
         if (optionalToken.isEmpty()) {
             return ResponseEntity.badRequest().body("Invalid or expired token.");
@@ -92,19 +89,19 @@ public class UserController {
             return ResponseEntity.badRequest().body("Token has expired.");
         }
 
-        // Update user's password
         Users user = resetToken.getUser();
-        user.setPassword(newPassword); // Ensure password is hashed (e.g., BCrypt)
+        if (user == null) {
+            return ResponseEntity.badRequest().body("User with this email does not exist.");
+        }
+
+        user.setPassword(newPassword); // Ideally, hash the password before saving
         userRepo.save(user);
 
-        // Delete the used token
-        tokenRepo.delete(resetToken);
+        tokenRepo.delete(resetToken); // Remove token after successful password reset
 
-        // Construct a confirmation link or response message (optional)
-        String confirmationMessage = "Password has been reset successfully. You can now log in using your new password.";
-
-        return ResponseEntity.ok(confirmationMessage);
+        return ResponseEntity.ok("Password has been reset successfully.");
     }
+
 
 
     // Registeren voor nieuwe gebruiker
