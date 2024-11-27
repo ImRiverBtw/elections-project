@@ -9,7 +9,7 @@
 
 <script>
 import {Chart} from "chart.js/auto";
-import {useAffiliations} from "@/Composables/useAffiliations.js";
+import {useAffiliations} from "@/composables/useAffiliations.js";
 import ErrorComponent from "@/components/Status/ErrorComponent.vue";
 import Loading from "@/components/Status/Loading.vue";
 import {nextTick, onMounted, provide, ref} from "vue";
