@@ -1,6 +1,5 @@
 package com.election.electionbackend.jpa;
 
-import com.election.electionbackend.entity.ForumPost;
 import com.election.electionbackend.entity.ForumTag;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -9,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository

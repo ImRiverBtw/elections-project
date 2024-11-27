@@ -13,7 +13,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-public class ForumPost {
+public class Post {
 
     /**
      * Attributes
@@ -38,7 +38,7 @@ public class ForumPost {
     @CreationTimestamp
     private LocalDateTime creationDate;
 
-    public ForumPost() {
+    public Post() {
 
     }
 
@@ -51,7 +51,7 @@ public class ForumPost {
      * @param textContent - the content of the post
      * @param creationDate - the time when the post is created
      */
-    public ForumPost(Long id, String title, String tag, String author, String textContent, LocalDateTime creationDate) {
+    public Post(Long id, String title, String tag, String author, String textContent, LocalDateTime creationDate) {
         this.id = id;
         this.title = title;
         this.tag = tag;

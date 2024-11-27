@@ -4,7 +4,8 @@
 
 package com.election.electionbackend.jpa;
 
-import com.election.electionbackend.entity.ForumPost;
+import com.election.electionbackend.entity.ForumTag;
+import com.election.electionbackend.entity.Post;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -22,17 +23,24 @@ public class ForumPostRepository {
     @PersistenceContext
     private EntityManager em;
 
+//    private ForumTagRepository forumTagRepository;
+
+
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+//    public ForumPostRepository(ForumTagRepository forumTagRepository) {
+//        this.forumTagRepository = forumTagRepository;
+//    }
 
     /**
      * Method that retrieves a certain post by its id
      * @param id - the id of the post you want to retrieve
      * @return - the post with the matching id
      */
-    public ForumPost findById(Long id) {
+    public Post findById(Long id) {
 
-        return em.find(ForumPost.class, id);
+        return em.find(Post.class, id);
 
     }
 
@@ -40,8 +48,8 @@ public class ForumPostRepository {
      * Method that retrieves a list of all posts
      * @return a list of all posts
      */
-    public List<ForumPost> findAll() {
-        List<ForumPost> forumPosts = em.createQuery("from ForumPost").getResultList();
+    public List<Post> findAll() {
+        List<Post> forumPosts = em.createQuery("from Post").getResultList();
         return forumPosts;
     }
 
@@ -50,7 +58,7 @@ public class ForumPostRepository {
      * @param forumPost the post you want to add/update
      * @return the post that is saved/updated
      */
-    public ForumPost save(ForumPost forumPost) {
+    public Post save(Post forumPost) {
 
         // checks if the post already exists //
         if (forumPost.getId() == null) {
@@ -72,7 +80,7 @@ public class ForumPostRepository {
      */
     public void insertDummyPosts() {
 
-        ForumPost forumPost = new ForumPost(1224324234L,"titel", "tag", "auteur (gebruiker)", "inhoud post", LocalDateTime.now());
+        Post forumPost = new Post(12L,"titel", "testTag", "auteur (gebruiker)", "inhoud post", LocalDateTime.now());
 
         save(forumPost);
     }

@@ -6,7 +6,7 @@
 package com.election.electionbackend.controllers;
 
 
-import com.election.electionbackend.entity.ForumPost;
+import com.election.electionbackend.entity.Post;
 import com.election.electionbackend.jpa.ForumPostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +29,9 @@ public class ForumPostController {
      * @return a list of all the forum posts
      */
     @GetMapping("/forumposts")
-    public List<ForumPost> getAllForumPosts() {
+    public List<Post> getAllForumPosts() {
 
-        List <ForumPost> forumPosts = forumPostRepository.findAll();
+        List <Post> forumPosts = forumPostRepository.findAll();
 
         return forumPosts;
 
@@ -43,7 +43,7 @@ public class ForumPostController {
      * @return a ResponseEntity telling if the post was created succefully
      */
     @PostMapping("/forumNewPost")
-    public ResponseEntity<String> createNewPost(@RequestBody ForumPost forumPost) {
+    public ResponseEntity<String> createNewPost(@RequestBody Post forumPost) {
 
         forumPostRepository.save(forumPost);
 

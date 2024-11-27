@@ -28,14 +28,36 @@
             @input="clearError('title')"><br><br>
 
         <label for="tags">Tags</label>
-        <input
-            type="text"
-            id="tags"
-            name="tags"
-            placeholder="Typ en klik op een tag"
-            v-model="post.tags"
-            :class="{'border-red': showError.tags}"
-            @input="clearError('tags')"><br><br>
+
+<!--        zelf een tag aanmaken -->
+<!--        <input-->
+<!--            type="text"-->
+<!--            id="tags"-->
+<!--            name="tags"-->
+<!--            placeholder="Typ en klik op een tag"-->
+<!--            v-model="post.tags"-->
+<!--            :class="{'border-red': showError.tags}"-->
+<!--            @input="clearError('tags')"><br><br>-->
+
+        <div class="dropdown">
+
+          <button @click.prevent="toggleDropdown" class="dropdown-button">
+            {{ selected || 'Klik op een Tag' }}
+          </button>
+
+          <!-- Dropdown Menu -->
+          <ul v-if="isOpen" class="dropdown-menu">
+            <li
+                v-for="(tag, index) in existingTags"
+                :key="index"
+                @click="selectOption(tag.name)"
+                class="dropdown-item"
+            >
+              {{ tag.name }}
+            </li>
+          </ul>
+
+        </div>
 
         <label for="body">Tekst</label>
 
@@ -86,11 +108,14 @@ export default {
       post: {
         id: null,
         title: "",
-        tags: "",
+        tags: {},
         body: "",
       },
 
       existingTags: {},
+
+      isOpen: false, // Controls visibility of dropdown
+      selected: null // Selected option
 
     }
 
@@ -113,7 +138,7 @@ export default {
     },
 
 
-    handleSubmitPost(){
+    handleSubmitPost() {
 
       if (this.isValid()) {
 
@@ -132,10 +157,12 @@ export default {
 
         // attributes need to match columns in db //
         title: this.post.title,
-        tag: this.post.tags,
-        author: "test",
+        tag: this.selected,
+
+        // needs to change to get userID with jwt token //
+        author: "1",
+
         textContent: this.post.body,
-        // creationDate: new Date(),
 
       };
 
@@ -147,10 +174,11 @@ export default {
           body: JSON.stringify(postData),
         });
 
-        if(!response.ok) {
+        if (!response.ok) {
           const errorText = await response.text();
           alert("Error: " + errorText);
-        } else("Post aanmaken succesvol"); {
+        } else ("Post aanmaken succesvol");
+        {
 
           this.clearInputFields()
 
@@ -168,11 +196,13 @@ export default {
       this.post.tags = "";
 
       this.showModal = false;
+
+      this.selected = null;
     },
 
     isValid() {
 
-      if (this.post.title === "" || this.post.body === "" || this.post.tags === "") {
+      if (this.post.title === "" || this.post.body === "" || this.post.tags === null) {
         console.log("alle velden moeten ingevuld zijn")
 
         this.showError.title = this.post.title.trim() === '';
@@ -189,7 +219,6 @@ export default {
       this.showError[field] = false;
     },
 
-    // todo -
     async insertExistingTags() {
 
       try {
@@ -199,21 +228,31 @@ export default {
           headers: {'Content-Type': 'application/json'},
         });
 
-        if(!response.ok) {
+        if (!response.ok) {
           const errorText = await response.text();
           alert("Error: " + errorText);
-        } else("Tags ophalen succesvol "); {
+        } else ("Tags ophalen succesvol ");
+        {
 
           const data = await response.json()
           console.log(data)
+
+          this.existingTags = data;
 
         }
       } catch (error) {
         console.error('Tags ophalem niet gelukt', error);
       }
-    }
-  },
+    },
 
+      toggleDropdown() {
+        this.isOpen = !this.isOpen;
+      },
+      selectOption(option) {
+        this.selected = option;
+        this.isOpen = false;
+      }
+    },
 
 }
 
@@ -341,6 +380,34 @@ textarea {
 
 .border-red {
   border: 2px solid red;
+}
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+.dropdown-button {
+  padding: 10px;
+  background-color: #004594;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.dropdown-menu {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0;
+  width: 100%;
+  border: 1px solid #ccc;
+}
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+}
+.dropdown-item:hover {
+  background-color: #f1f1f1;
 }
 
 </style>

@@ -1,7 +1,6 @@
 package com.election.electionbackend.controllers;
 
 
-import com.election.electionbackend.entity.ForumPost;
 import com.election.electionbackend.entity.ForumTag;
 import com.election.electionbackend.jpa.ForumTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;

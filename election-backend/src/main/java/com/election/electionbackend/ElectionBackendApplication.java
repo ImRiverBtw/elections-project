@@ -54,8 +54,8 @@ public class ElectionBackendApplication implements CommandLineRunner {
         pollingStationRepo.insertDummyData();
         pollingStationCandidateRepo.insertDummyData();
 
-        forumPostRepository.insertDummyPosts();
         forumTagRepository.insertDummyTags();
+        forumPostRepository.insertDummyPosts();
 
     }
 
