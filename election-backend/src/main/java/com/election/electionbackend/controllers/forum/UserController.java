@@ -2,7 +2,6 @@ package com.election.electionbackend.controllers.forum;
 
 import com.election.electionbackend.models.forum.PasswordResetToken;
 import com.election.electionbackend.models.forum.Users;
-import com.election.electionbackend.repositories.forum.PasswordResetTokenRepository;
 import com.election.electionbackend.repositories.forum.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -106,32 +105,40 @@ public class UserController {
 
     // Registeren voor nieuwe gebruiker
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody Users user) {
-        //Controllen of email/gebruikersnaam al in de database staan
-
-        //TODO beter maken dat die alleen laat zien wat er fout is.
-        if (userRepo.existsByUsernameOrEmail(user.getUsername(), user.getEmail())) {
-            return ResponseEntity.badRequest().body("Gebruiksnaam of emailadres is al in gebruik.");
+    public ResponseEntity<Object> registerUser(@RequestBody Users user) {
+        if (userRepo.existsByUsername(user.getUsername())) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("message", "Deze gebruikersnaam is al in gebruik.")
+            );
         }
+
+        if (userRepo.existsByEmail(user.getEmail())) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("message", "Dit e-mailadres is al in gebruik.")
+            );
+        }
+
         userRepo.save(user);
-        //bevestiging van registeren
-        return ResponseEntity.ok("User registered successfully");
+        return ResponseEntity.ok(Map.of("message", "User registered successfully"));
     }
+
 
     //Login van een gebruiker
     @PostMapping("/login")
-    public String loginUser(@RequestBody Users users) {
-        //gebruiker gegevens zoeken om email.
+    public ResponseEntity<Object> loginUser(@RequestBody Users users) {
         Users existingUser = userRepo.findByEmail(users.getEmail());
 
-        //gegevens controlleren
-        if(existingUser != null && existingUser.getPassword().equals(users.getPassword())) {
-            return "Login succesful";
+        if (existingUser != null && existingUser.getPassword().equals(users.getPassword())) {
+            return ResponseEntity.ok(Map.of(
+                    "message", "Login successful",
+                    "userId", existingUser.getUserId(),
+                    "username", existingUser.getUsername()
+            ));
         }
 
-        //error message
-        return "Invalid email or password";
+        return ResponseEntity.status(401).body(Map.of("message", "Invalid email or password"));
     }
+
 
     //Dummy data
     @RequestMapping("/insertDummyData")

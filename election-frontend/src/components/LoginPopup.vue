@@ -9,9 +9,10 @@
       <div class="inputBox">
         <div class="inputText email">Email-addres</div>
         <input class="inputField email" v-model="loginEmail" placeholder="Email-addres" />
+        <small v-if="emailError" class="text-error">{{ emailError }}</small>
 
         <div class="inputText password">Wachtwoord</div>
-        <input class="inputField password" v-model="loginPassword" placeholder="Wachtwoord" />
+        <input class="inputField password" type="password" v-model="loginPassword" placeholder="Wachtwoord" />
 
         <a href="#" @click.prevent="$emit('forgot-password')">Wachtwoord vergeten?</a>
 
@@ -33,6 +34,7 @@ export default {
     return {
       loginEmail: '',
       loginPassword: '',
+      emailError: null,
     };
   },
   methods: {
@@ -41,26 +43,26 @@ export default {
       this.$emit('close');
     },
     async submit() {
-      //verzamelen van gegevens van de inputs
-      const loginData = {
-        email: this.loginEmail,
-        password: this.loginPassword,
-      };
+      this.emailError = null;
 
       try {
-        //verzamelde gegevens naar de backend sturen.
-        const response = await fetch('http://localhost:8080/userdata/login', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(loginData),
-        });
-
-        const result = await response.text();
-        console.log(result);
+        console.log("Ingelogd succesful");
+        this.close();
       } catch (error) {
-        console.error('Error during login:', error);
-    }
+        if (error.message.includes('Invalid email or password')) {
+          this.emailError = 'E-mailadres of wachtwoord is onjuist.';
+        } else {
+          this.emailError = 'Er is een probleem opgetreden. Probeer het later opnieuw.';
+        }
+      }
     },
   },
 };
 </script>
+
+<style>
+.text-error {
+  font-size: 12px;
+  color: red;
+}
+</style>
