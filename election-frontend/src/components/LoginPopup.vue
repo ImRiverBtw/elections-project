@@ -12,7 +12,7 @@
         <small v-if="emailError" class="text-error">{{ emailError }}</small>
 
         <div class="inputText password">Wachtwoord</div>
-        <input class="inputField password" v-model="loginPassword" placeholder="Wachtwoord" />
+        <input class="inputField password" type="password" v-model="loginPassword" placeholder="Wachtwoord" />
 
         <button class="Button Submit Login" @click="submit">Login</button>
       </div>

@@ -44,7 +44,7 @@ export default {
 
           const fuseOptions = {
             keys: ['name'],
-            threshold: 0.4
+            threshold: 0.1
           };
 
           this.fuse = new Fuse(normalizedGemeenten, fuseOptions);
