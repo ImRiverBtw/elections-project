@@ -92,6 +92,7 @@ export default {
     onMounted(async () => {
       // Fetch affiliation data from the API
       await fetchAffiliationResults();
+      affiliations.value = affiliations.value.filter(affiliation => affiliation.seatCount > 0);
 
       // Ensure Chart.js is available globally (for plugins)
       window.Chart = Chart;
