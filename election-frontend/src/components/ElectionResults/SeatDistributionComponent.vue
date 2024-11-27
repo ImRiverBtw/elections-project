@@ -23,47 +23,47 @@ export default {
     provide("err", err)
 
     const createChart = () => {
-        const ctx = barChart.value.getContext("2d");
-        const labels = affiliations.value.map(affiliation => affiliation.name);
-        const electionData = affiliations.value.map(affiliation => affiliation.seatCount);
+      const ctx = barChart.value.getContext("2d");
+      const labels = affiliations.value.map(affiliation => affiliation.name);
+      const electionData = affiliations.value.map(affiliation => affiliation.seatCount);
 
-        const data = {
-          labels: labels,
-          datasets: [{
-            label: "Aantal zetels 2023",
-            data: electionData,
-            borderWidth: 1,
-            borderColor: '#B9C5E9',
-            borderRadius: 2,
-            backgroundColor: 'rgba(185, 197, 233, 0.5)',
-          }]
-        }
+      const data = {
+        labels: labels,
+        datasets: [{
+          label: "Aantal zetels 2023",
+          data: electionData,
+          borderWidth: 1,
+          borderColor: '#B9C5E9',
+          borderRadius: 2,
+          backgroundColor: 'rgba(185, 197, 233, 0.5)',
+        }]
+      }
 
-        const config = {
-          type: "bar",
-          data: data,
-          options: {
-            plugins: {
-              afterDraw: {
-              },
-              legend: {
-                labels: {
-                  font: {
-                    size: 19,
-                    weight: 'bold',
-                  }
+      const config = {
+        type: "bar",
+        data: data,
+        options: {
+          plugins: {
+            afterDraw: {
+            },
+            legend: {
+              labels: {
+                font: {
+                  size: 19,
+                  weight: 'bold',
                 }
               }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
             }
           }
         }
-        new Chart(ctx, config)
       }
+      new Chart(ctx, config)
+    }
 
     onMounted(async () => {
       await fetchAffiliationResults();
@@ -77,9 +77,7 @@ export default {
     })
     return {affiliations, err, loading, barChart}
   },
-  methods: {
-
-  }
+  methods: {}
 }
 </script>
 

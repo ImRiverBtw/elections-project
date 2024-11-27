@@ -49,9 +49,9 @@ export default {
       await fetchAffiliationResults();
 
       //calculate total number of votes
-        totalVoteCount.value = affiliations.value.reduce((totalVotes, affiliation) => {
-          return totalVotes + affiliation.votes; // Accumulate votes
-        }, 0);
+      totalVoteCount.value = affiliations.value.reduce((totalVotes, affiliation) => {
+        return totalVotes + affiliation.votes; // Accumulate votes
+      }, 0);
     })
     return {affiliations, err, loading, totalVoteCount}
   },
