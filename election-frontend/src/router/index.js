@@ -8,6 +8,8 @@ import SeatDistribution from "@/components/ElectionResults/SeatDistributionCompo
 import TotalTable from "@/components/ElectionResults/TotalTableComponent.vue";
 import NewPostComponent from "@/components/Forum/NewPostComponent.vue";
 import ForumView from "@/components/Forum/ForumView.vue";
+import LoginPopup from "@/components/LoginPopup.vue";
+import testView from "@/views/TestView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -71,8 +73,12 @@ const router = createRouter({
                     component: NewPostComponent,
                 },
             ]
-
-        }
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: testView,
+        },
 
     ]
 })
