@@ -1,60 +1,55 @@
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
-
-// Props
-defineProps({
-  visible: {
-    type: Boolean,
-    required: true,
-  },
-});
-
-// Emits
-const emit = defineEmits(['close']); // Define the 'close' event
+import { ref } from 'vue';
 
 // Reactive data for password inputs
 const newPassword = ref('');
 const confirmPassword = ref('');
+const token = new URLSearchParams(window.location.search).get('token'); // Extract token from URL
+
+// Check if token exists
+if (!token) {
+  alert('Invalid or missing token.');
+  window.location.href = '/'; // Redirect to home or an appropriate page
+}
 
 // Function to reset the password
 const submit = async () => {
-  const token = new URLSearchParams(window.location.search).get('token'); // Token from URL
-  if (!token) {
-    alert('Invalid token.');
-    return;
-  }
-
   if (newPassword.value !== confirmPassword.value) {
     alert('Passwords do not match.');
     return;
   }
 
   try {
-    const response = await fetch('http://localhost:8080/userdata/reset-password', {
+    const response = await fetch('http://localhost:8080/userdata/forgot-password', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json', // Include Accept header
+      },
       body: JSON.stringify({ token, newPassword: newPassword.value }),
     });
 
-    if (response.ok) {
-      alert('Password reset successfully!');
-      emit('close'); // Emit the 'close' event to parent
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('Failed:', error);
+      alert(`Failed to reset password: ${error}`);
     } else {
-      alert('Failed to reset password.');
+      alert('Password reset successfully!');
+      window.location.href = '/'; // Redirect to the home or login page
     }
   } catch (error) {
-    console.error(error);
-    alert('An error occurred. Please try again.');
+    console.error('Unexpected error:', error);
+    alert('An unexpected error occurred. Please try again.');
   }
+
 };
 </script>
 
 <template>
-  <div v-if="visible" class="popup">
+  <div class="popup">
     <div class="popup-content">
       <div class="popup-header">
         <h2>Reset Password</h2>
-        <button class="Button Close" @click="emit('close')">Close</button>
       </div>
       <div class="line"></div>
       <div class="inputBox">
@@ -79,7 +74,7 @@ const submit = async () => {
 </template>
 
 <style scoped>
-/* Reuse your current popup styles */
+/* Popup styles */
 .popup {
   position: fixed;
   top: 0;
@@ -141,13 +136,6 @@ const submit = async () => {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
-
-.Button.Close {
-  background: transparent;
-  border: none;
-  font-size: 16px;
-  color: #333333;
 }
 
 .Button:hover {

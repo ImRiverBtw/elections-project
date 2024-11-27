@@ -5,14 +5,13 @@ import com.election.electionbackend.entity.Users;
 import com.election.electionbackend.jpa.PasswordResetTokenRepository;
 import com.election.electionbackend.jpa.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/userdata")
@@ -25,36 +24,48 @@ public class UserController {
     private PasswordResetTokenRepository tokenRepo;
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> requestBody) {
-        // Extract email from JSON body
-        String email = requestBody.get("email");
-
-        // Validate email
-        if (email == null || email.isEmpty()) {
-            return ResponseEntity.badRequest().body("Email is required.");
-        }
-
-        // Find user by email
+    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
         Users user = userRepo.findByEmail(email);
+
         if (user == null) {
-            return ResponseEntity.badRequest().body("Email not found.");
+            return ResponseEntity.badRequest().body("User with this email does not exist.");
         }
 
-        // Generate reset token
+        // Generate token
         String token = UUID.randomUUID().toString();
         PasswordResetToken resetToken = new PasswordResetToken();
         resetToken.setToken(token);
-        resetToken.setExpiryDate(LocalDateTime.now().plusHours(1));
+        resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(30));
         resetToken.setUser(user);
 
-        // Save reset token
         tokenRepo.save(resetToken);
 
-        // Simulate sending email (log the token for now)
-        System.out.println("Password reset token: " + token);
+        // Send reset link via Node.js backend
+        RestTemplate restTemplate = new RestTemplate();
+        String emailBackendUrl = "http://localhost:3000/send-email"; // Node.js email backend URL
+        Map<String, String> emailRequest = new HashMap<>();
+        emailRequest.put("to", email);
+        emailRequest.put("subject", "Password Reset Request");
 
-        return ResponseEntity.ok("Password reset token has been sent to your email.");
+        // Plain text and HTML content
+        String resetLink = "http://127.0.0.1:5173/reset-password?token=" + token;
+        String plainText = "Click the link to reset your password: " + resetLink;
+        String htmlText = "<p>Click the link to reset your password:</p>" +
+                "<p><a href='" + resetLink + "'>" + resetLink + "</a></p>";
+
+        emailRequest.put("text", plainText); // For plain text fallback
+        emailRequest.put("html", htmlText); // For HTML content
+
+        try {
+            restTemplate.postForObject(emailBackendUrl, emailRequest, String.class);
+            return ResponseEntity.ok("Password reset email sent.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email.");
+        }
     }
+
+
 
     // Reset password
     @PostMapping("/reset-password")
@@ -83,13 +94,16 @@ public class UserController {
 
         // Update user's password
         Users user = resetToken.getUser();
-        user.setPassword(newPassword); // Ideally hash the password here
+        user.setPassword(newPassword); // Ensure password is hashed (e.g., BCrypt)
         userRepo.save(user);
 
         // Delete the used token
         tokenRepo.delete(resetToken);
 
-        return ResponseEntity.ok("Password has been reset successfully.");
+        // Construct a confirmation link or response message (optional)
+        String confirmationMessage = "Password has been reset successfully. You can now log in using your new password.";
+
+        return ResponseEntity.ok(confirmationMessage);
     }
 
 

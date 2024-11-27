@@ -34,6 +34,10 @@ const router = createRouter({
             component: () => import('../views/ParseTestView.vue')
         },
         {
+            path: '/reset-password',
+            name: 'reset-password',
+            component: () => import('../components/ResetPasswordPopup.vue')        },
+        {
             path: '/electionresults',
             name: 'electionresults',
             component: ElectionResultsView,

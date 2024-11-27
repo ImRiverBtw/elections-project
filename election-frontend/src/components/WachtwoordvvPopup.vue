@@ -15,24 +15,26 @@ const emit = defineEmits(['close']); // Define the 'close' event
 // Reactive data for email input
 const email = ref('');
 
-// Function to send the reset password email
+// Function to send the reset password request
 const submit = async () => {
   try {
+    // Call the backend's forgot-password endpoint
     const response = await fetch('http://localhost:8080/userdata/forgot-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value }),
+      body: JSON.stringify({ email: email.value }), // Send only the email
     });
 
     if (response.ok) {
-      alert('Email sent! Please check your inbox to reset your password.');
-      emit('close'); // Emit the 'close' event to parent
+      alert('Password reset email sent! Please check your inbox.');
+      emit('close'); // Close the popup
     } else {
-      alert('Failed to send email. Please try again.');
+      const error = await response.text();
+      alert('Failed to send reset email: ' + error);
     }
   } catch (error) {
-    console.error(error);
-    alert('An error occurred. Please try again.');
+    console.error('Error:', error);
+    alert('An error occurred while sending the reset email. Please try again.');
   }
 };
 </script>
