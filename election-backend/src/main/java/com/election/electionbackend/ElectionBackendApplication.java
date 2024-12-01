@@ -1,6 +1,6 @@
 package com.election.electionbackend;
 
-import com.election.electionbackend.services.ElectionService;
+import com.election.electionbackend.services.electionresult.ElectionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;

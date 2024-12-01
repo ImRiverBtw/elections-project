@@ -1,4 +1,4 @@
-package com.election.electionbackend.services;
+package com.election.electionbackend.services.electionresult;
 
 import com.election.electionbackend.DTO.electionresult.AggregatedVoteDto;
 import com.election.electionbackend.DTO.electionresult.MunicipalityDto;
@@ -29,31 +29,7 @@ public class ElectionService {
     private final VoteRepository voteRepository;
     private final XmlParser xmlParser;
 
-    /**
-     * Retrieves the total votes by party across all municipalities.
-     * @return List of AggregatedVoteDto containing vote details for each party.
-     */
-    public List<AggregatedVoteDto> getTotalVotesByParty() {
-        List<Vote> allVotes = voteRepository.findAll();
-        int totalValidVotes = allVotes.stream().mapToInt(Vote::getValidVotes).sum();
-        int electoralQuota = totalValidVotes / 150;
 
-        return allVotes.stream()
-                .filter(vote -> vote.getParty() != null)
-                .collect(Collectors.groupingBy(
-                        vote -> vote.getParty().getId(),
-                        Collectors.summingInt(Vote::getValidVotes)
-                ))
-                .entrySet().stream()
-                .map(entry -> {
-                    Party party = partyRepository.findById(entry.getKey()).orElseThrow();
-                    int totalVotes = entry.getValue();
-                    int seatCount = totalVotes / electoralQuota;
-                    double votePercentage = Math.round((double) totalVotes / totalValidVotes * 10000) / 100.0;
-                    return new AggregatedVoteDto(Integer.parseInt(party.getId()), party.getName(), totalVotes, seatCount, votePercentage);
-                })
-                .collect(Collectors.toList());
-    }
 
     /**
      * Retrieves the total votes by party in a specific municipality.

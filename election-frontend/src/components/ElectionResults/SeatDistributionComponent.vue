@@ -16,7 +16,7 @@
 
 <script>
 import {Chart} from "chart.js/auto"; // Import Chart.js library
-import {useAffiliations} from "@/composables/useAffiliations.js"; // Custom composable for fetching affiliation data
+import {useAffiliationResult} from "@/composables/useAffiliationResult.js"; // Custom composable for fetching affiliation data
 import ErrorComponent from "@/components/Status/ErrorComponent.vue"; // Error handling component
 import Loading from "@/components/Status/Loading.vue"; // Loading indicator component
 import {nextTick, onMounted, provide, ref} from "vue"; // Vue Composition API utilities
@@ -26,7 +26,7 @@ export default {
   components: {Loading, ErrorComponent}, // Register child components
   setup() {
     // Destructure reactive variables and functions from the custom composable
-    const {affiliations, err, loading, fetchAffiliationResults} = useAffiliations();
+    const {affiliations, err, loading, fetchAffiliationResults} = useAffiliationResult();
 
     // Ref for the canvas element to render the chart
     const barChart = ref(null);
@@ -91,7 +91,7 @@ export default {
      */
     onMounted(async () => {
       // Fetch affiliation data from the API
-      await fetchAffiliationResults();
+      await fetchAffiliationResults("seat");
       affiliations.value = affiliations.value.filter(affiliation => affiliation.seatCount > 0);
 
       // Ensure Chart.js is available globally (for plugins)

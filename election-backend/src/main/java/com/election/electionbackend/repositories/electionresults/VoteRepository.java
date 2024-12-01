@@ -1,7 +1,11 @@
 package com.election.electionbackend.repositories.electionresults;
 
+import com.election.electionbackend.DTO.electionresult.NewAggregatedVoteDto;
 import com.election.electionbackend.models.electionresults.Vote;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.List;
 
 /**
@@ -67,4 +71,27 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
      * @return the number of votes for the specified party
      */
     long countByParty_Id(String partyId);
+
+
+    /**
+     * Retrieves the total number of valid votes (i.e., votes that have a candidate).
+     * @return The total number of valid votes as a long.
+     */
+    @Query("SELECT SUM(v.validVotes) FROM Vote v WHERE v.candidate IS NOT NULL")
+    long getTotalValidVotes();
+
+
+    /**
+     * Retrieves the total votes grouped by party and calculates the vote percentage for each party.
+     * @param totalValidVotes The total number of valid votes to calculate the percentage.
+     * @return A list of NewAggregatedVoteDto containing party id, name, total votes, and vote percentage.
+     */
+    @Query("SELECT new com.election.electionbackend.DTO.electionresult.NewAggregatedVoteDto(" + //new DTO
+            "CAST(p.id AS long), " + //party id
+            "p.name, " + //party name
+            "SUM(v.validVotes), " + //sum up the votes
+            "ROUND((CAST(SUM(v.validVotes) AS double) / :totalValidVotes) * 100, 2))" +  // calculate the percentage and round to 2 decimal places
+            "FROM Vote v JOIN v.party p WHERE v.party IS NOT NULL AND v.candidate IS NOT NULL " + //only include values with a valid party and candidate
+            "GROUP BY p.id, p.name")
+    List<NewAggregatedVoteDto> findVotesGroupedByParty(@Param("totalValidVotes") long totalValidVotes);
 }
