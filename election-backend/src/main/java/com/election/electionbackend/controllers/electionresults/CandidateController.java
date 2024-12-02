@@ -1,7 +1,6 @@
 package com.election.electionbackend.controllers.electionresults;
 
-
-import com.election.electionbackend.services.electionresult.CandidateService;
+//import com.election.electionbackend.services.electionresult.CandidateService;
 import com.election.electionbackend.services.electionresult.VoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class CandidateController {
 
     private final VoteService voteService;
-    private final CandidateService candidateService;
+//    private final CandidateService candidateService;
 
-    @GetMapping("/{candidate_id}/votes")
-    public int getTotalVotesForCandidate(@PathVariable String candidate_id) {
-        return voteService.getTotalVotesForCandidate(candidate_id);
+    /**
+     * Endpoint to get the total amount of votes for a specific candidate
+     *
+     * @param id The id of a candidate
+     * @return An integer representing the amount of votes a candidate got
+     */
+    @GetMapping("/{id}/votes")
+    public int getTotalVotesForCandidate(@PathVariable String id) {
+        return voteService.getTotalVotesForCandidate(id);
     }
 }

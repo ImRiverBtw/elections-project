@@ -17,19 +17,20 @@ public class PollingStationService {
     private final PollingStationRepository pollingStationRepository;
     private final VoteRepository voteRepository;
 
-
     /**
      * Retrieves the amount of votes each party got in a specific polling station
+     *
      * @param pollingStationId The Id of the polling station.
      * @return List of newAggregatedVoteDto containing the total amount of votes each party got in the polling station
      */
-    public List<NewAggregatedVoteDto> getTotalVotesByPartyInPollingStation(String pollingStationId){
+    public List<NewAggregatedVoteDto> getTotalVotesByPartyInPollingStation(String pollingStationId) {
         long totalVotes = voteRepository.getTotalValidVotesForPollingStation(pollingStationId);
         return voteRepository.findVotesGroupedByPartyForPollingStation(totalVotes, pollingStationId);
     }
 
     /**
      * Retrieves the polling stations for a specific municipality.
+     *
      * @param municipalityId ID of the municipality.
      * @return List of PollingStationDto containing details of the polling stations.
      */

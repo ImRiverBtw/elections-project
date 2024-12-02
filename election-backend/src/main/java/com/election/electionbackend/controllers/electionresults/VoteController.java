@@ -1,23 +1,20 @@
 package com.election.electionbackend.controllers.electionresults;
 
-
 import com.election.electionbackend.services.electionresult.VoteService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/electionresult/votes")
+@RequiredArgsConstructor
 public class VoteController {
 
     private final VoteService voteService;
 
-    public VoteController(VoteService voteService) {
-        this.voteService = voteService;
-    }
-
     /**
      * Endpoint to get total votes or seats by party.
+     *
      * @return List of NewAggregatedVoteDto or NewAggregatedSeatDto containing details for each party.
      */
     @GetMapping("/affiliation")
@@ -28,17 +25,18 @@ public class VoteController {
             case "seat":
                 return ResponseEntity.ok(voteService.getTotalSeatsByParty());
             default:
-                return ResponseEntity.badRequest().body("Invalid responseType");
+                return ResponseEntity.badRequest().body("Invalid resultType");
         }
     }
 
     /**
      * Endpoint to get seat count for a specific party.
-     * @param partyId ID of the party.
+     *
+     * @param id The ID of a party.
      * @return Number of seats allocated to the party.
      */
-    @GetMapping("/affiliation/{partyId}/seats")
-    public int getSeatCountForParty(@PathVariable String partyId) {
-        return voteService.getTotalSeatsForParty(partyId);
+    @GetMapping("/affiliation/{id}/seats")
+    public int getSeatCountForParty(@PathVariable String id) {
+        return voteService.getTotalSeatsForParty(id);
     }
 }

@@ -23,6 +23,7 @@ public class MunicipalityService {
 
     /**
      * Retrieves the top party for each municipality.
+     *
      * @return List of MunicipalityPartyDto containing the top party details for each municipality.
      */
     public List<MunicipalityPartyDto> getMunicipalitiesWithTopParty() {
@@ -38,22 +39,22 @@ public class MunicipalityService {
 
     /**
      * Retrieves all municipalities.
+     *
      * @return List of MunicipalityDto containing details of all municipalities.
      */
-    public List<MunicipalityDto> getAll(){
-        List<Municipality> municipalities=  municipalityRepository.findAll();
+    public List<MunicipalityDto> getAll() {
+        List<Municipality> municipalities = municipalityRepository.findAll();
         return municipalities.stream()
-                .map(municipality -> {
-                    return new MunicipalityDto(municipality.getId(), municipality.getName());
-                }).collect(Collectors.toList());
+                .map(municipality -> new MunicipalityDto(municipality.getId(), municipality.getName())).collect(Collectors.toList());
     }
 
     /**
      * Retrieves the details of a specific municipality by its ID.
+     *
      * @param id the Id of the municipality.
      * @return MunicipalityDto containing details of the municipality.
      */
-    public MunicipalityDto getMunicipalityById(String id){
+    public MunicipalityDto getMunicipalityById(String id) {
         Municipality municipality = municipalityRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Municipality not found"));
         MunicipalityDto dto = new MunicipalityDto();

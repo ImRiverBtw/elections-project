@@ -22,11 +22,4 @@ public class Municipality {
 
     private String name; // Name of the municipality (e.g., Boekel)
 
-    @OneToMany
-    private List<PollingStation> pollingStations;
-
-    public Municipality(String id, String name){
-        this.id = id;
-        this.name = name;
-    }
 }

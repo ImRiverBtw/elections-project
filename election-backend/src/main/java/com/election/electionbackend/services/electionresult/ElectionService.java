@@ -49,6 +49,7 @@ public class ElectionService {
 
     /**
      * Processes the XML data and saves the votes to the database.
+     *
      * @param xmlContent XML content as a string.
      */
     public void processXmlData(String xmlContent) {
