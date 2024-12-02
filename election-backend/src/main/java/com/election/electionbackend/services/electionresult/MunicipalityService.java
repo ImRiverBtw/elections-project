@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +46,20 @@ public class MunicipalityService {
                 .map(municipality -> {
                     return new MunicipalityDto(municipality.getId(), municipality.getName());
                 }).collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves the details of a specific municipality by its ID.
+     * @param id the Id of the municipality.
+     * @return MunicipalityDto containing details of the municipality.
+     */
+    public MunicipalityDto getMunicipalityById(String id){
+        Municipality municipality = municipalityRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Municipality not found"));
+        MunicipalityDto dto = new MunicipalityDto();
+        dto.setId(municipality.getId());
+        dto.setName(municipality.getName());
+        return dto;
     }
 
 }

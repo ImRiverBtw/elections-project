@@ -5,7 +5,6 @@ import com.election.electionbackend.DTO.electionresult.NewAggregatedSeatDto;
 import com.election.electionbackend.DTO.electionresult.NewAggregatedVoteDto;
 import com.election.electionbackend.repositories.electionresults.VoteRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class VoteService {
 
-    @Autowired
     private final VoteRepository voteRepository;
 
     /**
@@ -38,7 +36,7 @@ public class VoteService {
     }
 
     /**
-     * Retrieves the total seats for each party based on the D'Hondt method and electoral quota.
+     * Retrieves the total seats for each party
      * @return A list of NewAggregatedSeatDto containing party ID, name, and the number of seats allocated.
      */
     public List<NewAggregatedSeatDto> getTotalSeatsByParty() {
@@ -53,10 +51,28 @@ public class VoteService {
              .collect(Collectors.toList());
     }
 
-    private int getTotalVotesForParty(String partyId){
+    /**
+     * Retrieves the total number of valid votes for a specific party
+     * @param partyId ID of the party
+     * @return Total number of valid votes for the party
+     */
+    public int getTotalVotesForParty(String partyId){
         return voteRepository.findTotalVotesForParty(partyId);
     };
 
+
+    /**
+     * Retrieves the total number of valid votes for a specific candidate.
+     * @param candidateId ID of the candidate.
+     * @return Total number of valid votes for the candidate.
+     */
+    public int getTotalVotesForCandidate(String candidateId){return voteRepository.findTotalVotesForCandidate(candidateId);};
+
+    /**
+     * Retrieves the total number of seats for a specific party
+     * @param partyId ID of the party
+     * @return Total number of seats for the party
+     */
    public int getTotalSeatsForParty(String partyId){
        int votes = getTotalVotesForParty(partyId);
        return calculateSeats(votes);

@@ -78,24 +78,45 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
 
     /**
      * Retrieves the total number of valid votes (i.e., votes that have a candidate).
-     *
      * @return The total number of valid votes as a long.
      */
     @Query("SELECT SUM(v.validVotes) FROM Vote v WHERE v.candidate IS NOT NULL")
     long getTotalValidVotes();
 
     /**
-     * Retrieves the total number of valid votes (i.e., votes that have a candidate).
-     *
-     * @return The total number of valid votes as a long.
+     * Retrieves the total number of valid votes in a specific municipality, used for calculating percentages
+     * @param municipalityId  The id of a municipality
+     * @return The total number of votes as a long.
      */
     @Query("SELECT SUM(v.validVotes) FROM Vote v WHERE v.candidate IS NOT NULL AND v.pollingStation.municipality.id = :municipalityId")
     long getTotalValidVotesForMunicipality(@Param("municipalityId") String municipalityId);
 
+    /**
+     * Retrieves the total number of valid votes in a specific pollingStation, used for calculating percentages
+     * @param pollingStationId  The id of a municipality
+     * @return The total number of votes as a long.
+     */
+    @Query("SELECT SUM(v.validVotes) FROM Vote v WHERE v.candidate IS NOT NULL AND v.pollingStation.id = :pollingStationId")
+    long getTotalValidVotesForPollingStation(@Param("pollingStationId") String pollingStationId);
+
+    /**
+     * Retrieves the total votes for a specific party
+     * @param partyId The id of a party
+     * @return An integer representing the total amount of votes a party has
+     */
+    @Query("SELECT SUM(v.validVotes) FROM Vote v WHERE v.party.id = :partyId AND v.candidate IS NOT NULL")
+    int findTotalVotesForParty(@Param("partyId") String partyId);
+
+    /**
+     * Retrieves the total votes for a specific party
+     * @param candidateId The id of candidate
+     * @return An integer representing the total amount of votes a party has
+     */
+    @Query("SELECT SUM(v.validVotes) FROM Vote v WHERE v.candidate.id = :candidateId")
+    int findTotalVotesForCandidate(@Param("candidateId") String candidateId);
 
     /**
      * Retrieves the total votes grouped by party and calculates the vote percentage for each party.
-     *
      * @param totalValidVotes The total number of valid votes to calculate the percentage.
      * @return A list of NewAggregatedVoteDto containing party id, name, total votes, and vote percentage.
      */
@@ -108,19 +129,41 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
             "GROUP BY p.id, p.name ORDER BY SUM(v.validVotes) DESC")
     List<NewAggregatedVoteDto> findVotesGroupedByParty(@Param("totalValidVotes") long totalValidVotes);
 
+    /**
+     * Retrieves the total votes grouped by party for a given municipality and calculates the vote percentage for each party.
+     * @param totalValidVotes The total number of valid votes to calculate the percentage.
+     * @param municipalityId The id of a municipality
+     * @return A list of NewAggregatedVoteDto containing party id, name, total votes, and vote percentage.
+     */
     @Query("SELECT new com.election.electionbackend.DTO.electionresult.NewAggregatedVoteDto(" + //new DTO
             "CAST(p.id AS long), " + //party id
             "p.name, " + //party name
             "SUM(v.validVotes), " + //sum up the votes
-            "ROUND((CAST(SUM(v.validVotes) AS double) / :totalValidVotes) * 100, 2))" +  // calculate the percentage and round to 2 decimal places
-            "FROM Vote v JOIN v.party p WHERE v.party IS NOT NULL AND v.candidate IS NOT NULL AND v.pollingStation.municipality.id = :municipalityId " + //only include values with a valid party and candidate
+            "ROUND((CAST(SUM(v.validVotes) AS double) / :totalValidVotes) * 100, 2))" +
+            "FROM Vote v JOIN v.party p WHERE v.party IS NOT NULL AND v.candidate IS NOT NULL AND v.pollingStation.municipality.id = :municipalityId " +
             "GROUP BY p.id, p.name ORDER BY SUM(v.validVotes) DESC")
     List<NewAggregatedVoteDto> findVotesGroupedByPartyForMunicipality(@Param("totalValidVotes") long totalValidVotes, @Param("municipalityId") String municipalityId);
 
+    /**
+     * Retrieves the total votes grouped by party for a given pollingStation and calculates the vote percentage for each party.
+     * @param totalValidVotes The total number of valid votes to calculate the percentage.
+     * @param pollingStationId The id of a pollingStation
+     * @return A list of NewAggregatedVoteDto containing party id, name, total votes, and vote percentage.
+     */
+    @Query("SELECT new com.election.electionbackend.DTO.electionresult.NewAggregatedVoteDto(" + //new DTO
+            "CAST(p.id AS long), " + //party id
+            "p.name, " + //party name
+            "SUM(v.validVotes), " + //sum up the votes
+            "ROUND((CAST(SUM(v.validVotes) AS double) / :totalValidVotes) * 100, 2))" +
+            "FROM Vote v JOIN v.party p WHERE v.party IS NOT NULL AND v.candidate IS NOT NULL AND v.pollingStation.id = :pollingStationId " +
+            "GROUP BY p.id, p.name ORDER BY SUM(v.validVotes) DESC")
+    List<NewAggregatedVoteDto> findVotesGroupedByPartyForPollingStation(@Param("totalValidVotes") long totalValidVotes, @Param("pollingStationId") String pollingStationId);
 
-    @Query("SELECT SUM(v.validVotes) FROM Vote v WHERE v.party.id = :partyId AND v.candidate IS NOT NULL")
-    int findTotalVotesForParty(@Param("partyId") String partyId);
-
+    /**
+     * Retrieves the party with the most votes for a given municipality
+     * @param municipalityId The id of a municipality
+     * @return A list of AffiliationDto ordered by votes descending
+     */
     @Query("SELECT new com.election.electionbackend.DTO.electionresult.AffiliationDto(v.party.id, v.party.name, SUM(v.validVotes)) " +
             "FROM Vote v " +
             "WHERE v.party IS NOT NULL AND v.candidate IS NOT NULL " +
