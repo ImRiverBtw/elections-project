@@ -97,7 +97,7 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
             "SUM(v.validVotes), " + //sum up the votes
             "ROUND((CAST(SUM(v.validVotes) AS double) / :totalValidVotes) * 100, 2))" +  // calculate the percentage and round to 2 decimal places
             "FROM Vote v JOIN v.party p WHERE v.party IS NOT NULL AND v.candidate IS NOT NULL " + //only include values with a valid party and candidate
-            "GROUP BY p.id, p.name")
+            "GROUP BY p.id, p.name ORDER BY SUM(v.validVotes) DESC")
     List<NewAggregatedVoteDto> findVotesGroupedByParty(@Param("totalValidVotes") long totalValidVotes);
 
 
