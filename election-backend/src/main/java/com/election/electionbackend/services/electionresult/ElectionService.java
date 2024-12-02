@@ -1,9 +1,6 @@
 package com.election.electionbackend.services.electionresult;
 
-import com.election.electionbackend.DTO.electionresult.AggregatedVoteDto;
-import com.election.electionbackend.DTO.electionresult.MunicipalityDto;
-import com.election.electionbackend.DTO.electionresult.MunicipalityPartyDto;
-import com.election.electionbackend.DTO.electionresult.PollingStationDto;
+import com.election.electionbackend.DTO.electionresult.*;
 import com.election.electionbackend.models.electionresults.*;
 import com.election.electionbackend.repositories.electionresults.*;
 import com.election.electionbackend.util.XmlParser;
@@ -184,71 +181,5 @@ public class ElectionService {
 
             voteRepository.save(vote);
         }
-    }
-
-    /**
-     * Retrieves the top party for each municipality.
-     * @return List of MunicipalityPartyDto containing the top party details for each municipality.
-     */
-    public List<MunicipalityPartyDto> getMunicipalitiesWithTopParty() {
-        List<Municipality> municipalities = municipalityRepository.findAll();
-        List<MunicipalityPartyDto> result = new ArrayList<>();
-
-        for (Municipality municipality : municipalities) {
-            List<Vote> votes = voteRepository.findByPollingStation_Municipality_Id(municipality.getId());
-            Map<String, Integer> partyVotes = votes.stream()
-                    .filter(vote -> vote.getParty() != null)
-                    .collect(Collectors.groupingBy(
-                            vote -> vote.getParty().getId(),
-                            Collectors.summingInt(Vote::getValidVotes)
-                    ));
-
-            if (!partyVotes.isEmpty()) {
-                Map.Entry<String, Integer> topPartyEntry = partyVotes.entrySet().stream()
-                        .max(Map.Entry.comparingByValue())
-                        .orElseThrow();
-
-                Party topParty = partyRepository.findById(topPartyEntry.getKey()).orElseThrow();
-                MunicipalityPartyDto.Affiliation affiliation = new MunicipalityPartyDto.Affiliation(
-                        topParty.getId(), topParty.getName(), topPartyEntry.getValue()
-                );
-                result.add(new MunicipalityPartyDto(municipality.getId(), municipality.getName(), affiliation));
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Retrieves the seat count for a specific party.
-     * @param partyId ID of the party.
-     * @return Number of seats allocated to the party.
-     */
-    public int getSeatCountForParty(String partyId) {
-        List<Vote> allVotes = voteRepository.findAll();
-        int totalValidVotes = allVotes.stream().mapToInt(Vote::getValidVotes).sum();
-        int electoralQuota = totalValidVotes / 150;
-
-        int totalVotesForParty = voteRepository.findByParty_Id(partyId).stream()
-                .mapToInt(Vote::getValidVotes)
-                .sum();
-
-        return totalVotesForParty / electoralQuota;
-    }
-
-    /**
-     * Retrieves all municipalities.
-     * @return List of MunicipalityDto containing details of all municipalities.
-     */
-    public List<MunicipalityDto> getAllMunicipalities() {
-        List<Municipality> municipalities = municipalityRepository.findAll();
-        return municipalities.stream()
-                .map(municipality -> {
-                    MunicipalityDto dto = new MunicipalityDto();
-                    dto.setId(municipality.getId());
-                    dto.setName(municipality.getName());
-                    return dto;
-                })
-                .collect(Collectors.toList());
     }
 }

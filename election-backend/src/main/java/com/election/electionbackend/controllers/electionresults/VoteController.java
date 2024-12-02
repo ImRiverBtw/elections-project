@@ -32,4 +32,14 @@ public class VoteController {
                 return ResponseEntity.badRequest().body("Invalid responseType");
         }
     }
+
+    /**
+     * Endpoint to get seat count for a specific party.
+     * @param partyId ID of the party.
+     * @return Number of seats allocated to the party.
+     */
+    @GetMapping("/affiliation/{partyId}/seats")
+    public int getSeatCountForParty(@PathVariable String partyId) {
+        return voteService.getTotalSeatsForParty(partyId);
+    }
 }

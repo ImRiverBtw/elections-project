@@ -20,35 +20,6 @@ public class ElectionResultController {
     }
 
 
-
-    /**
-     * Endpoint to get seat count for a specific party.
-     * @param partyId ID of the party.
-     * @return Number of seats allocated to the party.
-     */
-    @GetMapping("/votes/affiliation/{partyId}/seats")
-    public int getSeatCountForParty(@PathVariable String partyId) {
-        return electionService.getSeatCountForParty(partyId);
-    }
-
-    /**
-     * Endpoint to get the top party for each municipality.
-     * @return List of MunicipalityPartyDto containing the top party details for each municipality.
-     */
-    @GetMapping("/municipalities/top-party")
-    public List<MunicipalityPartyDto> getMunicipalitiesWithTopParty() {
-        return electionService.getMunicipalitiesWithTopParty();
-    }
-
-    /**
-     * Endpoint to get all municipalities.
-     * @return List of MunicipalityDto containing details of all municipalities.
-     */
-    @GetMapping("/municipalities")
-    public List<MunicipalityDto> getAllMunicipalities() {
-        return electionService.getAllMunicipalities();
-    }
-
     /**
      * Endpoint to get total votes by party in a specific municipality.
      * @param municipalityId ID of the municipality.

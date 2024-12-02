@@ -43,6 +43,15 @@ public class VoteService {
              .collect(Collectors.toList());
     }
 
+    private int getTotalVotesForParty(String partyId){
+        return voteRepository.findTotalVotesForParty(partyId);
+    };
+
+   public int getTotalSeatsForParty(String partyId){
+       int votes = getTotalVotesForParty(partyId);
+       return calculateSeats(votes);
+   }
+
     /**
      * Calculates the number of seats a party has based on its total votes
      * @param votes The total votes received by the party.
