@@ -12,7 +12,6 @@ public class VoteController {
 
     private final VoteService voteService;
 
-    @Autowired
     public VoteController(VoteService voteService) {
         this.voteService = voteService;
     }

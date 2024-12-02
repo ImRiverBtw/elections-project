@@ -84,6 +84,14 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
     @Query("SELECT SUM(v.validVotes) FROM Vote v WHERE v.candidate IS NOT NULL")
     long getTotalValidVotes();
 
+    /**
+     * Retrieves the total number of valid votes (i.e., votes that have a candidate).
+     *
+     * @return The total number of valid votes as a long.
+     */
+    @Query("SELECT SUM(v.validVotes) FROM Vote v WHERE v.candidate IS NOT NULL AND v.pollingStation.municipality.id = :municipalityId")
+    long getTotalValidVotesForMunicipality(@Param("municipalityId") String municipalityId);
+
 
     /**
      * Retrieves the total votes grouped by party and calculates the vote percentage for each party.
@@ -99,6 +107,15 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
             "FROM Vote v JOIN v.party p WHERE v.party IS NOT NULL AND v.candidate IS NOT NULL " + //only include values with a valid party and candidate
             "GROUP BY p.id, p.name ORDER BY SUM(v.validVotes) DESC")
     List<NewAggregatedVoteDto> findVotesGroupedByParty(@Param("totalValidVotes") long totalValidVotes);
+
+    @Query("SELECT new com.election.electionbackend.DTO.electionresult.NewAggregatedVoteDto(" + //new DTO
+            "CAST(p.id AS long), " + //party id
+            "p.name, " + //party name
+            "SUM(v.validVotes), " + //sum up the votes
+            "ROUND((CAST(SUM(v.validVotes) AS double) / :totalValidVotes) * 100, 2))" +  // calculate the percentage and round to 2 decimal places
+            "FROM Vote v JOIN v.party p WHERE v.party IS NOT NULL AND v.candidate IS NOT NULL AND v.pollingStation.municipality.id = :municipalityId " + //only include values with a valid party and candidate
+            "GROUP BY p.id, p.name ORDER BY SUM(v.validVotes) DESC")
+    List<NewAggregatedVoteDto> findVotesGroupedByPartyForMunicipality(@Param("totalValidVotes") long totalValidVotes, @Param("municipalityId") String municipalityId);
 
 
     @Query("SELECT SUM(v.validVotes) FROM Vote v WHERE v.party.id = :partyId AND v.candidate IS NOT NULL")

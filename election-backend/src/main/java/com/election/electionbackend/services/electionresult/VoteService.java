@@ -28,6 +28,16 @@ public class VoteService {
     }
 
     /**
+     * Retrieves the total votes by party in a specific municipality.
+     * @param municipalityId ID of the municipality.
+     * @return List of NewAggregatedVoteDto containing vote details for each party in the municipality.
+     */
+    public List<NewAggregatedVoteDto> getTotalVotesByPartyForMunicipality(String municipalityId) {
+        long totalValidVotes = voteRepository.getTotalValidVotesForMunicipality(municipalityId);
+        return voteRepository.findVotesGroupedByPartyForMunicipality(totalValidVotes, municipalityId);
+    }
+
+    /**
      * Retrieves the total seats for each party based on the D'Hondt method and electoral quota.
      * @return A list of NewAggregatedSeatDto containing party ID, name, and the number of seats allocated.
      */

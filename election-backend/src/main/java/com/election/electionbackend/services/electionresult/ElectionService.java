@@ -26,34 +26,55 @@ public class ElectionService {
     private final VoteRepository voteRepository;
     private final XmlParser xmlParser;
 
+    /**
+     * Processes all XML files in the specified directory.
+     * Reads the XML files, parses the data, and saves the votes to the database.
+     */
+    public void processAllXmlFiles() {
+        try {
+            List<Path> xmlFiles = Files.walk(Paths.get(DIRECTORY))
+                    .filter(path -> path.getFileName().toString().matches(FILE_PATTERN))
+                    .toList();
+
+            for (Path file : xmlFiles) {
+                System.out.println("Processing file: " + file);
+                String xmlContent = Files.readString(file);
+                processXmlData(xmlContent);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to process XML files in directory: " + DIRECTORY, e);
+        }
+    }
 
 
     /**
-     * Retrieves the total votes by party in a specific municipality.
-     * @param municipalityId ID of the municipality.
-     * @return List of AggregatedVoteDto containing vote details for each party in the municipality.
+     * Processes the XML data and saves the votes to the database.
+     * @param xmlContent XML content as a string.
      */
-    public List<AggregatedVoteDto> getTotalVotesByPartyInMunicipality(String municipalityId) {
-        List<Vote> votes = voteRepository.findByPollingStation_Municipality_Id(municipalityId);
-        int totalValidVotes = votes.stream().mapToInt(Vote::getValidVotes).sum();
-        int electoralQuota = totalValidVotes / 150;
+    public void processXmlData(String xmlContent) {
+        List<Vote> votes = xmlParser.parseVotes(xmlContent);
 
-        return votes.stream()
-                .filter(vote -> vote.getParty() != null)
-                .collect(Collectors.groupingBy(
-                        vote -> vote.getParty().getId(),
-                        Collectors.summingInt(Vote::getValidVotes)
-                ))
-                .entrySet().stream()
-                .map(entry -> {
-                    Party party = partyRepository.findById(entry.getKey()).orElseThrow();
-                    int totalVotes = entry.getValue();
-                    int seatCount = totalVotes / electoralQuota;
-                    double votePercentage = (double) totalVotes / totalValidVotes * 100;
-                    return new AggregatedVoteDto(Integer.parseInt(party.getId()), party.getName(), totalVotes, seatCount, votePercentage);
-                })
-                .collect(Collectors.toList());
+        for (Vote vote : votes) {
+            Municipality municipality = municipalityRepository.save(vote.getPollingStation().getMunicipality());
+            vote.getPollingStation().setMunicipality(municipality);
+
+            PollingStation pollingStation = pollingStationRepository.save(vote.getPollingStation());
+            vote.setPollingStation(pollingStation);
+
+            if (vote.getParty() != null) {
+                Party party = partyRepository.save(vote.getParty());
+                vote.setParty(party);
+            }
+
+            if (vote.getCandidate() != null) {
+                Candidate candidate = candidateRepository.save(vote.getCandidate());
+                vote.setCandidate(candidate);
+            }
+
+            voteRepository.save(vote);
+        }
     }
+
 
     /**
      * Retrieves the total votes by party in a specific polling station.
@@ -133,53 +154,5 @@ public class ElectionService {
                     return dto;
                 })
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * Processes all XML files in the specified directory.
-     * Reads the XML files, parses the data, and saves the votes to the database.
-     */
-    public void processAllXmlFiles() {
-        try {
-            List<Path> xmlFiles = Files.walk(Paths.get(DIRECTORY))
-                    .filter(path -> path.getFileName().toString().matches(FILE_PATTERN))
-                    .toList();
-
-            for (Path file : xmlFiles) {
-                System.out.println("Processing file: " + file);
-                String xmlContent = Files.readString(file);
-                processXmlData(xmlContent);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to process XML files in directory: " + DIRECTORY, e);
-        }
-    }
-
-    /**
-     * Processes the XML data and saves the votes to the database.
-     * @param xmlContent XML content as a string.
-     */
-    public void processXmlData(String xmlContent) {
-        List<Vote> votes = xmlParser.parseVotes(xmlContent);
-
-        for (Vote vote : votes) {
-            Municipality municipality = municipalityRepository.save(vote.getPollingStation().getMunicipality());
-            vote.getPollingStation().setMunicipality(municipality);
-
-            PollingStation pollingStation = pollingStationRepository.save(vote.getPollingStation());
-            vote.setPollingStation(pollingStation);
-
-            if (vote.getParty() != null) {
-                Party party = partyRepository.save(vote.getParty());
-                vote.setParty(party);
-            }
-
-            if (vote.getCandidate() != null) {
-                Candidate candidate = candidateRepository.save(vote.getCandidate());
-                vote.setCandidate(candidate);
-            }
-
-            voteRepository.save(vote);
-        }
     }
 }
