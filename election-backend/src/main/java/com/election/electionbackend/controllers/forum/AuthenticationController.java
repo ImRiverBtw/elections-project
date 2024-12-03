@@ -2,6 +2,7 @@ package com.election.electionbackend.controllers.forum;
 
 
 import com.election.electionbackend.DTO.LoginRequest;
+import com.election.electionbackend.DTO.LoginResponse;
 import com.election.electionbackend.DTO.RegisterRequest;
 import com.election.electionbackend.Exceptions.UnauthorizedException;
 import com.election.electionbackend.Exceptions.UserAlreadyExistsException;
@@ -9,6 +10,7 @@ import com.election.electionbackend.models.forum.User;
 import com.election.electionbackend.services.AuthenticationService;
 import com.election.electionbackend.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,12 +42,13 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<Object> loginUser(@RequestBody LoginRequest request) {
         try {
-            User existingUser = authenticationService.login(request);
-            return ResponseEntity.ok(Map.of(
-                    "message", "Login successful",
-                    "userId", existingUser.getId(),
-                    "username", existingUser.getUsername()
-            ));
+            LoginResponse loginResponse = authenticationService.login(request);
+            User user = loginResponse.getUser();
+            String tokenString = loginResponse.getTokenString();
+
+            return ResponseEntity.accepted()
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenString)
+                    .body(user);
         } catch (UnauthorizedException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }

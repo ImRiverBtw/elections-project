@@ -1,7 +1,10 @@
 package com.election.electionbackend.models.forum;
 
 import com.election.electionbackend.security.SecureHasher;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.security.NoSuchAlgorithmException;
 
 @Entity
 @Table(name = "_user")
@@ -17,10 +20,14 @@ public class User {
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @JsonIgnore
+    private byte[] salt;
 
     public User(){
         this.role = UserRole.USER;
@@ -33,6 +40,14 @@ public class User {
 
     public String getUsername() {
         return username;
+    }
+
+    public byte[] getSalt() {
+        return salt;
+    }
+
+    public void setSalt(byte[] salt) {
+        this.salt = salt;
     }
 
     public void setUsername(String username) {
@@ -56,7 +71,7 @@ public class User {
     }
 
     public String hashPassword(String password){
-        return SecureHasher.secureHash("un-" + this.getUsername() + ":" + password);
+        return SecureHasher.secureHash(password, this.salt);
     }
 
     public UserRole getRole(){
