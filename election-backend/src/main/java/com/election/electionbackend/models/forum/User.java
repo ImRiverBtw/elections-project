@@ -5,8 +5,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "_users")
-@NoArgsConstructor
+@Table(name = "_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +22,10 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    public User(){
+        this.role = UserRole.USER;
+    }
 
     public Long getId() {
         return id;

@@ -1,6 +1,5 @@
 package com.election.electionbackend.services;
 
-import com.election.electionbackend.DTO.RegisterRequest;
 import com.election.electionbackend.models.forum.User;
 import com.election.electionbackend.repositories.forum.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final AuthenticationService authenticationService;
 
     public User findById(Long id){
         return userRepository.findById(id).orElseThrow(
@@ -41,18 +39,5 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void insertDummyData() {
-        String[] usernames = {"john_doe", "jane_doe", "alice_smith", "bob_jones"};
-        String[] emails = {"john@example.com", "DaveRobinKayHakanMichael@outlook.com", "jane@example.com", "alice@example.com", "bob@example.com"};
-        String[] passwords = {"password123", "password456", "password789", "password101"};
 
-        for (int i = 0; i < usernames.length; i++) {
-            RegisterRequest newUser = new RegisterRequest();
-
-            newUser.setUsername(usernames[i]);
-            newUser.setEmail(emails[i]);
-            newUser.setPassword(passwords[i]);
-            authenticationService.register(newUser);
-        }
-    }
 }
