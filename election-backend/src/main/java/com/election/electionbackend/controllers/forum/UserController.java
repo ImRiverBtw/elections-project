@@ -102,12 +102,7 @@ public class UserController {
         return ResponseEntity.ok("Password has been reset successfully.");
     }
 
-    //Dummy data
-    @RequestMapping("/insertDummyData")
-    public String insertDummyData() {
-        userService.insertDummyData();
-        return "Dummy data inserted succesfully";
-    }
+
 
     //TODO moet aan het einde verwijderd worden (is nu om te checken).
     @GetMapping("/getAllUsers")
