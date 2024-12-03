@@ -3,54 +3,65 @@ package com.election.electionbackend.controllers.forum;
 
 import com.election.electionbackend.DTO.LoginRequest;
 import com.election.electionbackend.DTO.RegisterRequest;
-import com.election.electionbackend.models.forum.Account;
-import com.election.electionbackend.security.SecureHasher;
-import com.election.electionbackend.services.AccountService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.election.electionbackend.models.forum.User;
+import com.election.electionbackend.services.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthenticationController {
 
-    @Autowired
-    private AccountService accountService;
+    private final UserService userService;
 
-    // Register a new Account
+    // Register a new User
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegisterRequest registerRequest) {
-
-        //Check if an account with the given displayName already exists
-        if (accountService.existsByDisplayName(registerRequest.displayName())){
-            return ResponseEntity.badRequest().body("Gebruiksnaam is al in gebruik.");
+    public ResponseEntity<Object> registerUser(@RequestBody RegisterRequest request) {
+        //Check if a User with the given username already exists
+        System.out.println(request);
+        if (userService.existsByUsername(request.getUsername())) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("message", "Deze gebruikersnaam is al in gebruik.")
+            );
         }
-
-        //Check if an account with the given email already exists
-        if (accountService.existsByEmail(registerRequest.email())){
-            return ResponseEntity.badRequest().body("Emailadres is al in gebruik.");
+        //Check if a User with the given email already exists
+        if (userService.existsByEmail(request.getEmail())) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("message", "Dit e-mailadres is al in gebruik.")
+            );
         }
-
-        //save the account if none exist with the given email and displayName
-        accountService.save(new Account(registerRequest.displayName(), registerRequest.email(), registerRequest.password()));
-        return ResponseEntity.ok("User registered successfully");
+        //save the User if none exist with the given email and username
+        User newUser = new User();
+        newUser.setUsername(request.getUsername());
+        newUser.setEmail(request.getEmail());
+        newUser.setPassword(request.getPassword());
+        System.out.println(newUser.getPassword());
+        userService.save(newUser);
+        return ResponseEntity.ok(Map.of("message", "User registered successfully"));
     }
 
-    //Login van een gebruiker
+    //Login a existing user
     @PostMapping("/login")
-    public String loginUser(@RequestBody LoginRequest loginRequest) {
-        //gebruiker gegevens zoeken om email.
-        Account existingAccount = accountService.findByEmail(loginRequest.email());
+    public ResponseEntity<Object> loginUser(@RequestBody LoginRequest request) {
+        //search for user details by email
+        User existingUser = userService.findByEmail(request.getEmail());
 
-        //gegevens controlleren
-        if(existingAccount != null && existingAccount.getPassword().equals(SecureHasher.secureHash(loginRequest.password()))) {
-            return "Login succesful";
+        //check if the password is correct
+        if (existingUser != null && existingUser.verifyPassword(request.getPassword())) {
+            return ResponseEntity.ok(Map.of(
+                    "message", "Login successful",
+                    "userId", existingUser.getId(),
+                    "username", existingUser.getUsername()
+            ));
         }
 
-        //error message
-        return "Invalid email or password";
+        return ResponseEntity.status(401).body(Map.of("message", "Invalid email or password"));
     }
 }

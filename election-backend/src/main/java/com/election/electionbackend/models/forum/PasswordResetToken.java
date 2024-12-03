@@ -15,8 +15,8 @@ public class PasswordResetToken {
     private LocalDateTime expiryDate;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "userId")
-    private Users user;
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
     public Long getId() {
         return id;
@@ -42,11 +42,11 @@ public class PasswordResetToken {
         this.expiryDate = expiryDate;
     }
 
-    public Users getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(Users user) {
+    public void setUser(User user) {
         this.user = user;
     }
 }

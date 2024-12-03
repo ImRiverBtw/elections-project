@@ -1,13 +1,16 @@
 package com.election.electionbackend.models.forum;
 
+import com.election.electionbackend.security.SecureHasher;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
-public class Users {
+@Table(name = "_users")
+@NoArgsConstructor
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String username;
@@ -18,14 +21,13 @@ public class Users {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
-    public Long getUserId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 
     public String getUsername() {
         return username;
@@ -48,6 +50,22 @@ public class Users {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = hashPassword(password);
+    }
+
+    public String hashPassword(String password){
+        return SecureHasher.secureHash("un-" + this.getUsername() + ":" + password);
+    }
+
+    public UserRole getRole(){
+        return this.role;
+    }
+
+    public void setRole(UserRole role){
+        this.role = role;
+    }
+
+    public boolean verifyPassword(String password){
+        return this.password.equals(hashPassword(password));
     }
 }
