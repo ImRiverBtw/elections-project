@@ -2,7 +2,6 @@ package com.election.electionbackend.models.forum;
 
 import com.election.electionbackend.security.SecureHasher;
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "_user")

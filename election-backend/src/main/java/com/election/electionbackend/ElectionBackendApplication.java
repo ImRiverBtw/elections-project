@@ -1,7 +1,6 @@
 package com.election.electionbackend;
 
 import com.election.electionbackend.services.AuthenticationService;
-import com.election.electionbackend.services.UserService;
 import com.election.electionbackend.services.electionresult.ElectionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
