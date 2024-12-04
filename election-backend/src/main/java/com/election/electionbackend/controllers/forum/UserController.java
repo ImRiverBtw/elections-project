@@ -1,7 +1,9 @@
 package com.election.electionbackend.controllers.forum;
 
+import com.election.electionbackend.Exceptions.UnauthorizedException;
 import com.election.electionbackend.models.forum.PasswordResetToken;
 import com.election.electionbackend.models.forum.User;
+import com.election.electionbackend.security.JWToken;
 import com.election.electionbackend.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,8 +107,11 @@ public class UserController {
 
 
     //TODO moet aan het einde verwijderd worden (is nu om te checken).
-    @GetMapping("/getAllUsers")
-    public List<User> getAllUsers() {
+    @GetMapping("")
+    public List<User> getAllUsers(@RequestAttribute(name = JWToken.JWT_ATTRIBUTE_NAME) JWToken jwtInfo) {
+        if (jwtInfo == null) {
+            throw new UnauthorizedException("Admin role is required to view users.");
+        }
         return userService.findAll();
     }
 }
