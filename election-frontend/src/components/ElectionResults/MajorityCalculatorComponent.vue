@@ -82,7 +82,7 @@
 
 <script>
 import PartyTag from "@/components/PartyTag.vue";
-import { useAffiliations } from "@/composables/useAffiliations.js";
+import { useAffiliationResult } from "@/composables/useAffiliationResult.js";
 import {onMounted, provide, ref} from "vue";
 import Loading from "@/components/Status/Loading.vue";
 import ErrorComponent from "@/components/Status/ErrorComponent.vue";
@@ -91,11 +91,11 @@ export default {
   name: "MajorityCalulator",
   components: {Loading, ErrorComponent, PartyTag},
   setup() {
-    const {affiliations, err, loading, fetchAffiliationResults} = useAffiliations();
+    const {affiliations, err, loading, fetchAffiliationResults} = useAffiliationResult();
     provide("err", err)
 
     onMounted(async () => {
-      await fetchAffiliationResults();
+      await fetchAffiliationResults('seat');
       affiliations.value = affiliations.value.filter(affiliation => affiliation.seatCount > 0);
     })
     return {affiliations, err, loading}

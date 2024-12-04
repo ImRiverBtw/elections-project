@@ -14,17 +14,7 @@ import lombok.NoArgsConstructor;
 public class MunicipalityPartyDto {
     private String id; // Municipality party ID
     private String name; // Municipality party name
-    private Affiliation affiliation; // Affiliation details of the municipality party
+    private AffiliationDto affiliation; // Affiliation details of the municipality party
 
-    /**
-     * Nested static class representing the affiliation details.
-     */
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Affiliation {
-        private String id; // Affiliation ID
-        private String name; // Affiliation name
-        private int votes; // Total votes received by the affiliation
-    }
+
 }

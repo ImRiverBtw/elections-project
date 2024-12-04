@@ -1,18 +1,24 @@
 import { ref } from 'vue';
 
 // A custom Vue 3 composition function to manage affiliation data
-export function useAffiliations() {
+export function useAffiliationResult() {
     // Reactive variables to store affiliations, errors, and loading state
     const affiliations = ref([]); // Holds the list of affiliations fetched from the server
     const err = ref(null); // Holds any error that occurs during the fetch operation
     const loading = ref(false); // Indicates whether data is currently being fetched
 
     // Asynchronous function to fetch affiliation results from the API
-    const fetchAffiliationResults = async () => {
+    const fetchAffiliationResults = async (resultType) => {
         loading.value = true; // Set loading state to true while fetching data
         try {
             // Make a GET request to the API endpoint
-            const response = await fetch('http://localhost:8080/electionresult/votes/affiliation');
+            const response = await fetch('http://localhost:8080/electionresult/votes/affiliation', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'resultType': resultType
+                }
+            });
 
             // Check if the response status is not OK and throw an error if it isn't
             if (!response.ok) {

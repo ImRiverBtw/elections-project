@@ -49,14 +49,14 @@
 <script>
 import Loading from "@/components/Status/Loading.vue"; // Loading indicator component
 import ErrorComponent from "@/components/Status/ErrorComponent.vue"; // Error display component
-import { useAffiliations } from "@/Composables/useAffiliations.js"; // Custom composable to fetch affiliation data
+import { useAffiliationResult } from "@/composables/useAffiliationResult.js"; // Custom composable to fetch affiliation data
 import { onMounted, provide, ref } from "vue"; // Vue Composition API utilities
 
 export default {
   name: "TotalTable", // Component name
   components: { Loading, ErrorComponent }, // Register child components
   setup() {
-    const { affiliations, err, loading, fetchAffiliationResults } = useAffiliations(); // Fetch reactive affiliation data, errors, and loading state
+    const { affiliations, err, loading, fetchAffiliationResults } = useAffiliationResult(); // Fetch reactive affiliation data, errors, and loading state
     provide("err", err); // Provide the error object to child components for global error handling
 
     let totalVoteCount = ref(0); // Reactive variable to store total vote count
@@ -65,7 +65,7 @@ export default {
      * Lifecycle hook to fetch affiliation data on component mount
      */
     onMounted(async () => {
-      await fetchAffiliationResults(); // Fetch data from the API
+      await fetchAffiliationResults('vote'); // Fetch data from the API
 
       // Calculate the total number of votes by summing votes of all affiliations
       totalVoteCount.value = affiliations.value.reduce((totalVotes, affiliation) => {
