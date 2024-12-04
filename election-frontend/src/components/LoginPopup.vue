@@ -23,7 +23,8 @@
 </template>
 
 <script>
-import {inject, ref} from "vue";
+import {inject, nextTick, ref} from "vue";
+import router from "@/router/index.js";
 
 export default {
   props: {
@@ -42,7 +43,7 @@ export default {
       emailError.value = null;
       try {
         await sessionService.asyncLogIn(loginEmail.value, loginPassword.value);
-        close();
+        close()
       } catch (error) {
         if (error.message.includes('Invalid email or password')) {
           emailError.value = 'E-mailadres of wachtwoord is onjuist.';
@@ -51,8 +52,10 @@ export default {
           console.log(error)
         }
       }
+      await nextTick();
     };
     const close = () => {
+      router.push("/profile")
       emit("close"); // This emits the "close" event
     };
 

@@ -44,12 +44,15 @@ export class FetchInterceptor {
     }
 
     handleErrorInResponse(response) {
+        console.log(response.status)
         if (response.status >= 500) {
             console.error("Server error occurred. Please try again later.");
         } else if (response.status === 404) {
             console.error("Requested resource not found.");
         } else if (response.status === 403) {
             console.error("You do not have permission to access this resource.");
+        } else if (response.status === 401) {
+            console.error("Invalid email or password")
         } else if (response.status >= 400) {
             console.error("A client error occurred. Please check your request.");
         }

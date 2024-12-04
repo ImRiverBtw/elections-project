@@ -81,11 +81,7 @@ export default {
     };
   },
   methods: {
-    /**
-     * Calculate the percentage of total votes for a given affiliation
-     * @param {Object} affiliation - The affiliation object
-     * @returns {string} - Percentage of total votes
-     */
+
     getVotePercentage(affiliation) {
       if (this.totalVoteCount === 0) {
         return 0; // Avoid division by zero
@@ -93,24 +89,13 @@ export default {
       return ((affiliation.votes / this.totalVoteCount) * 100).toFixed(2);
     },
 
-    /**
-     * Comparator function to sort affiliations alphabetically (A-Z)
-     * @param {Object} a - First affiliation
-     * @param {Object} b - Second affiliation
-     * @returns {number} - Sorting order
-     */
+
     compareAlphabetical(a, b) {
       if (a.name < b.name) return -1;
       if (a.name > b.name) return 1;
       return 0;
     },
 
-    /**
-     * Comparator function to sort affiliations by votes (ascending)
-     * @param {Object} a - First affiliation
-     * @param {Object} b - Second affiliation
-     * @returns {number} - Sorting order
-     */
     compareVotes(a, b) {
       if (a.votes < b.votes) return -1;
       if (a.votes > b.votes) return 1;

@@ -8,9 +8,9 @@ import SeatDistribution from "@/components/ElectionResults/SeatDistributionCompo
 import TotalTable from "@/components/ElectionResults/TotalTableComponent.vue";
 import NewPostComponent from "@/components/Forum/NewPostComponent.vue";
 import ForumView from "@/components/Forum/ForumView.vue";
-import LoginPopup from "@/components/LoginPopup.vue";
 import testView from "@/views/TestView.vue";
 import accountListView from "@/views/AccountListView.vue";
+import myProfileView from "@/views/MyProfileView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -84,6 +84,11 @@ const router = createRouter({
             path: '/accounts',
             name: 'ACCOUNTS',
             component: accountListView,
+        },
+        {
+            path: '/profile',
+            name: 'PROFILE',
+            component: myProfileView
         }
 
     ]

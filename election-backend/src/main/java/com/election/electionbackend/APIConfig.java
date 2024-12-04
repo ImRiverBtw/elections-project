@@ -19,14 +19,16 @@ public class APIConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173") // Exact origin of your frontend
+                .allowedOrigins("http://localhost:5174") // Exact origin of your frontend
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders(
                         HttpHeaders.AUTHORIZATION,
-                        HttpHeaders.CONTENT_TYPE)
+                        HttpHeaders.CONTENT_TYPE,
+                        "resultType")
                 .exposedHeaders(
                         HttpHeaders.AUTHORIZATION,
-                        HttpHeaders.CONTENT_TYPE)
+                        HttpHeaders.CONTENT_TYPE,
+                        "resultType")
                 .allowCredentials(true); // Allow credentials if necessary
     }
 

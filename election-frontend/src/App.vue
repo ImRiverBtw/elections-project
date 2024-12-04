@@ -11,6 +11,7 @@ import router from "@/router/index.js";
 
 const theSessionService = shallowReactive(
     new SessionService(`${CONFIG.BACKEND_URL}`, CONFIG.JWT_STORAGE_ITEM));
+
 const theFetchInterceptor = new FetchInterceptor(theSessionService);
 
 provide('sessionService', theSessionService);

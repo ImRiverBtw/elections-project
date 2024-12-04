@@ -44,9 +44,8 @@ public class AuthenticationService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        User user = userService.findByEmail(request.getEmail());
+        User user =userService.findByEmail(request.getEmail());
         if (user == null || !user.verifyPassword(request.getPassword())) {
-            System.out.println(user.verifyPassword(request.getPassword()));
             throw new UnauthorizedException("Username or password do not match with an existing account");
         }
         // Issue a token for the account, valid for some time

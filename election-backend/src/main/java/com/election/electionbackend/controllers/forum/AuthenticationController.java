@@ -11,6 +11,7 @@ import com.election.electionbackend.services.AuthenticationService;
 import com.election.electionbackend.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,13 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    private final UserService userService;
     private final AuthenticationService authenticationService;
 
     // Register a new User
@@ -49,8 +50,8 @@ public class AuthenticationController {
             return ResponseEntity.accepted()
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenString)
                     .body(user);
-        } catch (UnauthorizedException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (UnauthorizedException | NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
         }
     }
 }

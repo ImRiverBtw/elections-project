@@ -1,3 +1,6 @@
+import {jwtDecode} from "jwt-decode";
+import{reactive} from "vue";
+
 const API_BASE_URL = 'http://localhost:8080/auth';
 
 export class SessionService {
@@ -5,6 +8,20 @@ export class SessionService {
     constructor(resourcesUrl, browserStorageItemName) {
         this.RESOURCES_URL = resourcesUrl;
         this.BROWSER_STORAGE_ITEM_NAME = browserStorageItemName;
+        this.state = reactive({
+            token: this.getTokenFromBrowserStorage()
+        })
+    }
+    async asyncRegister(username, email, password){
+        const registerData = {username, email, password};
+        let response = await fetch(`${this.RESOURCES_URL}/auth/register`,{
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(registerData),
+            credentials: 'include',
+        });
+        return response.ok;
+
     }
 
     async asyncLogIn(email, password) {
@@ -21,7 +38,10 @@ export class SessionService {
             );
             return true;
         }
-        return false;
+        throw new Error("Invalid email or password")
+    }
+    async logout(){
+        this.saveTokenIntoBrowserStorage(null)
     }
 
     saveTokenIntoBrowserStorage(token) {
@@ -37,6 +57,7 @@ export class SessionService {
             window.sessionStorage.setItem(this.BROWSER_STORAGE_ITEM_NAME, token);
             window.localStorage.setItem(this.BROWSER_STORAGE_ITEM_NAME, token);
         }
+        this.state.token = token
     }
 
     getTokenFromBrowserStorage() {
@@ -49,41 +70,29 @@ export class SessionService {
     }
 
     isAuthenticated() {
-        let token = this.getTokenFromBrowserStorage();
-        return token != null;
+        return !!this.state.token;
     }
     isAdmin(){
-        let token = this.getTokenFromBrowserStorage();
         try{
-            let decodedToken = jwt.decode(token);
+            let decodedToken = jwtDecode(this.state.token);
             return decodedToken.role === "ADMIN";
         } catch(err){
             console.error("error decoding token")
             return false;
         }
     }
-}
-
-export async function login(email, password) {
-    const loginData = {email, password};
-    try {
-        const response = await fetch(`${API_BASE_URL}/login`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(loginData),
-        });
-        if (response.ok) {
-            this.saveTokenIntoBrowserStorage(
-                response.headers.get('Authorization'),
-            );
-            return true;
+    getUsername(){
+        try {
+            let decodedToken = jwtDecode(this.state.token);
+            return decodedToken.sub;
+        } catch (err) {
+            console.error("error decoding token")
+            return "placeholder username"
         }
-        throw new Error(await response.text());
-    } catch (error) {
-        console.error('Error during login:', error);
-        throw error;
     }
 }
+
+
 
 export async function register(username, email, password) {
     const registerData = {username, email, password};
