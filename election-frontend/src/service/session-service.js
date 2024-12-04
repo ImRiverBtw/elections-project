@@ -1,6 +1,6 @@
 const API_BASE_URL = 'http://localhost:8080/auth';
 
-export class AuthService {
+export class SessionService {
 
     constructor(resourcesUrl, browserStorageItemName) {
         this.RESOURCES_URL = resourcesUrl;
@@ -46,6 +46,21 @@ export class AuthService {
             token = window.localStorage.getItem(this.RESOURCES_URL);
         }
         return token;
+    }
+
+    isAuthenticated() {
+        let token = this.getTokenFromBrowserStorage();
+        return token != null;
+    }
+    isAdmin(){
+        let token = this.getTokenFromBrowserStorage();
+        try{
+            let decodedToken = jwt.decode(token);
+            return decodedToken.role === "ADMIN";
+        } catch(err){
+            console.error("error decoding token")
+            return false;
+        }
     }
 }
 

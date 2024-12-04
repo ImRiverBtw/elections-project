@@ -2,7 +2,19 @@
 // import {RouterLink, RouterView} from 'vue-router'
 import ECHeader from "@/components/ECHeader.vue";
 import ECFooter from "@/components/ECFooter.vue";
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, shallowReactive, provide, onBeforeUnmount, onBeforeMount} from 'vue';
+import {SessionService} from "@/service/session-service.js";
+import {CONFIG} from "@/config.js";
+import {FetchInterceptor} from "@/service/fetch-interceptor.js";
+import router from "@/router/index.js";
+
+
+const theSessionService = shallowReactive(
+    new SessionService(`${CONFIG.BACKEND_URL}`, CONFIG.JWT_STORAGE_ITEM));
+const theFetchInterceptor = new FetchInterceptor(theSessionService);
+
+provide('sessionService', theSessionService);
+provide('fetchInterceptor', theFetchInterceptor);
 
 // Reactive variable for dark mode state
 const isDarkMode = ref(localStorage.getItem('darkMode') === 'true');
@@ -35,6 +47,26 @@ onMounted(() => {
     }
   }
 });
+
+const routerGuard = (to, from) => {
+if (to.name === 'ACCOUNTS'){
+  if (!theSessionService.isAdmin()){
+    console.error(`User not authorized to visit ${to}`)
+    return from;
+  }
+} else if (to.name === 'PROFILE'){
+  if (!theSessionService.isAuthenticated()){
+    return {name: 'login', query: {targetRoute: to.name}};
+  }
+}
+}
+
+onBeforeMount(() => {
+  router.beforeEach(routerGuard)
+})
+onBeforeUnmount(() =>{
+  theFetchInterceptor.unregister();
+})
 
 function myFunction() {
   var x = document.getElementById("myTopnav");

@@ -8,11 +8,11 @@
       <div class="line"></div>
       <div class="inputBox">
         <div class="inputText email">Email-addres</div>
-        <input class="inputField email" v-model="loginEmail" placeholder="Email-addres" />
+        <input class="inputField email" v-model="loginEmail" placeholder="Email-addres"/>
         <small v-if="emailError" class="text-error">{{ emailError }}</small>
 
         <div class="inputText password">Wachtwoord</div>
-        <input class="inputField password" type="password" v-model="loginPassword" placeholder="Wachtwoord" />
+        <input class="inputField password" type="password" v-model="loginPassword" placeholder="Wachtwoord"/>
 
         <a href="#" @click.prevent="$emit('forgot-password')">Wachtwoord vergeten?</a>
 
@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import {inject, ref} from "vue";
+
 export default {
   props: {
     visible: {
@@ -30,32 +32,37 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      loginEmail: '',
-      loginPassword: '',
-      emailError: null,
-    };
-  },
-  methods: {
-    //Close te popup
-    close() {
-      this.$emit('close');
-    },
-    async submit() {
-      this.emailError = null;
+  setup(props, {emit}) {
+    const sessionService = inject('sessionService');
+    const loginEmail = ref("");
+    const loginPassword = ref("");
+    const emailError = ref(null);
 
+    const submit = async () => {
+      emailError.value = null;
       try {
-        console.log("Ingelogd succesful");
-        this.close();
+        await sessionService.asyncLogIn(loginEmail.value, loginPassword.value);
+        close();
       } catch (error) {
         if (error.message.includes('Invalid email or password')) {
-          this.emailError = 'E-mailadres of wachtwoord is onjuist.';
+          emailError.value = 'E-mailadres of wachtwoord is onjuist.';
         } else {
-          this.emailError = 'Er is een probleem opgetreden. Probeer het later opnieuw.';
+          emailError.value = 'Er is een probleem opgetreden. Probeer het later opnieuw.';
+          console.log(error)
         }
       }
-    },
+    };
+    const close = () => {
+      emit("close"); // This emits the "close" event
+    };
+
+    return {
+      loginEmail,
+      loginPassword,
+      emailError,
+      submit,
+      close,
+    }
   },
 };
 </script>

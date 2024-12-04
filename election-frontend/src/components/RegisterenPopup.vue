@@ -31,7 +31,8 @@
 </template>
 
 <script>
-import { register, login } from '../models/authService.js';
+import { register} from '../service/session-service.js';
+
 
 export default {
   props: {
@@ -92,7 +93,7 @@ export default {
         const response = await register(this.registerUsername, this.registerEmail, this.registerPassword);
         // Controleer of de registratie succesvol is
         if (response && response.message === "User registered successfully") {
-          const loginResponse = await login(this.registerEmail, this.registerPassword);
+          const loginResponse = await SessionService.asyncLogin(this.registerEmail, this.registerPassword);
           console.log('Login succesvol na registratie:', loginResponse);
           this.$emit('close');
         }
