@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { register, login } from '../models/authService.js';
+import { ref, computed , inject} from "vue";
 
 export default {
   props: {
@@ -40,80 +40,95 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      registerUsername: '',
-      registerEmail: '',
-      registerPassword: '',
-      registerConfirmPassword: '',
-      emailError: null,
-      usernameError: null,
+  setup(props, { emit }) {
+    const sessionService = inject("sessionService")
+    const registerUsername = ref("");
+    const registerEmail = ref("");
+    const registerPassword = ref("");
+    const registerConfirmPassword = ref("");
+    const emailError = ref(null);
+    const usernameError = ref(null);
+
+    const isValidEmail = computed(() => (email) => {
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      return emailRegex.test(email);
+    });
+
+    const isValidPassword = computed(() => (password) => {
+      const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/;
+      return passwordRegex.test(password);
+    });
+
+    const close = () => {
+      emit("close");
     };
-  },
-  computed: {
-    isValidEmail() {
-      return (email) => {
-        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        return emailRegex.test(email);
-      };
-    },
-    isValidPassword() {
-      return (password) => {
-        const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/;
-        return passwordRegex.test(password);
-      }
-    }
-  },
-  methods: {
-    close() {
-      this.$emit('close');
-    },
-    async submit() {
-      this.emailError = null;
-      this.usernameError = null;
 
-      if (!this.isValidEmail(this.registerEmail)) {
-        alert('Ongeldig emailadres');
+    const submit = async () => {
+      emailError.value = null;
+      usernameError.value = null;
+
+      if (!isValidEmail.value(registerEmail.value)) {
+        alert("Ongeldig emailadres");
         return;
       }
 
-      if (!this.isValidPassword(this.registerPassword)) {
-        alert('Wachtwoord moet minimaal 8 karakters bevatten en één cijfer en één speciaal teken');
+      if (!isValidPassword.value(registerPassword.value)) {
+        alert("Wachtwoord moet minimaal 8 karakters bevatten en één cijfer en één speciaal teken");
         return;
       }
 
-      if (this.registerPassword !== this.registerConfirmPassword) {
-        alert('De wachtwoorden komen niet overeen');
+      if (registerPassword.value !== registerConfirmPassword.value) {
+        alert("De wachtwoorden komen niet overeen");
         return;
       }
 
       try {
         // Registreren
-        const response = await register(this.registerUsername, this.registerEmail, this.registerPassword);
-        // Controleer of de registratie succesvol is
+        const response = await sessionService.asyncRegister(
+            registerUsername.value,
+            registerEmail.value,
+            registerPassword.value
+        );
+
         if (response && response.message === "User registered successfully") {
-          const loginResponse = await login(this.registerEmail, this.registerPassword);
-          console.log('Login succesvol na registratie:', loginResponse);
-          this.$emit('close');
+          const loginResponse = await sessionService.asyncLogIn(
+              registerEmail.value,
+              registerPassword.value
+          );
+          console.log("Login succesvol na registratie:", loginResponse);
+          emit("close");
         }
       } catch (error) {
-        console.error('Fout tijdens registratie of login:', error);
+        console.error("Fout tijdens registratie of login:", error);
 
-        const errorMessage = error?.message || 'Er is een onverwachte fout opgetreden.';
+        const errorMessage = error?.message || "Er is een onverwachte fout opgetreden.";
 
-        if (errorMessage.includes('gebruikersnaam')) {
-          this.usernameError = 'Deze gebruikersnaam is al in gebruik.';
-        } else if (errorMessage.includes('e-mail')) {
-          this.emailError = 'Dit e-mailadres is al in gebruik.';
-        }
-         else {
+        if (errorMessage.includes("gebruikersnaam")) {
+          usernameError.value = "Deze gebruikersnaam is al in gebruik.";
+        } else if (errorMessage.includes("e-mail")) {
+          emailError.value = "Dit e-mailadres is al in gebruik.";
+        } else {
           alert(errorMessage);
-         }
+        }
       }
-    },
+    };
+
+    return {
+      registerUsername,
+      registerEmail,
+      registerPassword,
+      registerConfirmPassword,
+      emailError,
+      usernameError,
+      isValidEmail,
+      isValidPassword,
+      close,
+      submit,
+    };
   },
 };
 </script>
+
 
 <style scoped>
 .text-error {

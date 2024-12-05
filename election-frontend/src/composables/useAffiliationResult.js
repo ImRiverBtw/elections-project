@@ -12,7 +12,7 @@ export function useAffiliationResult() {
         loading.value = true; // Set loading state to true while fetching data
         try {
             // Make a GET request to the API endpoint
-            const response = await fetch('http://localhost:8080/electionresult/votes/affiliation', {
+            const response = await fetch(`http://localhost:8080/electionresult/votes/affiliation`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

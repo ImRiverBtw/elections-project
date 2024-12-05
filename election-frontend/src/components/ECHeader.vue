@@ -1,7 +1,10 @@
 <script setup>
-import { ref } from 'vue';
+import {ref, inject, computed} from 'vue';
 
+const sessionService = inject("sessionService")
 
+const isAuthenticated = computed(() => sessionService.isAuthenticated());
+const isAdmin = computed(() => sessionService.isAdmin());
 // Reactive variable for dark mode state
 const isDarkMode = ref(localStorage.getItem('darkMode') === 'true');
 
@@ -51,7 +54,9 @@ function myFunction() {
       <RouterLink to="/">Home</RouterLink>
       <RouterLink to="/electionresults/resultsmap">Verkiezingsuitslagen</RouterLink>
       <RouterLink to="/forum">Forum</RouterLink>
-      <RouterLink to="/login">Login/resgister</RouterLink>
+      <RouterLink to="/login" v-if="!isAuthenticated">Login/register</RouterLink>
+      <RouterLink to="/profile" v-if="isAuthenticated">My Profile</RouterLink>
+      <RouterLink to="/accounts" v-if="isAdmin">Admin Dashboard</RouterLink>
       <a href="javascript:void(0);" class="icon" @click="myFunction">
         <i class="fa fa-bars"></i>
       </a>

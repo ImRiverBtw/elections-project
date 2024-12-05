@@ -28,8 +28,11 @@ public class Vote {
     private Party party; // Many-to-one relationship with the Party entity
 
     @ManyToOne
-    @JoinColumn(name = "candidate_id", nullable = true)
-    private Candidate candidate; // Many-to-one relationship with the Candidate entity (nullable)
+    @JoinColumns({
+            @JoinColumn(name = "candidate_identifier", referencedColumnName = "candidate_identifier"),
+            @JoinColumn(name = "party_identifier", referencedColumnName = "party_identifier")
+    })
+    private Candidate candidate; // Relationship with Candidate
 
     private int validVotes; // Number of valid votes
 }

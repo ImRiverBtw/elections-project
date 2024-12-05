@@ -1,6 +1,7 @@
 package com.election.electionbackend.util;
 
 import com.election.electionbackend.models.electionresults.*;
+import com.election.electionbackend.models.id.CandidateId;
 import org.w3c.dom.*;
 import org.springframework.stereotype.Component;
 
@@ -83,9 +84,12 @@ public class XmlParser {
                     for (int k = 0; k < candidateNodes.getLength(); k++) {
                         Element candidateElement = (Element) candidateNodes.item(k);
                         Element candidateIdentifier = (Element) candidateElement.getElementsByTagNameNS("urn:oasis:names:tc:evs:schema:eml", "CandidateIdentifier").item(0);
+                        String candidateIdentifierString = candidateIdentifier != null ? candidateIdentifier.getAttribute("Id") : "Unknown";
+                        assert currentParty != null;
+                        CandidateId currentCandidateId = new CandidateId(candidateIdentifierString, currentParty.getId());
                         Candidate candidate = new Candidate(
-                                candidateIdentifier != null ? candidateIdentifier.getAttribute("Id") : "Unknown",
-                                null, // Name not present in XML
+                                currentCandidateId,
+                                null,
                                 currentParty
                         );
 

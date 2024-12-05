@@ -1,111 +1,45 @@
 package com.election.electionbackend.repositories.forum;
 
-import com.election.electionbackend.models.forum.Users;
-import jakarta.persistence.EntityManager;
+import com.election.electionbackend.models.forum.User;
 import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional
-public class UserRepository {
-
-    private EntityManager em;
-
-    public UserRepository(EntityManager em) {
-        this.em = em;
-    }
+public interface UserRepository extends JpaRepository<User, Long> {
 
     /**
-     * Voegt dummy data toe aan de database
-     */
-    public void insertDummyData() {
-        String[] usernames = {"john_doe", "jane_doe", "alice_smith", "bob_jones"};
-        String[] emails = {"john@example.com", "DaveRobinKayHakanMichael@outlook.com", "jane@example.com", "alice@example.com", "bob@example.com"};
-        String[] passwords = {"password123", "password456", "password789", "password101"};
-
-        for (int i = 0; i < usernames.length; i++) {
-            Users user = new Users();
-            user.setUsername(usernames[i]);
-            user.setEmail(emails[i]);
-            user.setPassword(passwords[i]);
-            em.persist(user);
-        }
-    }
-
-    /**
-     * Zoekt naar een gebruiker op basis van de gebruikersnaam
-     * @param username Voor het vinden van de usernaam om te checken of de usernaam al in de database staat
-     * @return
-     */
-    public Users findByUsername(String username) {
-        return em.createQuery("SELECT u from Users u where u.username = :username", Users.class)
-                .setParameter("username", username)
-                .getResultList()
-                .stream()
-                .findFirst()
-                .orElse(null);
-    }
-
-    /**
-     * Controleert of een gebruiker met de opgegeven gebruikersnaam of e-mailadres al bestaat.
+     * Searches for a user by username
      *
-     * @param username de gebruikersnaam om te controleren.
-     * @return true als een gebruiker met de gebruikersnaam of het e-mailadres al bestaat, anders false.
+     * @param username The username of a user
+     * @return The user to which the given username belongs, if it exists
      */
-    public boolean existsByUsername(String username) {
-        return em.createQuery("SELECT COUNT(u) FROM Users u WHERE u.username = :username", Long.class)
-                .setParameter("username", username)
-                .getSingleResult() > 0;
-    }
-
-    public boolean existsByEmail(String email) {
-        return em.createQuery("SELECT COUNT(u) FROM Users u WHERE u.email = :email", Long.class)
-                .setParameter("email", email)
-                .getSingleResult() > 0;
-    }
+    Optional<User> findUserByUsername(String username);
 
     /**
-     * Zoekt een gebruiker op basis van het e-mailadres.
+     * Searches for a user by email
      *
-     * @param email het e-mailadres van de te zoeken gebruiker.
-     * @return de gevonden gebruikersentiteit, of null als deze niet gevonden wordt.
+     * @param email The email address of a user
+     * @return The user to which the given email belongs, if it exists
      */
-    public Users findByEmail(String email) {
-        return em.createQuery("SELECT u from Users u WHERE u.email = :email", Users.class)
-                .setParameter("email", email)
-                .getResultList()
-                .stream()
-                .findFirst()
-                .orElse(null);
-    }
+    Optional<User> findUserByEmail(String email);
 
     /**
-     * Slaat een gebruiker op in de database.
+     * checks if a user with the given email exists
      *
-     * @param users de gebruiker die opgeslagen moet worden.
+     * @param email The email address of a user
+     * @return true if a user with the given email address already exists, false if a user with the given email address does not exist
      */
-    public void save(Users users) {
-        em.persist(users);
-    }
+    boolean existsByEmail(String email);
 
     /**
-     * Haalt alle gebruikers op uit de database.
+     * checks if a user with the given username exists
      *
-     * @return een lijst met alle gebruikers.
+     * @param username The username of a user
+     * @return true if a user with the given username already exists, false if a user with the given username does not exist
      */
-    public List<Users> findAll() {
-        return em.createQuery("from Users", Users.class).getResultList();
-    }
-
-    /**
-     * Zoekt een gebruiker op basis van het ID.
-     *
-     * @param id het ID van de te zoeken gebruiker.
-     * @return de gevonden gebruikersentiteit, of null als deze niet gevonden wordt.
-     */
-    public Users findById(Long id) {
-        return em.find(Users.class, id);
-    }
+    boolean existsByUsername(String username);
 }

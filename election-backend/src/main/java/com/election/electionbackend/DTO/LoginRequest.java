@@ -1,4 +1,11 @@
 package com.election.electionbackend.DTO;
 
-public record LoginRequest(String email, String password) {
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+@Data
+@RequiredArgsConstructor
+public class LoginRequest {
+    private String email;
+    private String password;
 }

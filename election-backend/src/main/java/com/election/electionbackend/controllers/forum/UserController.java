@@ -1,8 +1,11 @@
 package com.election.electionbackend.controllers.forum;
 
+import com.election.electionbackend.Exceptions.UnauthorizedException;
 import com.election.electionbackend.models.forum.PasswordResetToken;
-import com.election.electionbackend.models.forum.Users;
-import com.election.electionbackend.repositories.forum.UserRepository;
+import com.election.electionbackend.models.forum.User;
+import com.election.electionbackend.security.JWToken;
+import com.election.electionbackend.services.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +17,10 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/userdata")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepo;
+    private final UserService userService;
 
     @Autowired
     private com.election.electionbackend.repositories.forum.PasswordResetTokenRepository tokenRepo;
@@ -25,7 +28,7 @@ public class UserController {
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> request) {
         String email = request.get("email");
-        Users user = userRepo.findByEmail(email);
+        User user = userService.findByEmail(email);
 
         if (user == null) {
             return ResponseEntity.badRequest().body("User with this email does not exist.");
@@ -88,13 +91,13 @@ public class UserController {
             return ResponseEntity.badRequest().body("Token has expired.");
         }
 
-        Users user = resetToken.getUser();
+        User user = resetToken.getUser();
         if (user == null) {
             return ResponseEntity.badRequest().body("User with this email does not exist.");
         }
 
         user.setPassword(newPassword); // Ideally, hash the password before saving
-        userRepo.save(user);
+        userService.save(user);
 
         tokenRepo.delete(resetToken); // Remove token after successful password reset
 
@@ -103,53 +106,12 @@ public class UserController {
 
 
 
-    // Registeren voor nieuwe gebruiker
-    @PostMapping("/register")
-    public ResponseEntity<Object> registerUser(@RequestBody Users user) {
-        if (userRepo.existsByUsername(user.getUsername())) {
-            return ResponseEntity.badRequest().body(
-                    Map.of("message", "Deze gebruikersnaam is al in gebruik.")
-            );
-        }
-
-        if (userRepo.existsByEmail(user.getEmail())) {
-            return ResponseEntity.badRequest().body(
-                    Map.of("message", "Dit e-mailadres is al in gebruik.")
-            );
-        }
-
-        userRepo.save(user);
-        return ResponseEntity.ok(Map.of("message", "User registered successfully"));
-    }
-
-
-    //Login van een gebruiker
-    @PostMapping("/login")
-    public ResponseEntity<Object> loginUser(@RequestBody Users users) {
-        Users existingUser = userRepo.findByEmail(users.getEmail());
-
-        if (existingUser != null && existingUser.getPassword().equals(users.getPassword())) {
-            return ResponseEntity.ok(Map.of(
-                    "message", "Login successful",
-                    "userId", existingUser.getUserId(),
-                    "username", existingUser.getUsername()
-            ));
-        }
-
-        return ResponseEntity.status(401).body(Map.of("message", "Invalid email or password"));
-    }
-
-
-    //Dummy data
-    @RequestMapping("/insertDummyData")
-    public String insertDummyData() {
-        userRepo.insertDummyData();
-        return "Dummy data inserted succesfully";
-    }
-
     //TODO moet aan het einde verwijderd worden (is nu om te checken).
-    @GetMapping("/getAllUsers")
-    public List<Users> getAllUsers() {
-        return userRepo.findAll();
+    @GetMapping("")
+    public List<User> getAllUsers(@RequestAttribute(name = JWToken.JWT_ATTRIBUTE_NAME) JWToken jwtInfo) {
+        if (jwtInfo == null) {
+            throw new UnauthorizedException("Admin role is required to view users.");
+        }
+        return userService.findAll();
     }
 }

@@ -3,6 +3,7 @@ package com.election.electionbackend.repositories.electionresults;
 import com.election.electionbackend.DTO.electionresult.AffiliationDto;
 import com.election.electionbackend.DTO.electionresult.NewAggregatedVoteDto;
 import com.election.electionbackend.models.electionresults.Vote;
+import com.election.electionbackend.models.id.CandidateId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -39,7 +40,7 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
      * @param candidateId the ID of the candidate
      * @return a list of votes belonging to the specified candidate
      */
-    List<Vote> findByCandidate_Id(String candidateId);
+    List<Vote> findByCandidate_Id(CandidateId candidateId);
 
     /**
      * Finds votes for a party within a specific polling station.
@@ -57,7 +58,7 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
      * @param candidateId      the ID of the candidate
      * @return a list of votes for the specified candidate within the specified polling station
      */
-    List<Vote> findByPollingStation_IdAndCandidate_Id(String pollingStationId, String candidateId);
+    List<Vote> findByPollingStation_IdAndCandidate_Id(String pollingStationId, CandidateId candidateId);
 
     /**
      * Finds votes by the municipality ID of the polling station.
@@ -113,7 +114,7 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
      * @return An integer representing the total amount of votes a party has
      */
     @Query("SELECT SUM(v.validVotes) FROM Vote v WHERE v.candidate.id = :candidateId")
-    int findTotalVotesForCandidate(@Param("candidateId") String candidateId);
+    int findTotalVotesForCandidate(@Param("candidateId") CandidateId candidateId);
 
     /**
      * Retrieves the total votes grouped by party and calculates the vote percentage for each party.
