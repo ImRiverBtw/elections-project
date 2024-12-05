@@ -68,7 +68,8 @@ public class VoteService {
     /**
      * Retrieves the total number of valid votes for a specific candidate.
      *
-     * @param candidateId ID of the candidate.
+     * @param candidateIdentifier candidateIdentifier used to create the CandidateId
+     * @param partyId partyId used to create the CandidateId
      * @return Total number of valid votes for the candidate.
      */
     public int getTotalVotesForCandidate(String candidateIdentifier, String partyId) {
