@@ -3,6 +3,7 @@ package com.election.electionbackend.services.electionresult;
 
 import com.election.electionbackend.DTO.electionresult.NewAggregatedSeatDto;
 import com.election.electionbackend.DTO.electionresult.NewAggregatedVoteDto;
+import com.election.electionbackend.models.id.CandidateId;
 import com.election.electionbackend.repositories.electionresults.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -70,7 +71,8 @@ public class VoteService {
      * @param candidateId ID of the candidate.
      * @return Total number of valid votes for the candidate.
      */
-    public int getTotalVotesForCandidate(String candidateId) {
+    public int getTotalVotesForCandidate(String candidateIdentifier, String partyId) {
+        CandidateId candidateId = new CandidateId(candidateIdentifier, partyId);
         return voteRepository.findTotalVotesForCandidate(candidateId);
     }
 

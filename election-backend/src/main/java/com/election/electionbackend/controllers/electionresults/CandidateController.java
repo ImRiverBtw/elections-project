@@ -24,6 +24,7 @@ public class CandidateController {
      */
     @GetMapping("/{id}/votes")
     public int getTotalVotesForCandidate(@PathVariable String id) {
-        return voteService.getTotalVotesForCandidate(id);
+        //TODO split id into candidate and party id
+        return voteService.getTotalVotesForCandidate(id, id);
     }
 }

@@ -1,5 +1,6 @@
 package com.election.electionbackend.models.electionresults;
 
+import com.election.electionbackend.models.id.CandidateId;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,8 +16,8 @@ import lombok.AllArgsConstructor;
 @Entity
 public class Candidate {
 
-    @Id
-    private String id; // Unique identifier for the candidate
+    @EmbeddedId
+    private CandidateId id; // Embedded ID, which includes party_id
 
     private String name; // Name of the candidate
 

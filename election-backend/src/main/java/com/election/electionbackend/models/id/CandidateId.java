@@ -2,52 +2,34 @@ package com.election.electionbackend.models.id;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Embeddable
 public class CandidateId implements Serializable {
-    @Column(name="affiliation_id")
-    private Long affiliationId;
 
-    @Column(name = "candidate_number")
-    private Long candidateNumber;
+    @Column(name = "candidate_identifier") // Maps to database column candidate_identifier
+    private String candidateIdentifier;
 
-    public CandidateId() {
-    }
-
-    public CandidateId(Long affiliationId, Long candidateNumber) {
-        this.affiliationId = affiliationId;
-        this.candidateNumber = candidateNumber;
-    }
-
-    public Long getAffiliationId() {
-        return affiliationId;
-    }
-
-    public void setAffiliationId(Long affiliationId) {
-        this.affiliationId = affiliationId;
-    }
-
-    public Long getCandidateNumber() {
-        return candidateNumber;
-    }
-
-    public void setCandidateNumber(Long candidateNumber) {
-        this.candidateNumber = candidateNumber;
-    }
+    @Column(name = "party_identifier") // Maps to database column party_id
+    private String partyIdentifier;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CandidateId that = (CandidateId) o;
-        return Objects.equals(affiliationId, that.affiliationId) && Objects.equals(candidateNumber, that.candidateNumber);
+        if (!(o instanceof CandidateId that)) return false;
+        return Objects.equals(getPartyIdentifier(), that.getPartyIdentifier()) && Objects.equals(getCandidateIdentifier(), that.getCandidateIdentifier());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(affiliationId, candidateNumber);
+        return Objects.hash(getPartyIdentifier(), getCandidateIdentifier());
     }
 }

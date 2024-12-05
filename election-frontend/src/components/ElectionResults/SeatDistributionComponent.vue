@@ -78,6 +78,13 @@ export default {
             y: {
               beginAtZero: true,
             }
+          },
+          onClick: (event, elements) =>{
+            if (elements.length >= 1) {
+              const index = elements[0].index;
+              const affiliation = affiliations.value[index];
+              console.log(affiliation.id);
+            }
           }
         }
       };

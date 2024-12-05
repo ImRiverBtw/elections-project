@@ -36,7 +36,7 @@ public class VoteController {
      * @return Number of seats allocated to the party.
      */
     @GetMapping("/affiliation/{id}/seats")
-    public int getSeatCountForParty(@PathVariable String id) {
-        return voteService.getTotalSeatsForParty(id);
+    public ResponseEntity<Integer> getSeatCountForParty(@PathVariable String id) {
+        return ResponseEntity.ok(voteService.getTotalSeatsForParty(id));
     }
 }
