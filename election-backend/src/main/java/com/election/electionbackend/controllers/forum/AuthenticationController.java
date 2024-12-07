@@ -8,7 +8,6 @@ import com.election.electionbackend.Exceptions.UnauthorizedException;
 import com.election.electionbackend.Exceptions.UserAlreadyExistsException;
 import com.election.electionbackend.models.forum.User;
 import com.election.electionbackend.services.AuthenticationService;
-import com.election.electionbackend.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,10 +27,11 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    // Register a new User
+    //Endpoint to register a new User
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody RegisterRequest request) {
         try {
+            //tries to register the user
             authenticationService.register(request);
             return ResponseEntity.ok(Map.of("message", "User registered successfully"));
         } catch (UserAlreadyExistsException e) {
@@ -39,14 +39,17 @@ public class AuthenticationController {
         }
     }
 
-    //Login a existing user
+    //Endpoint to log in an existing User
     @PostMapping("/login")
     public ResponseEntity<Object> loginUser(@RequestBody LoginRequest request) {
         try {
+            //tries to log in the user
             LoginResponse loginResponse = authenticationService.login(request);
+            //get the User object and JWToken from the loginResponse
             User user = loginResponse.getUser();
             String tokenString = loginResponse.getTokenString();
 
+            //returns a response-entity with the new jwtoken
             return ResponseEntity.accepted()
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenString)
                     .body(user);

@@ -33,6 +33,7 @@ public class JWToken {
         this.role = role;
     }
 
+    //encodes the JWToken
     public String encode(String issuer, String passphrase, int expiration) {
         Key key = getKey(passphrase);
         return Jwts.builder()
@@ -47,11 +48,13 @@ public class JWToken {
                 .compact();
     }
 
+    //generate a key to sign the  JWToken with.
     private static Key getKey(String passphrase) {
         byte[] hmacKey = passphrase.getBytes(StandardCharsets.UTF_8);
         return new SecretKeySpec(hmacKey, SignatureAlgorithm.HS512.getJcaName());
     }
 
+    //decode the JWToken.
     public static JWToken decode(String token, String issuer, String passphrase)
             throws ExpiredJwtException, MalformedJwtException {
         //validate the tokens and extract the claims

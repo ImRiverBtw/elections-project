@@ -19,6 +19,11 @@ public class AuthenticationService {
     private final UserService userService;
     private final APIConfig apiConfig;
 
+    /**
+     * Registers/signs-up a new user.
+     * @param request the RegisterRequest containing the username, email, and password for the new user
+     * @throws UserAlreadyExistsException if a user with the given username or email already exists
+     */
     public void register(RegisterRequest request) {
         //Check if a User with the given username already exists
         if (userService.existsByUsername(request.getUsername())) {
@@ -38,17 +43,25 @@ public class AuthenticationService {
         newUser.setEmail(request.getEmail());
         newUser.setSalt(salt);
         newUser.setPassword(request.getPassword());
-
-        System.out.println(newUser.getPassword());
         userService.save(newUser);
     }
 
+    /**
+     * logs-/signs-in an existing user
+     * @param request the LoginRequest containing the email and password for an existing user
+     * @return a LoginResponse containing the User object and a JWToken string
+     * @throws UnauthorizedException if no user with the given email is found or the password does not match the found user
+     */
     public LoginResponse login(LoginRequest request) {
+        //tries to find an existing user by email
         User user =userService.findByEmail(request.getEmail());
+
+        //checks for valid login information
         if (user == null || !user.verifyPassword(request.getPassword())) {
             throw new UnauthorizedException("Username or password do not match with an existing account");
         }
-        // Issue a token for the account, valid for some time
+
+        // Issue a token for the account
         JWToken jwToken = new JWToken(user.getUsername(), user.getId(), user.getRole());
         String tokenString = jwToken.encode(this.apiConfig.getIssuer(),
                 this.apiConfig.getPassphrase(),  this.apiConfig.getTokenDurationOfValidity());

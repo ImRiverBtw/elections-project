@@ -1,13 +1,12 @@
 package com.election.electionbackend.security;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
 
 public class SecureHasher {
-    // Configure a password hasher
+
     private static final SecureRandom random = new SecureRandom();
 
     public static byte[] generateSalt() {
@@ -15,11 +14,13 @@ public class SecureHasher {
         random.nextBytes(salt);
         return salt;
     }
+
     /**
-     * Calculate a secure hash from a source for the purpose of password hashing.
+     * Calculate a secure hash from a password
      *
-     * @param source
-     * @return the hashed source
+     * @param source input password
+     * @param salt the salt generated for the User to which the password belongs
+     * @return the hashed password
      */
     public static String secureHash(String source, byte[] salt) {
         try {

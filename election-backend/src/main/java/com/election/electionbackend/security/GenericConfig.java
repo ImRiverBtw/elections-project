@@ -1,5 +1,5 @@
 package com.election.electionbackend.security;
-
+//TODO add email and password validation in the backend for registration
 public class GenericConfig {
 
     public static final String EMAIL_REGEX
