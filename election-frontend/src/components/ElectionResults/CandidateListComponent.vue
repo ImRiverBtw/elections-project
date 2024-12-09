@@ -11,9 +11,12 @@
     <table>
       <tbody>
       <tr v-for="candidate in candidates" :key="candidate.id">
-        <img src="@/assets/img/default.png" alt="" width="48px" height="48px">
+        <td class="image-td">
+          <img src="@/assets/img/default.png" alt="" width="48px" height="48px">
+        </td>
+
         <th>{{candidate.name}}</th>
-        <td>{{candidate.votes}} stemmen</td>
+        <td class="right">{{candidate.votes}} stemmen</td>
       </tr>
       </tbody>
     </table>
@@ -60,7 +63,7 @@ watch(() => props.selectedPartyId, fetchCandidatesForSelectedParty);
 }
 img{
   width: 50px;
-  margin:2px;
+  margin:4px;
   height: 50px;
   border-radius: 50%;
   align-self: center;
@@ -83,16 +86,24 @@ table {
 
 
 tbody tr {
-  border-top: none;
+  border-bottom: 1px solid gray;
+  height: 64px;
 }
 
 th {
   text-align: left;
   padding: 18px;
 }
+.image-td{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+}
 
-td {
+td.right{
   text-align: right;
   padding: 18px;
+  white-space: nowrap;
 }
 </style>
