@@ -8,53 +8,58 @@
   <!-- Show loading indicator while data is being fetched -->
   <loading v-if="loading" />
 
-  <!-- Render the total table if affiliations data is available and there is no error -->
-  <div v-if="affiliations && !err" class="total-table">
+  <div class="content-wrapper">
+    <!-- Render the total table if affiliations data is available and there is no error -->
+    <div v-if="affiliations.length > 0 && !err" class="total-table" :class="{ 'shrinking': selectedPartyId }">
 
-    <!-- Header section displaying the title and total vote count -->
-    <div class="header">
-      <p>Partij</p>
-      <p class="right">Totaal aantal Stemmen: {{ totalVoteCount }}</p>
+      <!-- Header section displaying the title and total vote count -->
+      <div class="header">
+        <p>Partij</p>
+        <p class="right">Totaal aantal Stemmen: {{ totalVoteCount }}</p>
+      </div>
+
+      <!-- Sorting selector to allow sorting by different criteria -->
+      <div class="sorting-selector">
+        <label for="sort-selector">Sorteer op: </label>
+        <select id="sort-selector" v-model="selectedSort">
+          <option value="alphabeticalAsc">Alphabetisch (A-Z)</option>
+          <option value="alphabeticalDesc">Alphabetisch (Z-A)</option>
+          <option value="votesAsc">Stemmen (hoog - laag)</option>
+          <option value="votesDesc">Stemmen (laag - hoog)</option>
+        </select>
+      </div>
+
+      <!-- Table displaying affiliation data -->
+      <table>
+        <tbody>
+        <!-- Loop through the sorted affiliations and display each one -->
+        <tr v-for="affiliation in sortedAffiliations" :key="affiliation.name" @click="selectParty(affiliation.id, affiliation.name)" :class="{ selected: selectedPartyId === affiliation.id }">
+          <!-- Affiliation name -->
+          <th>{{ affiliation.name }}</th>
+          <!-- Affiliation votes and percentage of total votes -->
+          <td>
+            {{ affiliation.votes }} stemmen <br />
+            {{ getVotePercentage(affiliation) }}%
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
-
-    <!-- Sorting selector to allow sorting by different criteria -->
-    <div class="sorting-selector">
-      <label for="sort-selector">Sorteer op: </label>
-      <select id="sort-selector" v-model="selectedSort">
-        <option value="alphabeticalAsc">Alphabetisch (A-Z)</option>
-        <option value="alphabeticalDesc">Alphabetisch (Z-A)</option>
-        <option value="votesAsc">Stemmen (hoog - laag)</option>
-        <option value="votesDesc">Stemmen (laag - hoog)</option>
-      </select>
-    </div>
-
-    <!-- Table displaying affiliation data -->
-    <table>
-      <tbody>
-      <!-- Loop through the sorted affiliations and display each one -->
-      <tr v-for="affiliation in sortedAffiliations" :key="affiliation.name">
-        <!-- Affiliation name -->
-        <th>{{ affiliation.name }}</th>
-        <!-- Affiliation votes and percentage of total votes -->
-        <td>
-          {{ affiliation.votes }} stemmen <br />
-          {{ getVotePercentage(affiliation) }}%
-        </td>
-      </tr>
-      </tbody>
-    </table>
+      <CandidateListComponent v-if="selectedPartyId" class="candidate-list" :selectedPartyId="selectedPartyId" :selectedPartyName="selectedPartyName"/>
   </div>
+
 </template>
 
 <script>
 import Loading from "@/components/Status/Loading.vue"; // Loading indicator component
 import ErrorComponent from "@/components/Status/ErrorComponent.vue"; // Error display component
 import { useAffiliationResult } from "@/composables/useAffiliationResult.js"; // Custom composable to fetch affiliation data
-import { onMounted, provide, ref } from "vue"; // Vue Composition API utilities
+import { onMounted, provide, ref } from "vue";
+import CandidateListComponent from "@/components/ElectionResults/CandidateListComponent.vue"; // Vue Composition API utilities
 
 export default {
   name: "TotalTable", // Component name
-  components: { Loading, ErrorComponent }, // Register child components
+  components: {CandidateListComponent, Loading, ErrorComponent }, // Register child components
   setup() {
     const { affiliations, err, loading, fetchAffiliationResults } = useAffiliationResult(); // Fetch reactive affiliation data, errors, and loading state
     provide("err", err); // Provide the error object to child components for global error handling
@@ -78,9 +83,23 @@ export default {
   data() {
     return {
       selectedSort: "alphabeticalAsc", // Default sorting method
+      selectedPartyId: null,
+      selectedPartyName: null
     };
   },
   methods: {
+    selectParty(id, name){
+      switch (this.selectedPartyId){
+        case id:
+          this.selectedPartyId = null;
+          this.selectedPartyName = null;
+          break;
+        default:
+          this.selectedPartyName = name;
+          this.selectedPartyId = id;
+      }
+      console.log(this.selectedPartyId)
+    },
 
     getVotePercentage(affiliation) {
       if (this.totalVoteCount === 0) {
@@ -131,6 +150,19 @@ export default {
 </script>
 
 <style scoped>
+
+.selected{
+  background-color: #b3d9ff;
+}
+.candidate-list{
+  background-color: #80bfff;
+  width:  50%;
+}
+.content-wrapper{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
 h2 {
   margin-bottom: 18px;
 }
@@ -157,6 +189,14 @@ h2 {
   filter: drop-shadow(0 0 0.15rem lightgrey);
   background-color: white;
   border-radius: 2px;
+  width: 100%;
+  max-height: 75vh;
+  overflow: auto;
+  margin-right: 4px;
+  transition: width 0.3s ease; /* Smooth transition for width */
+}
+.total-table.shrinking {
+  width: 50%; /* Adjust the width when a party is selected */
 }
 
 

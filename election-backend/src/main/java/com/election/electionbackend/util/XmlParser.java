@@ -89,7 +89,7 @@ public class XmlParser {
                         CandidateId currentCandidateId = new CandidateId(candidateIdentifierString, currentParty.getId());
                         Candidate candidate = new Candidate(
                                 currentCandidateId,
-                                null,
+                                "placeholder name",
                                 currentParty
                         );
 

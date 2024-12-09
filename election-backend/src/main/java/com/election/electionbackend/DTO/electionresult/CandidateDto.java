@@ -1,5 +1,6 @@
 package com.election.electionbackend.DTO.electionresult;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -7,8 +8,10 @@ import lombok.Data;
  * This class uses Lombok annotations to reduce boilerplate code.
  */
 @Data
+@AllArgsConstructor
 public class CandidateDto {
-    private String id;      // Candidate ID
+    private String identifier;      // Candidate ID
     private String partyId; // Party ID to which this candidate belongs
     private String name;    // (Optional) Candidate name, if available
+    private int votes;
 }

@@ -48,9 +48,9 @@ public class VoteService {
 
         // Map the list of votes to a list of seats, calculating the number of seats per party
         return voteList.stream()
-                .map(voteDto -> {
-                    int seatCount = calculateSeats((int) voteDto.getVotes());
-                    return new NewAggregatedSeatDto(voteDto.getId(), voteDto.getName(), seatCount);
+                .map(vote -> {
+                    int seatCount = calculateSeats((int) vote.getVotes());
+                    return new NewAggregatedSeatDto(vote.getId(), vote.getName(), seatCount);
                 })
                 .collect(Collectors.toList());
     }
