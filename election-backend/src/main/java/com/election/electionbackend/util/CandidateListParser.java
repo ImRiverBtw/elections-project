@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class for parsing XML content related to candidates
+ */
 @Component
 public class CandidateListParser {
 
@@ -29,24 +32,41 @@ public class CandidateListParser {
     }
 
 
+    /**
+     * Parses the given XML content and extracts vote information.
+     *
+     * @param xmlContent the XML content to parse
+     * @return a list of Candidate entities extracted from the XML content
+     */
     public List<Candidate> parse(String xmlContent){
         List<Candidate> candidateList = new ArrayList<>();
         Document document = buildDocument(xmlContent);
 
         NodeList affiliationNodeList = document.getElementsByTagNameNS(NAMESPACE, "Affiliation");
 
+        //loops over the affiliations/parties
         for (int i = 0; i < affiliationNodeList.getLength(); i++) {
             Element affiliationElement = (Element) affiliationNodeList.item(i);
             String affiliationId = getAffiliationId(affiliationElement);
+
+            //retrieves an existing party by the current party id.
             Party currentParty = partyRepository.findById(affiliationId)
                     .orElseThrow(() -> new ResourceNotFound("Party not found"));
 
             NodeList candidateNodeList = affiliationElement.getElementsByTagNameNS(NAMESPACE, "Candidate");
+
+            //loops over the candidates within the current party
             for (int j = 0; j < candidateNodeList.getLength(); j++) {
                 Element candidateElement = (Element) candidateNodeList.item(j);
+
+                //get the identifier and name of the current candidate
                 String candidateIdentifier = getCandidateId(candidateElement);
                 String fullName = getFullName(candidateElement);
+
+                //use the candidateIdentifier and current party id to create a CandidateId object
                 CandidateId candidateIdObj = new CandidateId(candidateIdentifier, affiliationId);
+
+                //create a new candidate and add it to the arraylist
                 Candidate candidate = new Candidate(candidateIdObj, fullName, currentParty);
                 candidateList.add(candidate);
             }
@@ -54,9 +74,9 @@ public class CandidateListParser {
         return candidateList;
     }
 
+    // Parse the XML content into a Document object
     private Document buildDocument(String xmlContent){
         try {
-            // Parse the XML content into a Document object
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true); // Important for namespaces
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -70,6 +90,7 @@ public class CandidateListParser {
         }
     }
 
+    //Gets the affiliation identifier from the affiliation element.
     private String getAffiliationId(Element affiliationElement) {
         Element affiliationIdentifier = (Element) affiliationElement.getElementsByTagNameNS(NAMESPACE, "AffiliationIdentifier").item(0);
         if (affiliationIdentifier == null) {
@@ -78,6 +99,7 @@ public class CandidateListParser {
         return affiliationIdentifier.getAttribute("Id");
     }
 
+    //gets the candidate identifier from the candidate element
     private String getCandidateId(Element candidateElement) {
         Element candidateIdentifier = (Element) candidateElement.getElementsByTagNameNS(NAMESPACE, "CandidateIdentifier").item(0);
         if (candidateIdentifier == null) {
@@ -86,6 +108,7 @@ public class CandidateListParser {
         return candidateIdentifier.getAttribute("Id");
     }
 
+    //extracts the full name from the candidate element.
     private String getFullName(Element candidateElement) {
         Element fullNameElement = (Element) candidateElement.getElementsByTagNameNS(NAMESPACE, "CandidateFullName").item(0);
         if (fullNameElement == null) {
@@ -102,9 +125,12 @@ public class CandidateListParser {
         String lastName = getTextContentByTagName(personNameElement, "LastName");
 
         String fullNameRaw = firstName + " " + namePrefix + " " + lastName;
-        return fullNameRaw.replaceAll(" {2}", " ");
+        return fullNameRaw
+                .replaceAll(" {2}", " ")
+                .trim();
     }
 
+    //Gets the text content of a child from the parent element
     private String getTextContentByTagName(Element parent, String tagName) {
         Element textElement = (Element) parent.getElementsByTagNameNS(NAMESPACE_NL, tagName).item(0);
         if (textElement == null) {

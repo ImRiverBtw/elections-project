@@ -29,6 +29,7 @@ public class CandidateService {
     private static final String FILE_PATTERN = "Kandidatenlijsten_TK2023_.*\\.eml\\.xml";
     private final CandidateListParser candidateListParser;
 
+    //scans the directory for candidatelist xml files
     public List<Path> findXmlFiles() {
         List<Path> xmlFiles = new ArrayList<>();
         try (Stream<Path> stream = Files.walk(Paths.get(DIRECTORY))) {
@@ -41,6 +42,7 @@ public class CandidateService {
         return xmlFiles;
     }
 
+    //extract the xml content from all found files and pass it over to the process function
     public void processXmlFiles() {
         List<Path> xmlFiles = findXmlFiles();
         for (Path file : xmlFiles) {
@@ -54,6 +56,7 @@ public class CandidateService {
         }
     }
 
+    //parses the candidatelist file content and saves the candidates to the database
     public void processXmlData(String xmlContent) {
         List<Candidate> candidates = candidateListParser.parse(xmlContent);
         candidateRepository.saveAll(candidates);
